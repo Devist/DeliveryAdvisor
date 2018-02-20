@@ -1,7 +1,9 @@
-package com.ldcc.pliss.deliveryadvisor;
+package com.ldcc.pliss.deliveryadvisor.page;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
+import com.ldcc.pliss.deliveryadvisor.R;
 
 public class HomeActivity extends AppCompatActivity {
 
