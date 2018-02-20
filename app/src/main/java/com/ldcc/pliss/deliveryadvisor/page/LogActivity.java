@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.ldcc.pliss.deliveryadvisor.R;
 
-public class LogPage extends AppCompatActivity {
+public class LogActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

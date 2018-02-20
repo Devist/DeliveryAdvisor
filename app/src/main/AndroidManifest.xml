@@ -16,6 +16,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--앱 최초 실행, 또는 초기화시 진입하는 가이드 화면-->
+        <activity android:name=".page.HomeActivity"></activity>
+        <activity android:name=".page.ExplanationActivity"></activity>
+
+        <!--앱 화면 등록-->
+        <activity android:name=".page.LogActivity"></activity>
+        <activity android:name=".page.NavigationActivity"></activity>
+        <activity android:name=".page.SettingActivity"></activity>
+        <activity android:name=".page.SignInActivity"></activity>
     </application>
 
 </manifest>

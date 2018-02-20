@@ -9,8 +9,7 @@ import com.ldcc.pliss.deliveryadvisor.page.HomeActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    public SharedPreferences prefs;
-
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,9 +17,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         prefs = getSharedPreferences("Pref", MODE_PRIVATE);
+        boolean isFirstRun = checkFirstRun();
+
+        if(isFirstRun){
+            finish();
+        }else{
+            initSetting();
+        }
     }
 
-    public void checkFirstRun(){
+    private void initSetting(){
+
+    }
+
+
+    private boolean checkFirstRun(){
         boolean isFirstRun = prefs.getBoolean("isFirstRun",true);
         if(isFirstRun)
         {
@@ -29,5 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
             prefs.edit().putBoolean("isFirstRun",false).apply();
         }
+        return isFirstRun;
     }
 }
