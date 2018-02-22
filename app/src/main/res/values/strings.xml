@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">DeliveryAdvisor</string>
+    <string name="app_name">Delivery Advisor</string>
+    <string name="action_settings">Settings</string>
 </resources>
