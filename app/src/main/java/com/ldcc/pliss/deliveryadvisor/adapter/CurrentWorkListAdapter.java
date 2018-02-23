@@ -20,13 +20,13 @@ import com.ldcc.pliss.deliveryadvisor.R;
 import java.util.ArrayList;
 
 
-public class currentWorkListAdapter extends BaseAdapter {
+public class CurrentWorkListAdapter extends BaseAdapter {
 
     Context context;
     private final String [] infos;
     private final int [] images;
 
-    public currentWorkListAdapter(Context context, String [] infos, int [] images){
+    public CurrentWorkListAdapter(Context context, String [] infos, int [] images){
         //super(context, R.layout.single_list_app_item, utilsArrayList);
         this.context = context;
         this.infos = infos;

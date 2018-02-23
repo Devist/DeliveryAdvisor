@@ -15,8 +15,8 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.ldcc.pliss.deliveryadvisor.adapter.allWorkListAdapter;
-import com.ldcc.pliss.deliveryadvisor.adapter.currentWorkListAdapter;
+import com.ldcc.pliss.deliveryadvisor.adapter.AllWorkListAdapter;
+import com.ldcc.pliss.deliveryadvisor.adapter.CurrentWorkListAdapter;
 import com.ldcc.pliss.deliveryadvisor.page.HomeActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         currentWorkListView = (ListView) findViewById(R.id.currentWorkList);
-        currentWorkListAdapter = new currentWorkListAdapter(MainActivity.this, infos, images);
+        currentWorkListAdapter = new CurrentWorkListAdapter(MainActivity.this, infos, images);
         currentWorkListView.setAdapter(currentWorkListAdapter);
         currentWorkListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         allWorkListView = (ListView) findViewById(R.id.allWorkList);
-        allWorkListAdapter = new allWorkListAdapter(MainActivity.this, invoice, customerName,customerProduct,customerAddress,status);
+        allWorkListAdapter = new AllWorkListAdapter(MainActivity.this, invoice, customerName,customerProduct,customerAddress,status);
         allWorkListView.setAdapter(allWorkListAdapter);
         allWorkListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

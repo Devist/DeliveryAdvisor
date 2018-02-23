@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.ldcc.pliss.deliveryadvisor.R;
 
 
-public class allWorkListAdapter extends BaseAdapter {
+public class AllWorkListAdapter extends BaseAdapter {
 
     Context context;
     private final String [] invoice;
@@ -26,7 +26,7 @@ public class allWorkListAdapter extends BaseAdapter {
     private final String [] customerAddress;
     private final String [] status;
 
-    public allWorkListAdapter(Context context, String[] invoice, String[] customerName, String[] customerProduct, String[] customerAddress, String [] status){
+    public AllWorkListAdapter(Context context, String[] invoice, String[] customerName, String[] customerProduct, String[] customerAddress, String [] status){
         //super(context, R.layout.single_list_app_item, utilsArrayList);
         this.context = context;
         this.invoice = invoice;
