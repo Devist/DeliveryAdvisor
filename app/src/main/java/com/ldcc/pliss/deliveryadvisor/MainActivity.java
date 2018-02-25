@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.ldcc.pliss.deliveryadvisor.adapter.AllWorkListAdapter;
 import com.ldcc.pliss.deliveryadvisor.adapter.CurrentWorkListAdapter;
 import com.ldcc.pliss.deliveryadvisor.page.HomeActivity;
+import com.ldcc.pliss.deliveryadvisor.page.LogActivity;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -170,6 +171,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_camera) {
             Toast.makeText(MainActivity.this, "good job", Toast.LENGTH_SHORT).show();
+            Intent newIntent = new Intent(this, LogActivity.class);
+            startActivity(newIntent);
+
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {

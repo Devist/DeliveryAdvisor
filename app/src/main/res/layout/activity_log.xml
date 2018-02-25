@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ldcc.pliss.deliveryadvisor.MainActivity">
+    tools:context="com.ldcc.pliss.deliveryadvisor.page.LogActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -14,5 +14,12 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <fragment
+        android:name="com.ldcc.pliss.deliveryadvisor.logger.LogFragment"
+        android:id="@+id/log_fragment"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </android.support.constraint.ConstraintLayout>
