@@ -2,6 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ldcc.pliss.deliveryadvisor">
 
+    <!--작업 목록 CSV 파일을 읽어오기 위한 퍼미션-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <!--전화와 메시지를 보내기 위한 퍼미션-->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.DIAL_PHONE" />
+    <uses-permission android:name="android.permission.VIBRATE"    />
+
+    출처: http://mainia.tistory.com/4884 [녹두장군 - 상상을 현실로]
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

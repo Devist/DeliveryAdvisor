@@ -26,6 +26,7 @@
             app:srcCompat="@drawable/icon_user"
             />
         <android.support.v7.widget.AppCompatEditText
+            android:id="@+id/edit_text_manager"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="76"
@@ -41,21 +42,23 @@
         >
 
         <TextView
-            android:layout_weight="55"
+            android:id="@+id/textSuccessProgress"
+            android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:gravity="right|center"
-            android:text="100%"
+            android:text="0%"
             android:textSize="60dp"
             android:textColor="#000000"
             android:textStyle="bold"
         />
         <TextView
-            android:layout_weight="45"
+            android:id="@+id/textFailProgress"
+            android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:gravity="left|center"
-            android:text="5%"
+            android:text="100%"
             android:textSize="25dp"
             android:textColor="#000000"
             android:textStyle="bold"

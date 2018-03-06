@@ -24,13 +24,19 @@ public class CurrentWorkListAdapter extends BaseAdapter {
 
     Context context;
     private final String [] infos;
-    private final int [] images;
+    private final int[] images = {
+            R.drawable.icon_customer_name,
+            R.drawable.icon_product,
+            R.drawable.icon_invoice_number,
+            R.drawable.icon_target_location,
+            R.drawable.icon_phone,
+            R.drawable.icon_customer_message
+    };
 
-    public CurrentWorkListAdapter(Context context, String [] infos, int [] images){
+    public CurrentWorkListAdapter(Context context, String [] infos){
         //super(context, R.layout.single_list_app_item, utilsArrayList);
         this.context = context;
         this.infos = infos;
-        this.images = images;
     }
 
     @Override

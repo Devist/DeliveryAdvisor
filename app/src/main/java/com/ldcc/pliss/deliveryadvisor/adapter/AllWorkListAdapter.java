@@ -5,6 +5,8 @@ package com.ldcc.pliss.deliveryadvisor.adapter;
  */
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -13,91 +15,87 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ldcc.pliss.deliveryadvisor.R;
+
+import java.util.ArrayList;
 
 
 public class AllWorkListAdapter extends BaseAdapter {
 
-    Context context;
-    private final String [] invoice;
-    private final String [] customerName;
-    private final String [] customerProduct;
-    private final String [] customerAddress;
-    private final String [] status;
-
-    public AllWorkListAdapter(Context context, String[] invoice, String[] customerName, String[] customerProduct, String[] customerAddress, String [] status){
-        //super(context, R.layout.single_list_app_item, utilsArrayList);
-        this.context = context;
-        this.invoice = invoice;
-        this.customerName = customerName;
-        this.customerProduct = customerProduct;
-        this.customerAddress = customerAddress;
-        this.status = status;
+    private ArrayList<AllWorkListVO> allWorkListVO = new ArrayList<AllWorkListVO>() ;
+    //invoice,customerProduct,customerName,customerAddress,status
+    public AllWorkListAdapter(String[] invoice, String[] customerName, String []customerProduct, String[] customerAddress, String [] status){
+        super();
+        for(int i =0  ; i< invoice.length ; i++){
+            String title = "업무 " + (i+1) + " : " + invoice[i];
+            String contents = customerName[i] + "님 : " + customerProduct[i];
+            String address = customerAddress[i];
+            addVO(title,contents,address);
+        }
     }
 
+
+    public void addVO(String title, String contents, String address){
+        AllWorkListVO item = new AllWorkListVO();
+
+        item.setTxtTitle(title);
+        item.setTxtContents(contents);
+        item.setTxtAddress(address);
+
+        allWorkListVO.add(item);
+    }
     @Override
     public int getCount() {
-        return invoice.length;
+        return allWorkListVO.size();
     }
 
     @Override
-    public Object getItem(int i) {
-        return i;
-    }
+    public View getView(int position, View convertView, ViewGroup parent) {
 
-    @Override
-    public long getItemId(int i) {
-        return i;
-    }
-
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-
-
-        ViewHolder viewHolder;
-
-        final View result;
+        final int pos = position;
+        final Context context = parent.getContext();
 
         if (convertView == null) {
-
-            viewHolder = new ViewHolder();
-            LayoutInflater inflater = LayoutInflater.from(context);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.item_all_work, parent, false);
-            viewHolder.txtTitle = (TextView) convertView.findViewById(R.id.textWorkTitle);
-            viewHolder.txtContents = (TextView) convertView.findViewById(R.id.textWorkContents);
-            viewHolder.txtAddress = (TextView) convertView.findViewById(R.id.textWorkAddress);
-            viewHolder.icon = (ImageView) convertView.findViewById(R.id.imageWorkState);
-
-            result=convertView;
-
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-            result=convertView;
         }
 
-        viewHolder.txtTitle.setText("배송지 "+ position + ": 송장번호[ " + invoice[position] + "]");
-        viewHolder.txtContents.setText("["+ customerName[position] + "]님에게 상품 ["+ customerProduct[position] + "] 배송입니다.");
-        viewHolder.txtAddress.setText(customerAddress[position]);
-        if(status[position].equals("done"))
-            viewHolder.icon.setImageResource(R.drawable.icon_check);
-        else if(status[position].equals("yet"))
-            viewHolder.icon.setImageResource(R.drawable.icon_check);
-        else
-            viewHolder.icon.setImageResource(R.drawable.icon_check);
+        TextView txtTitle = (TextView) convertView.findViewById(R.id.textWorkTitle);
+        TextView txtContents = (TextView) convertView.findViewById(R.id.textWorkContents);
+        TextView txtAddress = (TextView) convertView.findViewById(R.id.textWorkAddress);
+        ImageView icon = (ImageView) convertView.findViewById(R.id.imageWorkState);
+
+        AllWorkListVO allWorkListViewItem = allWorkListVO.get(position);
+
+        txtTitle.setText(allWorkListViewItem.getTxtTitle());
+        txtContents.setText(allWorkListViewItem.getTxtContents());
+        txtAddress.setText(allWorkListViewItem.getTxtAddress());
+
+        icon.setImageResource(R.drawable.icon_check);
+
+//        final View finalConvertView = convertView;
+//        convertView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(context, (pos+1)+"번째 리스트가 클릭되었습니다,",Toast.LENGTH_SHORT).show();
+//                //finalConvertView.setBackgroundColor(Color.RED);
+//                finalConvertView.notify();
+//            }
+//        });
 
         return convertView;
     }
 
-    private static class ViewHolder {
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
-        TextView txtTitle;
-        TextView txtContents;
-        TextView txtAddress;
-        ImageView icon;
-
+    @Override
+    public Object getItem(int position) {
+        return allWorkListVO.get(position);
     }
 
 }

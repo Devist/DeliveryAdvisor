@@ -16,21 +16,19 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:text="현재 업무"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:textColor="#FFF"
             android:background="#383838"
             android:gravity="center"
             android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_weight="3.85"/>
+            android:layout_marginRight="30dp"/>
 
         <ListView
             android:id="@+id/currentWorkList"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="19"
+            android:layout_height="wrap_content"
             android:background="#FAFAFA"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
@@ -45,15 +43,17 @@
             android:layout_marginRight="30dp"
             android:orientation="horizontal">
             <Button
+                android:id="@+id/button_show_details"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="상세정보"
                 android:textColor="#2896F3"
                 android:textSize="15sp"
-                android:background="#000"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 />
             <Button
+                android:id="@+id/button_proc_delivery"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -63,6 +63,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 />
             <Button
+                android:id="@+id/button_call_customer"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -72,6 +73,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 />
             <Button
+                android:id="@+id/button_navi_path"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -93,22 +95,23 @@
                 android:layout_width="match_parent" android:layout_height="match_parent" >
 
                 <ProgressBar
+                    android:id="@+id/progress_bar_delivery"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@android:style/Widget.ProgressBar.Horizontal"
                     android:progressDrawable="@drawable/style_progress"
-                    android:id="@+id/progressWork"
                     android:progress="50"
                     />
 
                 <TextView
-                    android:id="@+id/myTextProgress"
+                    android:id="@+id/progress_text_delivery"
                     android:layout_width="match_parent"
+                    android:textSize="16sp"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/progressWork"
-                    android:layout_alignTop="@id/progressWork"
-                    android:layout_alignRight="@id/progressWork"
-                    android:layout_alignBottom="@id/progressWork"
+                    android:layout_alignLeft="@id/progress_bar_delivery"
+                    android:layout_alignTop="@id/progress_bar_delivery"
+                    android:layout_alignRight="@id/progress_bar_delivery"
+                    android:layout_alignBottom="@id/progress_bar_delivery"
                     android:background="@android:color/transparent"
                     android:text="할당된 배송 리스트 (8/10)"
                     android:gravity="center"
@@ -118,14 +121,27 @@
             </RelativeLayout>
         </LinearLayout>
 
-
-        <ListView
-            android:id="@+id/allWorkList"
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="59"
-            android:background="#FAFAFA"
-            />
+            android:fillViewport="true"
+            android:visibility="visible"
+            android:scrollbars="none"
+            android:layout_weight="59">
+
+            <ListView
+                android:id="@+id/allWorkList"
+                android:longClickable="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FAFAFA"
+                android:divider="@drawable/divider"
+                android:headerDividersEnabled="false"
+                android:footerDividersEnabled="false"
+                android:listSelector="#88000000"/>
+
+        </ScrollView>
+
 
     </LinearLayout>
 
