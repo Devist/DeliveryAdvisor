@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 
-import com.ldcc.pliss.deliveryadvisor.MainActivity;
 
 /**
  * Created by pliss on 2018. 2. 27..
@@ -16,18 +15,21 @@ import com.ldcc.pliss.deliveryadvisor.MainActivity;
 
 public class WorkUtil {
 
+    private Context context;
+
     public void callTheCustomer(Context context, String phoneNumber){
-        Context c = context;
+        this.context = context;
         Intent intent = new Intent(Intent.ACTION_CALL);
         intent.setData(Uri.parse("tel:"+phoneNumber));
-        if (ActivityCompat.checkSelfPermission(c, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(c, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(c, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(c, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.SEND_SMS, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        }else{
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED ) {
+
+        }else {
             try {
-                c.startActivity(intent);
+                this.context.startActivity(intent);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
     }
 }

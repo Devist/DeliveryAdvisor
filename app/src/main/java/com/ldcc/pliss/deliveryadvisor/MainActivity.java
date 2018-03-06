@@ -241,9 +241,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         buttonCallCustomer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                workUtil.callTheCustomer(v.getContext(),managerInfo[4]);
+                boolean isCallPossible = checkPermission();
+                if(isCallPossible)
+                    workUtil.callTheCustomer(v.getContext(),managerInfo[4]);
             }
         });
+
 
         buttonNaviPath.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -327,5 +330,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             prefs.edit().putBoolean("isFirstRun",false).apply();
         }
         return isFirstRun;
+    }
+
+    public boolean checkPermission(){
+        boolean result = false;
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CALL_PHONE, Manifest.permission.SEND_SMS, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }else{
+            result = true;
+        }
+        return result;
     }
 }
