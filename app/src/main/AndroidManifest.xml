@@ -5,12 +5,23 @@
     <!--작업 목록 CSV 파일을 읽어오기 위한 퍼미션-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
-    <!--전화와 메시지를 보내기 위한 퍼미션-->
+    <!--전화를 위한 퍼미션-->
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.DIAL_PHONE" />
-    <uses-permission android:name="android.permission.VIBRATE"    />
 
-    출처: http://mainia.tistory.com/4884 [녹두장군 - 상상을 현실로]
+    <!--문자 전송을 위한 퍼미션-->
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+    <!--상세한 위치 권한-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <!--블루투스 사용을 위한 퍼미션-->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-feature android:name="android.hardware.bluetooth_le" />
+    
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,7 +29,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCTymPSDZWsSbgcZIGfCmhTf-7s0Nd_f0M"/>
+
+        <activity   android:name=".MainActivity"
+                    android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -34,6 +51,13 @@
         <activity android:name=".page.NavigationActivity"></activity>
         <activity android:name=".page.SettingActivity"></activity>
         <activity android:name=".page.SignInActivity"></activity>
+
+        <!--어드바이저 화면 등록-->
+        <activity
+            android:name=".advisor.AdivisorDialog"
+            android:theme="@android:style/Theme.Dialog">
+        </activity>
+
     </application>
 
 </manifest>

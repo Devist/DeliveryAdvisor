@@ -7,6 +7,7 @@ package com.ldcc.pliss.deliveryadvisor.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 public class CurrentWorkListAdapter extends BaseAdapter {
 
     Context context;
-    private final String [] infos;
+    private final String [] infos = new String[6];
     private final int[] images = {
             R.drawable.icon_customer_name,
             R.drawable.icon_product,
@@ -36,7 +37,9 @@ public class CurrentWorkListAdapter extends BaseAdapter {
     public CurrentWorkListAdapter(Context context, String [] infos){
         //super(context, R.layout.single_list_app_item, utilsArrayList);
         this.context = context;
-        this.infos = infos;
+        for(int i = 0; i<6 ; i++){
+            this.infos[i] = infos[i];
+        }
     }
 
     @Override
@@ -61,8 +64,6 @@ public class CurrentWorkListAdapter extends BaseAdapter {
 
         ViewHolder viewHolder;
 
-        final View result;
-
         if (convertView == null) {
 
             viewHolder = new ViewHolder();
@@ -71,16 +72,23 @@ public class CurrentWorkListAdapter extends BaseAdapter {
             viewHolder.txtName = (TextView) convertView.findViewById(R.id.aNametxt);
             viewHolder.icon = (ImageView) convertView.findViewById(R.id.appIconIV);
 
-            result=convertView;
-
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
-            result=convertView;
         }
-
+//        if(infos[position].length()>20){
+//            viewHolder.txtName.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//            Log.d("값 들어옴",infos[position]);
+//            int height = viewHolder.txtName.getMeasuredHeight();
+//            Log.d("값 이전 높이",height+"");
+//            viewHolder.txtName.setMinimumHeight(height*2);
+//            Log.d("값 이후 높이",viewHolder.txtName.getMeasuredHeight()+"");
+//        }
+//        Log.d("값",infos[position]);
         viewHolder.txtName.setText(infos[position]);
+
         viewHolder.icon.setImageResource(images[position]);
+
 
         return convertView;
     }

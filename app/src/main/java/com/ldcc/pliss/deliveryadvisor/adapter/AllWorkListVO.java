@@ -12,7 +12,7 @@ public class AllWorkListVO {
     private String txtTitle;
     private String txtContents;
     private String txtAddress;
-    private Drawable icon;
+    private String status;
 
     public String getTxtTitle() {
         return txtTitle;
@@ -38,11 +38,11 @@ public class AllWorkListVO {
         this.txtAddress = txtAddress;
     }
 
-    public Drawable getIcon() {
-        return icon;
+    public String getStatus() {
+        return status;
     }
 
-    public void setIcon(Drawable icon) {
-        this.icon = icon;
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

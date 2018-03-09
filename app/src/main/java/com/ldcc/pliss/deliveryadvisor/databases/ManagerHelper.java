@@ -13,7 +13,6 @@ import io.realm.RealmResults;
 public class ManagerHelper {
 
     private Realm mRealm;
-    private String[] managerInfo = new String[6];
     private RealmResults<Manager> results;
 
     public ManagerHelper(Context context){
@@ -44,8 +43,9 @@ public class ManagerHelper {
         mRealm.commitTransaction();
     }
 
+
     public String[] getCurrentDeliveryInfo(Context context){
-        String [] deliveryInfo = new String[6];
+        String [] deliveryInfo = new String[7];
         DeliveryHelper deliveryHelper = new DeliveryHelper(context);
         Delivery currentDelivery = mRealm.where(Delivery.class).equalTo("INV_NUMB", results.get(0).getCurrentInvoice()).findFirst();
         //currentDelivery.setSHIP_STAT();
@@ -55,6 +55,7 @@ public class ManagerHelper {
         deliveryInfo[3] = currentDelivery.getRECV_ADDR();
         deliveryInfo[4] = currentDelivery.getRECV_1_TELNO();
         deliveryInfo[5] = currentDelivery.getSHIP_MSG();
+        deliveryInfo[6] = String.valueOf(currentDelivery.getSHIP_ORD());
 
         return deliveryInfo;
     }
@@ -69,6 +70,10 @@ public class ManagerHelper {
         return result;
     }
 
+    public String getManagerName(){
+        return results.get(0).getUserName();
+    }
+
     public void showLogs(){
         mRealm.beginTransaction();
         RealmResults<Delivery> results = mRealm.where(Delivery.class).findAll();
@@ -79,6 +84,12 @@ public class ManagerHelper {
         Log.d("조회값",results.get(0).getSHIP_TYPE());
         Log.d("조회값",results.get(0).getSHIP_ORD()+"");
         //}
+        mRealm.commitTransaction();
+    }
+
+    public void deleteAllList(){
+        mRealm.beginTransaction();
+        results.deleteAllFromRealm();
         mRealm.commitTransaction();
     }
 }

@@ -25,7 +25,6 @@ import io.realm.RealmConfiguration;
 
 public class SignInActivity extends AppCompatActivity {
 
-    private Realm realm;
     private List<String[]> workData;
     private TextView successProgressText;
     private TextView failProgressText;
@@ -42,12 +41,12 @@ public class SignInActivity extends AppCompatActivity {
 
     private void init(){
         successProgressText = (TextView) findViewById(R.id.textSuccessProgress);
-        failProgressText = (TextView) findViewById(R.id.textFailProgress);
-        editTextManager = (EditText) findViewById(R.id.edit_text_manager);
-        deliveryHelper = new DeliveryHelper(this);
+        failProgressText    = (TextView) findViewById(R.id.textFailProgress);
+        editTextManager     = (EditText) findViewById(R.id.edit_text_manager);
+        editTextManager     = (EditText) findViewById(R.id.edit_text_manager);
+        deliveryHelper      = new DeliveryHelper(this);
 
         CsvUtil csvUtil = new CsvUtil();
-
         workData = csvUtil.readCSV(this);
         deliveryHelper.setAllDeliveryList(workData);
 

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.ldcc.pliss.deliveryadvisor.page.HomeActivity">
+    tools:context="com.ldcc.pliss.deliveryadvisor.page.SettingActivity">
 
     <ListView
         android:id="@+id/allWorkList"
@@ -27,7 +27,7 @@
         android:layout_gravity="center_horizontal"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
-        android:onClick="goExplanationPage"
+        android:onClick="initAndgoHomePage"
         />
 
     <TextView

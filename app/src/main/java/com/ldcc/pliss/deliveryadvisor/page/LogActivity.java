@@ -107,16 +107,19 @@ public class LogActivity extends AppCompatActivity implements NavigationView.OnN
             Toast.makeText(LogActivity.this, "업무 내용을 확인합니다.", Toast.LENGTH_SHORT).show();
             Intent newIntent = new Intent(this, MainActivity.class);
             startActivity(newIntent);
+            finish();
         } else if (id == R.id.nav_navigation) {
             Toast.makeText(LogActivity.this, "경로를 확인합니다.", Toast.LENGTH_SHORT).show();
             Intent newIntent = new Intent(this, NavigationActivity.class);
             startActivity(newIntent);
+            finish();
         } else if (id == R.id.nav_logs) {
             Toast.makeText(LogActivity.this, "로그 기록을 확인합니다.", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_settings) {
             Toast.makeText(LogActivity.this, "환경 설정", Toast.LENGTH_SHORT).show();
             Intent newIntent = new Intent(this, SettingActivity.class);
             startActivity(newIntent);
+            finish();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.log_drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

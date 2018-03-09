@@ -32,16 +32,54 @@ public class DeliveryHelper {
         return results;
     }
 
+    public void deleteAllList(){
+        mRealm.beginTransaction();
+        results.deleteAllFromRealm();
+        mRealm.commitTransaction();
+    }
+
     public String getLastYetDelivery(){
         String yetInvoiceNumber = null;
 
-        yetInvoiceNumber = results.get(4).getINV_NUMB();
-
-//        for(int i=0; i<results.size();i++){
-//            if(results.get(i).getSHIP_STAT().equals("B"))
-//                yetInvoiceNumber = results.get(i).getINV_NUMB();
-//        }
+        for(int i=0; i<results.size();i++){
+            if(results.get(i).getSHIP_STAT().equals("B")){
+                yetInvoiceNumber = results.get(i).getINV_NUMB();
+                break;
+            }
+        }
         return yetInvoiceNumber;
+    }
+
+    public void changeManagerInfo(String invoice){
+        mRealm.beginTransaction();
+        Delivery delivery = mRealm.where(Delivery.class).equalTo("INV_NUMB", invoice).findFirst();
+        Manager managerINFO = mRealm.where(Manager.class).findAll().first();
+        managerINFO.setCurrentInvoice(delivery.getINV_NUMB());
+        mRealm.commitTransaction();
+    }
+
+    public void changeManagerInfoToNext(){
+        String yetInvoiceNumber = null;
+        for(int i=0; i<results.size();i++){
+            if(results.get(i).getSHIP_STAT().equals("B")){
+                yetInvoiceNumber = results.get(i).getINV_NUMB();
+                break;
+            }
+        }
+
+        mRealm.beginTransaction();
+        Manager managerINFO = mRealm.where(Manager.class).findAll().first();
+        managerINFO.setCurrentInvoice(yetInvoiceNumber);
+        mRealm.commitTransaction();
+    }
+
+    public Delivery getSearchedInfo(String invoiceNumber){
+        mRealm.beginTransaction();
+        Delivery deliveryProcessed = mRealm.where(Delivery.class).equalTo("INV_NUMB", invoiceNumber).findFirst();
+        mRealm.commitTransaction();
+
+        return deliveryProcessed;
+
     }
 
     public void setAllDeliveryList(final List<String[]> workData){
@@ -76,6 +114,20 @@ public class DeliveryHelper {
                 }
             }
         });
+    }
+
+    public void processCurrentDelivery(String invoice, String state, String how){
+
+        mRealm.beginTransaction();
+
+        Delivery deliveryProcessed = mRealm.where(Delivery.class).equalTo("INV_NUMB", invoice).findFirst();
+        if(state.equals("C")){
+            deliveryProcessed.setSHIP_STAT("C");
+            deliveryProcessed.setSTAT_HOW(how);
+        } else if(state.equals("N")) {
+            deliveryProcessed.setSHIP_STAT("N");
+        }
+        mRealm.commitTransaction();
     }
 
     public void showLogs(){

@@ -38,4 +38,11 @@ public class LogHelper {
         //}
         mRealm.commitTransaction();
     }
+
+    public void deleteAllList(){
+        mRealm.beginTransaction();
+        RealmResults<Delivery> results = mRealm.where(Delivery.class).findAll();
+        results.deleteAllFromRealm();
+        mRealm.commitTransaction();
+    }
 }

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="300dp"
+    android:background="#fff"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:background="#0075A2">
+
+        <ImageView
+            android:id="@+id/appIconView"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@mipmap/ic_launcher_foreground" />
+
+        <TextView
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Delivery Advisor 에서 알림"
+            android:textColor="#FFF"
+            android:textSize="18dp"
+            />
+    </RelativeLayout>
+
+
+    <TextView
+        android:layout_margin="10dp"
+        android:textSize="18dp"
+        android:text="'송장번호 10000056, 홍길동 고객의 상품을 배송처리하겠습니다 수령자는 누구입니까?' "
+        android:textColor="#0B3A54"
+        android:background="#FFFFFF"
+        android:id="@+id/text_advisor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:id="@+id/layout_for_work_button"
+        android:background="#0075A2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+
+</LinearLayout>
