@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -21,7 +20,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -34,6 +32,7 @@ import android.widget.Toast;
 
 import com.ldcc.pliss.deliveryadvisor.adapter.AllWorkListAdapter;
 import com.ldcc.pliss.deliveryadvisor.adapter.CurrentWorkListAdapter;
+import com.ldcc.pliss.deliveryadvisor.advisor.AdvisorService;
 import com.ldcc.pliss.deliveryadvisor.databases.Delivery;
 import com.ldcc.pliss.deliveryadvisor.databases.DeliveryHelper;
 import com.ldcc.pliss.deliveryadvisor.databases.Manager;
@@ -45,10 +44,6 @@ import com.ldcc.pliss.deliveryadvisor.page.NavigationActivity;
 import com.ldcc.pliss.deliveryadvisor.page.SettingActivity;
 import com.ldcc.pliss.deliveryadvisor.util.WorkUtil;
 
-import org.w3c.dom.Text;
-
-import io.realm.OrderedCollectionChangeSet;
-import io.realm.OrderedRealmCollectionChangeListener;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
@@ -76,10 +71,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RealmChangeListener workDataChangeListener;
     private String[] managerInfo = new String[7];
     private String[] invoice,
-             customerName,
-             customerProduct,
-             customerAddress,
-             status;
+            customerName,
+            customerProduct,
+            customerAddress,
+            status;
 
     private int currentPosition = 0;
     public LinearLayout row;
@@ -192,6 +187,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //setHighlight(deliveryDoneCount);
         allWorkListView.getViewTreeObserver().addOnGlobalLayoutListener(new MyGlobalListenerClass(deliveryDoneCount));
 
+        startService(new Intent(this, AdvisorService.class));
+
+//        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+//        audioManager.registerMediaButtonEventReceiver(new ComponentName(getApplicationContext(), MediaButtonIntentReceiver.class));
+
         setListener();
 
     }
@@ -229,9 +229,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-//                int h1 = parent.getHeight();
-//                int h2 = view.getHeight();
-//                allWorkListView.setSelectionFromTop(position, h1/2 -h2/2);
                 TextView temp;
                 if(position==deliveryDoneCount){
                     temp = (TextView) view.findViewById(R.id.textWorkTitle_ongoing);
@@ -304,36 +301,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 try{
                     managerInfo = managerHelper.getCurrentDeliveryInfo(MainActivity.this);
 
+                    results = deliveryHelper.getAllDeliveryList();
+                    invoice = new String[results.size()];
+                    customerName = new String[results.size()];
+                    customerProduct = new String[results.size()];
+                    customerAddress = new String[results.size()];
+                    status = new String[results.size()];
 
+                    deliveryDoneCount = Integer.parseInt(managerInfo[6])-1;
+                    for(int i = 0 ; i<results.size() ; i++){
+                        invoice[i] = results.get(i).getINV_NUMB();
+                        customerName[i] = results.get(i).getRECV_NM();
+                        customerProduct[i] = results.get(i).getITEM_NM();
+                        customerAddress[i] = results.get(i).getRECV_ADDR();
+                        status[i] = results.get(i).getSHIP_STAT();
+                    }
 
-                results = deliveryHelper.getAllDeliveryList();
-                invoice = new String[results.size()];
-                customerName = new String[results.size()];
-                customerProduct = new String[results.size()];
-                customerAddress = new String[results.size()];
-                status = new String[results.size()];
+                    currentWorkListAdapter = new CurrentWorkListAdapter(MainActivity.this, managerInfo);
+                    currentWorkListView.setAdapter(currentWorkListAdapter);
 
-                deliveryDoneCount = Integer.parseInt(managerInfo[6])-1;
-                for(int i = 0 ; i<results.size() ; i++){
-                    invoice[i] = results.get(i).getINV_NUMB();
-                    customerName[i] = results.get(i).getRECV_NM();
-                    customerProduct[i] = results.get(i).getITEM_NM();
-                    customerAddress[i] = results.get(i).getRECV_ADDR();
-                    status[i] = results.get(i).getSHIP_STAT();
-                }
+                    progressBarDelivery.setProgress(deliveryDoneCount);
+                    progressTextDelivery.setText("할당된 배송 리스트 (" + deliveryDoneCount + "/" + results.size()+")");
 
-                currentWorkListAdapter = new CurrentWorkListAdapter(MainActivity.this, managerInfo);
-                currentWorkListView.setAdapter(currentWorkListAdapter);
-
-                progressBarDelivery.setProgress(deliveryDoneCount);
-                progressTextDelivery.setText("할당된 배송 리스트 (" + deliveryDoneCount + "/" + results.size()+")");
-
-                status[deliveryDoneCount]="O";
-                allWorkListAdapter = new AllWorkListAdapter(invoice,customerName, customerProduct,customerAddress,status,deliveryDoneCount);
-                allWorkListView.setAdapter(allWorkListAdapter);
-                allWorkListView.setSelection(deliveryDoneCount);
-                //setHighlight(deliveryDoneCount);
-                allWorkListView.getViewTreeObserver().addOnGlobalLayoutListener(new MyGlobalListenerClass(deliveryDoneCount));
+                    status[deliveryDoneCount]="O";
+                    allWorkListAdapter = new AllWorkListAdapter(invoice,customerName, customerProduct,customerAddress,status,deliveryDoneCount);
+                    allWorkListView.setAdapter(allWorkListAdapter);
+                    allWorkListView.setSelection(deliveryDoneCount);
+                    //setHighlight(deliveryDoneCount);
+                    allWorkListView.getViewTreeObserver().addOnGlobalLayoutListener(new MyGlobalListenerClass(deliveryDoneCount));
                 }catch(Exception e){
                     finish();
                 }
@@ -458,6 +453,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         }
     }
-
 
 }

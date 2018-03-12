@@ -23,25 +23,30 @@ import static android.widget.Toast.LENGTH_SHORT;
  * Created by pliss on 2018. 3. 6..
  */
 
-public class AdivisorDialog extends Activity {
+public class AdvisorDialog extends Activity {
 
     private LinearLayout layoutForWorkButton;
     private TextView textViewQuestion;
-    private DeliveryHelper deliveryHelper = new DeliveryHelper(this);
-    private ManagerHelper managerHelper = new ManagerHelper(this);
+    private DeliveryHelper deliveryHelper;
+    private ManagerHelper managerHelper;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_advisor);
 
+        deliveryHelper = new DeliveryHelper(this);
+        managerHelper = new ManagerHelper(this);
 
         layoutForWorkButton = (LinearLayout) findViewById(R.id.layout_for_work_button);
         textViewQuestion = (TextView) findViewById(R.id.text_advisor);
 
         String myWork = getIntent().getStringExtra("Work-keyword");
 
-        if(myWork.equals("processDelivery")){
+        if(myWork==null){
+
+        }
+        else if(myWork.equals("processDelivery")){
             String[] currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
             processDelivery(currentDeliveryInfo);
         }

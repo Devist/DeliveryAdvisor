@@ -17,10 +17,13 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <!--블루투스 사용을 위한 퍼미션-->
+    <!--https://developer.android.com/guide/topics/media-apps/mediabuttons.html-->
+    <!--https://stackoverflow.com/questions/38289086/receive-callback-on-all-android-media-button-events-all-the-time-even-when-anot-->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-feature android:name="android.hardware.bluetooth_le" />
-    
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -40,6 +43,10 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter android:priority="10" >
+                <action android:name="android.intent.action.VOICE_COMMAND" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
 
         <!--앱 최초 실행, 또는 초기화시 진입하는 가이드 화면-->
@@ -54,9 +61,21 @@
 
         <!--어드바이저 화면 등록-->
         <activity
-            android:name=".advisor.AdivisorDialog"
+            android:name=".advisor.AdvisorDialog"
             android:theme="@android:style/Theme.Dialog">
         </activity>
+
+
+        <receiver android:name=".advisor.MediaButtonIntentReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".advisor.AdvisorService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
 
     </application>
 

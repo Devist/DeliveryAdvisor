@@ -14,7 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.telephony.SmsManager;
 import android.widget.Toast;
 
-import com.ldcc.pliss.deliveryadvisor.advisor.AdivisorDialog;
+import com.ldcc.pliss.deliveryadvisor.advisor.AdvisorDialog;
 
 
 /**
@@ -31,7 +31,7 @@ public class WorkUtil {
         Bundle bundle = new Bundle();
         bundle.putString("Work-keyword","processDelivery");
         bundle.putStringArray("Delivery-data",managerInfo);
-        Intent popupIntent = new Intent(context, AdivisorDialog.class);
+        Intent popupIntent = new Intent(context, AdvisorDialog.class);
         popupIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         popupIntent.putExtras(bundle);
         PendingIntent pie= PendingIntent.getActivity(context, 0, popupIntent, PendingIntent.FLAG_ONE_SHOT);
