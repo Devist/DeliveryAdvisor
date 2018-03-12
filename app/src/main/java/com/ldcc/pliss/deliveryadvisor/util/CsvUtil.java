@@ -26,14 +26,10 @@ public class CsvUtil {
     List<String[]> data = new ArrayList<String[]>();
 
     public List<String[]> readCSV(Context context){
-
         List<String[]> data = new ArrayList<String[]>();
 
         try {
-
             AssetManager assets = context.getResources().getAssets();
-
-            // CSVReader reader = new CSVReader(new FileReader(filename), '\t');
             // UTF-8
             CSVReader reader = new CSVReader(new InputStreamReader(assets.open("shipping_invoice_sample.csv"),"UTF-8"));
             String[] s;
@@ -49,6 +45,5 @@ public class CsvUtil {
             e.printStackTrace();
         }
         return data;
-
     }
 }

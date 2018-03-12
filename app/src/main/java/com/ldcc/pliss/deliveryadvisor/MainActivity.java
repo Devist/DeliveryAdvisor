@@ -76,16 +76,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             customerAddress,
             status;
 
-    private int currentPosition = 0;
-    public LinearLayout row;
-
     private RealmResults<Delivery> results;
     private int deliveryDoneCount;
     private Realm mRealm;
     private Manager ddd;
 
-    //세팅에서 초기화시, 남아있는 메인액티비티에서 Realm 디비 변화를 감지하여 처리하려다 에러나지 않도록 처리하는 변
+    //세팅에서 초기화시, 남아있는 메인액티비티에서 Realm 디비 변화를 감지하여 처리하려다 에러나지 않도록 처리하는 변수
     public static Activity fa;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,19 +103,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mRealm = Realm.getDefaultInstance();
         initSetting();
         setLayout();
+        startService(new Intent(this, AdvisorService.class));
     }
 
     private void initSetting(){
-        changeWorkData(this);
+        changeWorkData();
         workUtil = new WorkUtil();
-
     }
 
-    private void changeWorkData(MainActivity mainActivity) {
+    private void changeWorkData() {
         deliveryHelper = new DeliveryHelper(this);
 
         managerHelper = new ManagerHelper((this));
-        managerInfo = managerHelper.getCurrentDeliveryInfo(this);
+        managerInfo = managerHelper.getCurrentDeliveryInfo(MainActivity.this);
 
         results = deliveryHelper.getAllDeliveryList();
         invoice = new String[results.size()];
@@ -126,20 +124,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         customerAddress = new String[results.size()];
         status = new String[results.size()];
 
-        deliveryDoneCount = 0;
+        deliveryDoneCount = Integer.parseInt(managerInfo[6])-1;
         for(int i = 0 ; i<results.size() ; i++){
             invoice[i] = results.get(i).getINV_NUMB();
             customerName[i] = results.get(i).getRECV_NM();
             customerProduct[i] = results.get(i).getITEM_NM();
             customerAddress[i] = results.get(i).getRECV_ADDR();
             status[i] = results.get(i).getSHIP_STAT();
-            if (status[i].equals("C"))
-                deliveryDoneCount++;
         }
     }
 
     private void setLayout(){
-
 
         //우측 하단의 음성인식 버튼
         buttonSpeechRecognition = (FloatingActionButton) findViewById(R.id.fab);
@@ -178,38 +173,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         progressTextDelivery.setText("할당된 배송 리스트 (" + deliveryDoneCount + "/" + results.size()+")");
 
         //하단 모든 업무 뷰 세팅
-
         allWorkListView = (ListView) findViewById(R.id.allWorkList);
         status[deliveryDoneCount]="O";
         allWorkListAdapter = new AllWorkListAdapter(invoice,customerName, customerProduct,customerAddress,status,deliveryDoneCount);
         allWorkListView.setAdapter(allWorkListAdapter);
         allWorkListView.setSelection(deliveryDoneCount);
-        //setHighlight(deliveryDoneCount);
         allWorkListView.getViewTreeObserver().addOnGlobalLayoutListener(new MyGlobalListenerClass(deliveryDoneCount));
 
-        startService(new Intent(this, AdvisorService.class));
-
-//        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-//        audioManager.registerMediaButtonEventReceiver(new ComponentName(getApplicationContext(), MediaButtonIntentReceiver.class));
-
         setListener();
-
-    }
-
-    private void setHighlight(int position){
-
-        ListView v = (ListView) findViewById(R.id.allWorkList);
-
-        int h1 = v.getHeight();
-        v.measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
-        int h2 = v.getMeasuredHeight();
-
-        allWorkListView.setSelectionFromTop(position, h1/2-h2/2);
-
     }
 
     private void setListener(){
 
+        //음성인식 버튼을 클릭했을 때의 처리
         buttonSpeechRecognition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -218,29 +194,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        currentWorkListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(MainActivity.this, managerInfo[i], Toast.LENGTH_SHORT).show();
-            }
-        });
-
         allWorkListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 TextView temp;
+
                 if(position==deliveryDoneCount){
                     temp = (TextView) view.findViewById(R.id.textWorkTitle_ongoing);
                 }else{
                     temp = (TextView) view.findViewById(R.id.textWorkTitle);
                 }
 
-                String selectedInvoiceNumber = temp.getText().toString().split(":")[1].substring(1);
+                String selectedInvoiceNumber = temp.getText().toString().split(":")[1].substring(1);    //송장번호를 잘라서 가져옴.
 
                 final DetailInfoDialog detailInfoDialog = new DetailInfoDialog(MainActivity.this, selectedInvoiceNumber);
                 detailInfoDialog.show();
 
+                //다이얼로그에서 "현재 목적지로 변경" 버튼을 눌렀을 때의 처리
                 detailInfoDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
@@ -249,12 +220,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             deliveryHelper.changeManagerInfo(addCategoryStr);
                     }
                 });
-
                 return true;
             }
 
         });
 
+        //현재업무 리스트 뷰에서 "상세 정보" 버튼 클릭 시 처리
         buttonShowDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -263,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        //현재업무 리스트 뷰에서 "배송 처리" 버튼 클릭 시 처리
         buttonProcDelivery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -270,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        //현재업무 리스트 뷰에서 "전화 연결" 버튼 클릭 시 처리
         buttonCallCustomer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -281,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-
+        //현재업무 리스트 뷰에서 "길 안내" 버튼 클릭 시 처리
         buttonNaviPath.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -292,31 +265,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         ddd = mRealm.where(Manager.class).equalTo("userName",managerHelper.getManagerName()).findFirstAsync();
-        Toast.makeText(MainActivity.this,managerHelper.getManagerName(),Toast.LENGTH_SHORT).show();
         workDataChangeListener = new RealmChangeListener() {
             @Override
             public void onChange(Object o) {
 
                 Log.d("Realm", "개를 찾았거나 갱신됐습니다!");
                 try{
-                    managerInfo = managerHelper.getCurrentDeliveryInfo(MainActivity.this);
-
-                    results = deliveryHelper.getAllDeliveryList();
-                    invoice = new String[results.size()];
-                    customerName = new String[results.size()];
-                    customerProduct = new String[results.size()];
-                    customerAddress = new String[results.size()];
-                    status = new String[results.size()];
-
-                    deliveryDoneCount = Integer.parseInt(managerInfo[6])-1;
-                    for(int i = 0 ; i<results.size() ; i++){
-                        invoice[i] = results.get(i).getINV_NUMB();
-                        customerName[i] = results.get(i).getRECV_NM();
-                        customerProduct[i] = results.get(i).getITEM_NM();
-                        customerAddress[i] = results.get(i).getRECV_ADDR();
-                        status[i] = results.get(i).getSHIP_STAT();
-                    }
-
+                    changeWorkData();
                     currentWorkListAdapter = new CurrentWorkListAdapter(MainActivity.this, managerInfo);
                     currentWorkListView.setAdapter(currentWorkListAdapter);
 
@@ -327,16 +282,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     allWorkListAdapter = new AllWorkListAdapter(invoice,customerName, customerProduct,customerAddress,status,deliveryDoneCount);
                     allWorkListView.setAdapter(allWorkListAdapter);
                     allWorkListView.setSelection(deliveryDoneCount);
-                    //setHighlight(deliveryDoneCount);
                     allWorkListView.getViewTreeObserver().addOnGlobalLayoutListener(new MyGlobalListenerClass(deliveryDoneCount));
                 }catch(Exception e){
                     finish();
                 }
             }
-
         };
         ddd.addChangeListener(workDataChangeListener);
-
 
     }
 
@@ -408,6 +360,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
 
@@ -450,7 +403,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 allWorkListView.setSelectionFromTop(pos, h1/2-h2/2);
                 isAlreadyDone = true;
             }
-
         }
     }
 

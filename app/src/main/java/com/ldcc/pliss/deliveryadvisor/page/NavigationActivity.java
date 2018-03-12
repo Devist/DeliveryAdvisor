@@ -82,20 +82,6 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
             map.setMyLocationEnabled(true);
         }
 
-        final String [] colours = new String[]{
-                "HUE_AZURE",
-                "HUE_BLUE",
-                "HUE_CYAN",
-                "HUE_GREEN",
-                "HUE_MAGENTA",
-                "HUE_ORANGE",
-                "HUE_RED",
-                "HUE_ROSE",
-                "HUE_VIOLET",
-                "HUE_YELLOW"
-        };
-        final Random r=new Random();
-
         DeliveryHelper deliveryHelper = new DeliveryHelper(this);
         RealmResults<Delivery> results = deliveryHelper.getAllDeliveryList();
 

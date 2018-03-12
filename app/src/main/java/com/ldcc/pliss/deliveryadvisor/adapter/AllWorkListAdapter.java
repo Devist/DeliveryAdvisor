@@ -34,10 +34,8 @@ public class AllWorkListAdapter extends BaseAdapter {
             String address = customerAddress[i];
             String status = deliveryStatus[i];
             addVO(title,contents,address,status);
-
         }
     }
-
 
     public void addVO(String title, String contents, String address, String status){
         AllWorkListVO item = new AllWorkListVO();

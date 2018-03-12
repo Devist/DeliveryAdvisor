@@ -25,6 +25,7 @@ public class WorkUtil {
 
     private Context context;
 
+    //사용자가 배송 처리를 할 때, 배송 처리 팝업을 띄우는 기능
     public void showProcessDeliveryDialog (Context context,String[] managerInfo){
         this.context = context;
 
@@ -43,30 +44,23 @@ public class WorkUtil {
         }
     }
 
+    //사용자가 고객에게 전화 연결할 때 사용하는 기능
     public void callTheCustomer(Context context, String phoneNumber){
         this.context = context;
         Intent intent = new Intent(Intent.ACTION_CALL);
         intent.setData(Uri.parse("tel:"+phoneNumber));
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED ) {
-
-        }else {
-            try {
-                this.context.startActivity(intent);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (!(ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED)) {
+            this.context.startActivity(intent);
         }
-
     }
 
+    //사용자가 고객에메 문자 메시지를 전송할 때 사용하는 기능
     public void sendSMS(Context context, String phoneNumber, String message){
 
         String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
-
         PendingIntent sentPI = PendingIntent.getBroadcast(context,0,new Intent(SENT),0);
         PendingIntent deliveredPI = PendingIntent.getBroadcast(context,0,new Intent(DELIVERED),0);
-
 
         context.registerReceiver(new BroadcastReceiver() {
             @Override

@@ -1,23 +1,16 @@
 package com.ldcc.pliss.deliveryadvisor.advisor;
 
-
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.os.IBinder;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.KeyEvent;
-
-import com.ldcc.pliss.deliveryadvisor.MainActivity;
-import com.ldcc.pliss.deliveryadvisor.page.DetailInfoDialog;
 
 /**
  * Created by pliss on 2018. 3. 9..

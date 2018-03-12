@@ -22,7 +22,7 @@ import android.widget.TextView;
 
 /** Simple TextView which is used to output log data.
 */
-public class LogView extends TextView {
+public class LogView extends android.support.v7.widget.AppCompatTextView {
 
     public LogView(Context context) {
         super(context);

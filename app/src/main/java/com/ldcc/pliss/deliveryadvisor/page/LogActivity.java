@@ -61,8 +61,6 @@ public class LogActivity extends AppCompatActivity implements NavigationView.OnN
                 .println("2017-02-08:Received an unsupported action in FenceReceiver: action=");
         mLogFragment.getLogView()
                 .println("2017-02-08:Received an unsupported action in FenceReceiver: action=");
-
-
     }
 
     @Override

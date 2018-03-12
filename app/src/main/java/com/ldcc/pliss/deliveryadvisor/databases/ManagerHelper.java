@@ -21,20 +21,6 @@ public class ManagerHelper {
         results = mRealm.where(Manager.class).findAll();
     }
 
-    /**
-     * 유저 정보 데이터 리스트 반환
-     */
-    public RealmResults<Manager> getAllWorkList(){
-        return mRealm.where(Manager.class).findAll();
-    }
-
-    public void setManagerName(String name){
-        mRealm.beginTransaction();
-        Manager managerINFO = mRealm.createObject(Manager.class);
-        managerINFO.setUserName(name);
-        mRealm.commitTransaction();
-    }
-
     public void setManager(String name, String invoice){
         mRealm.beginTransaction();
         Manager managerINFO = mRealm.createObject(Manager.class);
@@ -43,12 +29,9 @@ public class ManagerHelper {
         mRealm.commitTransaction();
     }
 
-
     public String[] getCurrentDeliveryInfo(Context context){
         String [] deliveryInfo = new String[7];
-        DeliveryHelper deliveryHelper = new DeliveryHelper(context);
         Delivery currentDelivery = mRealm.where(Delivery.class).equalTo("INV_NUMB", results.get(0).getCurrentInvoice()).findFirst();
-        //currentDelivery.setSHIP_STAT();
         deliveryInfo[0] = currentDelivery.getRECV_NM();
         deliveryInfo[1] = currentDelivery.getITEM_NM();
         deliveryInfo[2] = currentDelivery.getINV_NUMB();
@@ -58,16 +41,6 @@ public class ManagerHelper {
         deliveryInfo[6] = String.valueOf(currentDelivery.getSHIP_ORD());
 
         return deliveryInfo;
-    }
-
-    public int getCurrentDeliveryOrder(Context context){
-
-        DeliveryHelper deliveryHelper = new DeliveryHelper(context);
-        Delivery currentDelivery = mRealm.where(Delivery.class).equalTo("INV_NUMB", results.get(0).getCurrentInvoice()).findFirst();
-        //currentDelivery.setSHIP_STAT();
-        int result = currentDelivery.getSHIP_ORD();
-
-        return result;
     }
 
     public String getManagerName(){

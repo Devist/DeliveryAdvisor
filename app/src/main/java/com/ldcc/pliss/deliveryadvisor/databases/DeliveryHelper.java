@@ -117,7 +117,6 @@ public class DeliveryHelper {
     }
 
     public void processCurrentDelivery(String invoice, String state, String how){
-
         mRealm.beginTransaction();
 
         Delivery deliveryProcessed = mRealm.where(Delivery.class).equalTo("INV_NUMB", invoice).findFirst();
