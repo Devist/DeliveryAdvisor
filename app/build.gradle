@@ -13,8 +13,12 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
+            multiDexEnabled true
+        }
+        release {
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -31,7 +35,7 @@ android {
 
     //Speech API 사용으로 인해 추가 //
     configurations.all {
-        resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
+        //resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.2'
         resolutionStrategy.force "com.android.support:support-annotations:25.+"
     }
     sourceSets{
