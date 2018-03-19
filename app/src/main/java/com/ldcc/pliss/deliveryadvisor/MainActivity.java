@@ -2,15 +2,12 @@ package com.ldcc.pliss.deliveryadvisor;
 
 import android.Manifest;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.Signature;
+import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -21,7 +18,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,7 +26,6 @@ import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -41,7 +36,6 @@ import com.ldcc.pliss.deliveryadvisor.adapter.AllWorkListAdapter;
 import com.ldcc.pliss.deliveryadvisor.adapter.CurrentWorkListAdapter;
 import com.ldcc.pliss.deliveryadvisor.advisor.AdvisorService;
 import com.ldcc.pliss.deliveryadvisor.advisor.ProcessorNLP;
-import com.ldcc.pliss.deliveryadvisor.advisor.google.SpeechHelper;
 import com.ldcc.pliss.deliveryadvisor.databases.Delivery;
 import com.ldcc.pliss.deliveryadvisor.databases.DeliveryHelper;
 import com.ldcc.pliss.deliveryadvisor.databases.Manager;
@@ -53,8 +47,10 @@ import com.ldcc.pliss.deliveryadvisor.page.NavigationActivity;
 import com.ldcc.pliss.deliveryadvisor.page.SettingActivity;
 import com.ldcc.pliss.deliveryadvisor.util.WorkUtil;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.concurrent.ExecutionException;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -104,7 +100,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        processorNLP.showTest();
+
+        String result;
+        try{
+
+            result = processorNLP.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"송장번호 1 3 5 7 8 배송 처리해줘").get();
+
+            Log.d("result222",result);
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+            result = "fail";
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            result = "fail";
+        }
+        try{
+            JSONObject flattenJson = new JSONObject(result);
+            JSONArray abc = flattenJson.getJSONArray("token_strings");
+            for(int i = 0 ;i <abc.length() ; i++){
+                Log.d("토큰들 : ",abc.getString(i));
+            }
+        }catch(Exception e){
+
+        }
+
+
+
+
+
         fa = this;
         prefs = getSharedPreferences("Pref", MODE_PRIVATE);
         boolean isFirstRun = checkFirstRun();
