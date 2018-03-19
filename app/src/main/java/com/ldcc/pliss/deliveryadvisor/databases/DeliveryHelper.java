@@ -20,6 +20,9 @@ public class DeliveryHelper {
     public DeliveryHelper(Context context){
         Realm.init(context);
         mRealm = Realm.getInstance(Realm.getDefaultConfiguration());
+        if (mRealm.isInTransaction())
+            mRealm.commitTransaction();
+
         mRealm.beginTransaction();
         results = mRealm.where(Delivery.class).findAll();
         mRealm.commitTransaction();
@@ -35,6 +38,7 @@ public class DeliveryHelper {
     public void deleteAllList(){
         mRealm.beginTransaction();
         results.deleteAllFromRealm();
+        mRealm.deleteAll();
         mRealm.commitTransaction();
     }
 

@@ -5,12 +5,16 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.KeyEvent;
+
+import com.ldcc.pliss.deliveryadvisor.advisor.naver.ClovaTTS;
+
 
 /**
  * Created by pliss on 2018. 3. 9..
@@ -19,14 +23,13 @@ import android.view.KeyEvent;
 public class AdvisorService extends Service {
     public static final String TAG = "MPS";
     private MediaSessionCompat mediaSession;
-
+    public static ClovaTTS clovaTTS;
 
     private final MediaSessionCompat.Callback mMediaSessionCallback
             = new MediaSessionCompat.Callback() {
 
         @Override
         public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
-            Log.d("hello","hello");
             final String intentAction = mediaButtonEvent.getAction();
             if (Intent.ACTION_MEDIA_BUTTON.equals(intentAction)) {
                 final KeyEvent event = mediaButtonEvent.getParcelableExtra(
@@ -68,6 +71,7 @@ public class AdvisorService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d("테스트","블루투스 버튼 서비스 시작");
         ComponentName receiver = new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName());
         mediaSession = new MediaSessionCompat(this, "PlayerService", receiver, null);
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
@@ -94,7 +98,12 @@ public class AdvisorService extends Service {
                 Log.d("KEY","focusChange=" + focusChange);
             }
         }, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        IntentFilter filter = new IntentFilter(Intent.ACTION_MEDIA_BUTTON);
+        filter.setPriority(0);
         mediaSession.setActive(true);
+
+        clovaTTS = new ClovaTTS(getFilesDir());
+
     }
 
     @Override

@@ -31,6 +31,7 @@ public class ManagerHelper {
 
     public String[] getCurrentDeliveryInfo(Context context){
         String [] deliveryInfo = new String[7];
+        mRealm.beginTransaction();
         Delivery currentDelivery = mRealm.where(Delivery.class).equalTo("INV_NUMB", results.get(0).getCurrentInvoice()).findFirst();
         deliveryInfo[0] = currentDelivery.getRECV_NM();
         deliveryInfo[1] = currentDelivery.getITEM_NM();
@@ -39,7 +40,7 @@ public class ManagerHelper {
         deliveryInfo[4] = currentDelivery.getRECV_1_TELNO();
         deliveryInfo[5] = currentDelivery.getSHIP_MSG();
         deliveryInfo[6] = String.valueOf(currentDelivery.getSHIP_ORD());
-
+        mRealm.commitTransaction();
         return deliveryInfo;
     }
 
@@ -61,8 +62,8 @@ public class ManagerHelper {
     }
 
     public void deleteAllList(){
-        mRealm.beginTransaction();
+        //mRealm.beginTransaction();
         results.deleteAllFromRealm();
-        mRealm.commitTransaction();
+        //mRealm.commitTransaction();
     }
 }

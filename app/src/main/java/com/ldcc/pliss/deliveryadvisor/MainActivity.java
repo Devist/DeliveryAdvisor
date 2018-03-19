@@ -1,11 +1,16 @@
 package com.ldcc.pliss.deliveryadvisor;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -16,11 +21,13 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -33,6 +40,8 @@ import android.widget.Toast;
 import com.ldcc.pliss.deliveryadvisor.adapter.AllWorkListAdapter;
 import com.ldcc.pliss.deliveryadvisor.adapter.CurrentWorkListAdapter;
 import com.ldcc.pliss.deliveryadvisor.advisor.AdvisorService;
+import com.ldcc.pliss.deliveryadvisor.advisor.ProcessorNLP;
+import com.ldcc.pliss.deliveryadvisor.advisor.google.SpeechHelper;
 import com.ldcc.pliss.deliveryadvisor.databases.Delivery;
 import com.ldcc.pliss.deliveryadvisor.databases.DeliveryHelper;
 import com.ldcc.pliss.deliveryadvisor.databases.Manager;
@@ -43,6 +52,9 @@ import com.ldcc.pliss.deliveryadvisor.page.LogActivity;
 import com.ldcc.pliss.deliveryadvisor.page.NavigationActivity;
 import com.ldcc.pliss.deliveryadvisor.page.SettingActivity;
 import com.ldcc.pliss.deliveryadvisor.util.WorkUtil;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -81,21 +93,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Realm mRealm;
     private Manager ddd;
 
+    ProgressBar mprogressBar;
+
     //세팅에서 초기화시, 남아있는 메인액티비티에서 Realm 디비 변화를 감지하여 처리하려다 에러나지 않도록 처리하는 변수
     public static Activity fa;
+
+    ProcessorNLP processorNLP = new ProcessorNLP();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        processorNLP.showTest();
         fa = this;
         prefs = getSharedPreferences("Pref", MODE_PRIVATE);
         boolean isFirstRun = checkFirstRun();
 
-        if(isFirstRun)
-            finish();
-        else
-            init();
+        if(isFirstRun) finish(); else init();
     }
 
     private void init(){
@@ -104,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initSetting();
         setLayout();
         startService(new Intent(this, AdvisorService.class));
+
     }
 
     private void initSetting(){
@@ -189,8 +204,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         buttonSpeechRecognition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "무엇을 도와 드릴까요? ^^", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "무엇을 도와 드릴까요? ^^ [전화,배송 처리,길 안내]",Snackbar.LENGTH_INDEFINITE)
                         .setAction("Action", null).show();
+//                SpeechHelper speechHelper = new SpeechHelper(MainActivity.this);
+//                speechHelper.startVoiceRecognition();
             }
         });
 
@@ -216,6 +233,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         String addCategoryStr = detailInfoDialog.getAddCategoryStr();
+
+                        mprogressBar = (ProgressBar) findViewById(R.id.circular_progress_bar);
+                        ObjectAnimator anim = ObjectAnimator.ofInt(mprogressBar, "progress", 0, 100);
+                        anim.setDuration(15000);
+                        anim.setInterpolator(new DecelerateInterpolator());
+                        anim.start();
                         if(addCategoryStr!=null)
                             deliveryHelper.changeManagerInfo(addCategoryStr);
                     }
@@ -250,6 +273,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if(isCallandMessagePossible) {
                     workUtil.callTheCustomer(v.getContext(), managerInfo[4]);
                     workUtil.sendSMS(MainActivity.this,managerInfo[4],"배달원이 상품 배송을 진행하기 위해 전화 걸었습니다.");
+                }else{
+                    Toast.makeText(MainActivity.this, "앱 설정에서 전화 권한 허용을 클릭해주시기 바랍니다.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -258,9 +283,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         buttonNaviPath.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "위치를 허용하지 않았을 경우, 앱 설정에서 위치 권한 허용을 클릭해주시기 바랍니다.", Toast.LENGTH_SHORT).show();
-                Intent newIntent = new Intent(MainActivity.this, NavigationActivity.class);
-                startActivity(newIntent);
+
+                boolean isCallandMessagePossible = checkPermission();
+                if(isCallandMessagePossible) {
+                    Intent newIntent = new Intent(MainActivity.this, NavigationActivity.class);
+                    startActivity(newIntent);
+                }else{
+                    Toast.makeText(MainActivity.this, "위치를 허용하지 않았을 경우, 앱 설정에서 위치 권한 허용을 클릭해주시기 바랍니다.", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
@@ -360,7 +391,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
 
@@ -405,5 +435,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
     }
+
+
 
 }

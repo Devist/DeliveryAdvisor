@@ -4,7 +4,7 @@
 
     <!--작업 목록 CSV 파일을 읽어오기 위한 퍼미션-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <!--전화를 위한 퍼미션-->
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.DIAL_PHONE" />
@@ -25,6 +25,15 @@
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <!--음성 녹음 권한 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -34,11 +43,14 @@
         android:theme="@style/AppTheme">
 
         <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value="97655c151395785cc8a880e848ee3952" />
+
+        <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCTymPSDZWsSbgcZIGfCmhTf-7s0Nd_f0M"/>
 
-        <activity   android:name=".MainActivity"
-                    android:launchMode="singleInstance">
+        <activity   android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -76,6 +88,8 @@
             android:enabled="true"
             android:exported="true">
         </service>
+
+        <service android:name=".advisor.google.SpeechService"/>
 
     </application>
 

@@ -22,7 +22,6 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
     private static long sLastClickTime = 0;
     @Override
     public void onReceive(Context context, Intent intent) {
-        //Toast.makeText(context,"touched!",Toast.LENGTH_SHORT).show();
         Intent popupIntent = new Intent(context, AdvisorDialog.class);
         popupIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pie= PendingIntent.getActivity(context, 0, popupIntent, PendingIntent.FLAG_ONE_SHOT);
@@ -35,27 +34,30 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
         this.abortBroadcast();
         KeyEvent key = (KeyEvent) intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
         if(key.getAction() == KeyEvent.ACTION_DOWN) {
-
+            Toast.makeText(context,"touched anywhere!",Toast.LENGTH_SHORT).show();
             int keycode = key.getKeyCode();
             switch(keycode) {
                 case KeyEvent.KEYCODE_MEDIA_STOP:
                 case KeyEvent.KEYCODE_MEDIA_PAUSE:
-                    Toast.makeText(context,"pause touched!",Toast.LENGTH_SHORT).show();
+
                     break;
                 case KeyEvent.KEYCODE_MEDIA_PLAY:
-                    Toast.makeText(context,"p touched!",Toast.LENGTH_SHORT).show();
+
                     break;
                 case KeyEvent.KEYCODE_HEADSETHOOK:
                     //handleHeadsetHook(context, key);
                     break;
                 case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                    Toast.makeText(context,"p & pause touched!",Toast.LENGTH_SHORT).show();
+
                     break;
                 case KeyEvent.KEYCODE_MEDIA_NEXT:
-                    Toast.makeText(context,"touched!",Toast.LENGTH_SHORT).show();
+
                     break;
                 case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                    Toast.makeText(context,"touched!",Toast.LENGTH_SHORT).show();
+
+                    break;
+                case KeyEvent.KEYCODE_CALL:
+
                     break;
             }
         }

@@ -27,7 +27,7 @@
         android:layout_gravity="center_horizontal"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
-        android:onClick="initAndgoHomePage"
+        android:onClick="showDialogInit"
         />
 
     <TextView

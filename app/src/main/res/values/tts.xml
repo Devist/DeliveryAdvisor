@@ -1,0 +1,31 @@
+<resources>
+
+    <!--어드바이저 인삿말-->
+    <string name="adv_hello1">무엇을 도와드릴까요?</string>
+    <string name="adv_hello2">어떤걸 도와드릴까요?</string>
+    <string name="adv_hello3">수고가 많으시네요.</string>
+    <string name="adv_hello4">안녕하세요! Delivery Advisor입니다.</string>
+    <string name="adv_hello5">뭐든지 시켜만 주세요!</string>
+
+
+    <!--추가 정보 획득 관련-->
+    <string name="adv_need_more1">다 이해하지 못했어요.</string>
+    <string name="adv_need_more2">조금 더 정보를 주시겠어요?</string>
+
+    <!--전화 연결 -->
+    <string name="adv_call_consignee">수하인에게 전화 연결합니다.</string>
+
+    <!--길 안내-->
+    <string name="adv_path_consignee">현재 목적지의 길 안내를 시작하겠습니다.</string>
+
+    <!--배송 처리 관련-->
+    <string name="adv_process_delivery">으로 배송 처리했습니다!</string>
+
+    <string name="adv_proc_self"            >본인</string>
+    <string name="adv_proc_unmanned_courier">무인택배함</string>
+
+
+    <!--Awareness. 그룹 벗어날 때 동시 처리 -->
+    <string name="adv_aware_out_of_group">그룹에서 벗어나고 있어요. 기존 배송지는 </string>
+
+</resources>

@@ -125,6 +125,7 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
         if (id == R.id.nav_main) {
             Toast.makeText(NavigationActivity.this, "업무 내용을 확인합니다.", Toast.LENGTH_SHORT).show();
             Intent newIntent = new Intent(this, MainActivity.class);
+            newIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(newIntent);
             finish();
         } else if (id == R.id.nav_navigation) {

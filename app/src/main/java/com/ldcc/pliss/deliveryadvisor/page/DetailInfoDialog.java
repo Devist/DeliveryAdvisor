@@ -105,7 +105,6 @@ public class DetailInfoDialog extends Dialog {
                 DetailInfoDialog.this.dismiss();
             }
         });
-
         buttonDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
