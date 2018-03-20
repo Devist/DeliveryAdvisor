@@ -46,7 +46,7 @@ public class ProcessorNLP extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... params) {
         String sentence = params[0];
-        return sendOpenResultPOST(sentence);
+        return requestKeywordExtraction(sentence);
     }
 
     @Override
@@ -59,48 +59,39 @@ public class ProcessorNLP extends AsyncTask<String, Void, String> {
         super.onPostExecute(result);
     }
 
-
-    public String sendOpenResultPOST(String sentence){
+    //Twitter-Korean-text 에 키워드 추출 요청
+    public String requestKeywordExtraction(String sentence){
         InputStream is = null;
         String result = "";
         try {
             URL urlCon = new URL("https://open-korean-text.herokuapp.com/tokenize?text=" + sentence);
             HttpURLConnection httpCon = (HttpURLConnection)urlCon.openConnection();
-
-            // ** Alternative way to convert Person object to JSON string usin Jackson Lib
-            // ObjectMapper mapper = new ObjectMapper();
-            // json = mapper.writeValueAsString(person);
-
-            // Set some headers to inform server about the type of the content
             httpCon.setRequestMethod(REQUEST_METHOD);
             httpCon.setReadTimeout(READ_TIMEOUT);
             httpCon.setConnectTimeout(CONNECTION_TIMEOUT);
-
             httpCon.connect();
 
             // receive response as inputStream
             try {
                 is = httpCon.getInputStream();
                 // convert inputstream to string
-                if(is != null){
-                    Log.d("오픈성공","오픈성공");
+                if(is != null)
                     result = convertInputStreamToString(is);
-                }
                 else
-                    result = "Did not work!";
+                    result = "FAIL";
             }
             catch (IOException e) {
-                e.printStackTrace();
+                result = "FAIL";
             }
             finally {
                 httpCon.disconnect();
             }
         }
         catch (IOException e) {
-            e.printStackTrace();
+            result ="FAIL";
         }
         catch (Exception e) {
-            Log.d("InputStream", e.getLocalizedMessage());
+            result="FAIL";
         }
 
         return result;
@@ -110,14 +101,9 @@ public class ProcessorNLP extends AsyncTask<String, Void, String> {
         BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
         String line = "";
         String result = "";
-        while((line = bufferedReader.readLine()) != null)
-            result += line;
+        while((line = bufferedReader.readLine()) != null) result += line;
 
-        Log.d("result","result");
         inputStream.close();
         return result;
-
     }
-
-
 }

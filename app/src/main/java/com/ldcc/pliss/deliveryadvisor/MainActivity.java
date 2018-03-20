@@ -433,7 +433,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ProcessorNLP processorNLP = new ProcessorNLP();  //테스트용. 추후 삭제
         String result;
         try{
-
             result = processorNLP.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"송장번호 1 3 5 7 8 배송 처리해줘").get();
 
             Log.d("result222",result);
