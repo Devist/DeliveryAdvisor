@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         buttonSpeechRecognition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "무엇을 도와 드릴까요? ^^ [전화,배송 처리,길 안내]",Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(view, "무엇을 도와 드릴까요? ^^ [전화,배송 처리,길 안내]",Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 //                SpeechHelper speechHelper = new SpeechHelper(MainActivity.this);
 //                speechHelper.startVoiceRecognition();

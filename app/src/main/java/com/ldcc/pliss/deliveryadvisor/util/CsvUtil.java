@@ -23,8 +23,6 @@ import java.util.List;
 
 public class CsvUtil {
 
-    List<String[]> data = new ArrayList<String[]>();
-
     public List<String[]> readCSV(Context context){
         List<String[]> data = new ArrayList<String[]>();
 
@@ -33,10 +31,7 @@ public class CsvUtil {
             // UTF-8
             CSVReader reader = new CSVReader(new InputStreamReader(assets.open("shipping_invoice_sample.csv"),"UTF-8"));
             String[] s;
-
-            while ((s = reader.readNext()) != null) {
-                data.add(s);
-            }
+            while ((s = reader.readNext()) != null) { data.add(s); }
         } catch (FileNotFoundException e) {
             Log.d("값","못찾음");
             e.printStackTrace();
@@ -44,6 +39,7 @@ public class CsvUtil {
             Log.d("값","기타 에러");
             e.printStackTrace();
         }
+
         return data;
     }
 }
