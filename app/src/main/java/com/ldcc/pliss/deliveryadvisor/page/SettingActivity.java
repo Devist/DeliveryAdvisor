@@ -27,7 +27,32 @@ public class SettingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setting);
     }
 
+    public void showDialogInit(View v){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder
+                .setTitle("데이터 초기화 및 종료")
+                .setMessage("데이터를 초기화하고 앱을 종료하시겠습니까?")
+                .setCancelable(false)
+                .setPositiveButton("네",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(
+                                    DialogInterface dialog, int id) {
+                                // 프로그램을 종료한다
+                                initData();
+                            }
+                        })
+                .setNegativeButton("아니오",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(
+                                    DialogInterface dialog, int id) {
+                                // 다이얼로그를 취소한다
+                                dialog.cancel();
+                            }
+                        });
 
+        AlertDialog alertDialog = alertDialogBuilder.create();  // 다이얼로그 생성
+        alertDialog.show();                                     // 다이얼로그 보여주기
+    }
 
     /**
      * 앱 캐시 지우기
@@ -69,41 +94,7 @@ public class SettingActivity extends AppCompatActivity {
 
         prefs = getSharedPreferences("Pref", MODE_PRIVATE);
         prefs.edit().clear().commit();
+
         System.exit(0);
-    }
-
-    public void showDialogInit(View v){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                this);
-
-        // 제목셋팅
-        alertDialogBuilder.setTitle("프로그램 종료");
-
-        // AlertDialog 셋팅
-        alertDialogBuilder
-                .setMessage("데이터를 초기화하고 앱을 종료하시겠습니까?")
-                .setCancelable(false)
-                .setPositiveButton("네",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(
-                                    DialogInterface dialog, int id) {
-                                // 프로그램을 종료한다
-                                initData();
-                            }
-                        })
-                .setNegativeButton("아니오",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(
-                                    DialogInterface dialog, int id) {
-                                // 다이얼로그를 취소한다
-                                dialog.cancel();
-                            }
-                        });
-
-        // 다이얼로그 생성
-        AlertDialog alertDialog = alertDialogBuilder.create();
-
-        // 다이얼로그 보여주기
-        alertDialog.show();
     }
 }
