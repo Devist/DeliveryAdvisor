@@ -21,7 +21,6 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.support.annotation.NonNull;
 
-
 /**
  * Continuously records audio and notifies the {@link VoiceRecorder.Callback} when voice (or any
  * sound) is heard.

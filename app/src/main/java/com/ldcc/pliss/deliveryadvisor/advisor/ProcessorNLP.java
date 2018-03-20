@@ -1,32 +1,12 @@
 package com.ldcc.pliss.deliveryadvisor.advisor;
 
-
-import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
-
-
-
-//import org.openkoreantext.processor.OpenKoreanTextProcessorJava;
-//import org.openkoreantext.processor.phrase_extractor.KoreanPhraseExtractor;
-//import org.openkoreantext.processor.tokenizer.KoreanTokenizer;
-//
-//import java.util.List;
-//
-//import scala.collection.Seq;
 
 /**
  * Created by pliss on 2018. 3. 19..

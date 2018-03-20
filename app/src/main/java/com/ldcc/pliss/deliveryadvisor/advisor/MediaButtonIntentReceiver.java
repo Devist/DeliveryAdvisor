@@ -2,13 +2,9 @@ package com.ldcc.pliss.deliveryadvisor.advisor;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Message;
 import android.view.KeyEvent;
-import android.widget.Toast;
 
 /**
  * Created by pliss on 2018. 3. 9..
@@ -16,10 +12,8 @@ import android.widget.Toast;
 
 public class MediaButtonIntentReceiver extends BroadcastReceiver {
 
-    private static final long DOUBLE_CLICK_INTERVAL = 700;
     private Context mContext;
-    private static boolean sDoubleClick = false;
-    private static long sLastClickTime = 0;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         Intent popupIntent = new Intent(context, AdvisorDialog.class);
@@ -34,7 +28,7 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
         this.abortBroadcast();
         KeyEvent key = (KeyEvent) intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
         if(key.getAction() == KeyEvent.ACTION_DOWN) {
-            Toast.makeText(context,"touched anywhere!",Toast.LENGTH_SHORT).show();
+
             int keycode = key.getKeyCode();
             switch(keycode) {
                 case KeyEvent.KEYCODE_MEDIA_STOP:
@@ -62,31 +56,5 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
             }
         }
     }
-
-//    private void handleHeadsetHook(Context context, KeyEvent event) {
-//        final long eventtime = event.getEventTime();
-////        ULog.v(getClass().getSimpleName(),"handleHeadsetHook repeat interval="+(eventtime - sLastClickTime));
-//        if(eventtime - sLastClickTime < DOUBLE_CLICK_INTERVAL) {
-//            sDoubleClick = true;
-//            Toast.makeText(context,"two touched!",Toast.LENGTH_SHORT).show();
-//            sLastClickTime = 0;
-//        }
-//        else {
-//            sDoubleClick = false;
-//            sLastClickTime = eventtime;
-//            mHandler.sendEmptyMessageDelayed(0, DOUBLE_CLICK_INTERVAL);
-//        }
-//    }
-//
-//    private Handler mHandler = new Handler() {
-//        @Override
-//        public void handleMessage(Message msg) {
-//            if(sDoubleClick == false) {
-//                //play(mContext);
-//            }
-//        }
-//
-//    };
-
 }
 

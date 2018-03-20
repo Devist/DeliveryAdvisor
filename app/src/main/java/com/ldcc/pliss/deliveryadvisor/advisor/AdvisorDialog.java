@@ -1,51 +1,31 @@
 package com.ldcc.pliss.deliveryadvisor.advisor;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.Manifest;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.ldcc.pliss.deliveryadvisor.MainActivity;
 import com.ldcc.pliss.deliveryadvisor.R;
-import com.ldcc.pliss.deliveryadvisor.advisor.daum.NewtoneTalk;
 import com.ldcc.pliss.deliveryadvisor.advisor.google.SpeechHelper;
 import com.ldcc.pliss.deliveryadvisor.advisor.naver.ClovaTTS;
-import com.ldcc.pliss.deliveryadvisor.databases.Delivery;
 import com.ldcc.pliss.deliveryadvisor.databases.DeliveryHelper;
 import com.ldcc.pliss.deliveryadvisor.databases.ManagerHelper;
-import com.ldcc.pliss.deliveryadvisor.page.NavigationActivity;
 import com.ldcc.pliss.deliveryadvisor.util.WorkUtil;
-
-import net.daum.mf.speech.api.TextToSpeechClient;
-import net.daum.mf.speech.api.TextToSpeechListener;
-
-import static android.widget.Toast.LENGTH_SHORT;
-import static com.ldcc.pliss.deliveryadvisor.advisor.AdvisorService.TAG;
 
 /**
  * Created by pliss on 2018. 3. 6..
  */
 
-public class AdvisorDialog extends Activity implements TextToSpeechListener {
+public class AdvisorDialog extends Activity {
 
     private LinearLayout layoutForWorkButton;
     private TextView textViewQuestion;
     private DeliveryHelper deliveryHelper;
     private ManagerHelper managerHelper;
-
     private SpeechHelper speechHelper;
-
-    private NewtoneTalk newtoneTalk;
     private ClovaTTS clovaTTS = AdvisorService.clovaTTS;
 
     private WorkUtil workUtil;
@@ -69,30 +49,32 @@ public class AdvisorDialog extends Activity implements TextToSpeechListener {
         if(clovaTTS==null)
             clovaTTS = new ClovaTTS(getFilesDir());
 
-
         String myWork = getIntent().getStringExtra("Work-keyword");
-        if(myWork==null){
-            textViewQuestion.setText("무엇을 도와드릴까요?");
-            clovaTTS.sayThis("tts_welcome","무엇을 도와드릴까요?");
-            String[] currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
-            drawFirstQuestionButton(currentDeliveryInfo);
-        }
-        else if(myWork.equals("processDelivery")){
-            String[] currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
-            drawProcessDeliveryButton(currentDeliveryInfo);
-        }
+        String[] currentDeliveryInfo;
 
+        switch (String.valueOf(myWork)){
+            case "null":
+                currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
+                drawFirstQuestionButton(currentDeliveryInfo);
+                break;
+            case "processDelivery":
+                currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
+                drawProcessDeliveryButton(currentDeliveryInfo);
+                break;
+            case "howToProcess":
+                break;
+        }
     }
+
     @Override
     protected void onStart() {
         super.onStart();
         speechHelper = new SpeechHelper(this);
         speechHelper.startVoiceRecognition();
-
     }
+
     @Override
     protected void onStop() {
-
 
         clovaTTS.stopClovaTTS();
         try{
@@ -100,88 +82,47 @@ public class AdvisorDialog extends Activity implements TextToSpeechListener {
         }catch (Exception e){
 
         }
-
 //        try{
 //            a.join();
 //        }catch (InterruptedException e) {
 //
 //        }
-
-
-        //startActivity(intent);
-        //finish();
-        // Stop listening to voice
-
         super.onStop();
-
-
     }
 
     private void drawFirstQuestionButton(final String[] currentDeliveryInfo){
+        textViewQuestion.setText("무엇을 도와드릴까요?");
+        clovaTTS.sayThis("tts_welcome","무엇을 도와드릴까요?");
 
-
-        Button buttonKeepSelf = new Button(this);
-        buttonKeepSelf.setText("예제) 고객에게 전화 연결해줘.");
-        buttonKeepSelf.setTextColor(Color.WHITE);
-        buttonKeepSelf.setTextSize(18);
-        buttonKeepSelf.setBackgroundResource(R.drawable.rounded);
-        layoutForWorkButton.addView(buttonKeepSelf);
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) buttonKeepSelf.getLayoutParams();
-        layoutParams.leftMargin = 15;
-        layoutParams.rightMargin = 15;
-        layoutParams.topMargin = 10;
-        layoutParams.bottomMargin = 10;
+        Button buttonKeepSelf = setButtonLayout("예제) 고객에게 전화 연결해줘.");
         buttonKeepSelf.setOnClickListener(new View.OnClickListener() {  //S:본인  F: 지인  O: 경비실  E: 기타 U:무인택배함
             @Override
             public void onClick(View v) {
-
                 finish();
             }
         });
-        buttonKeepSelf.setLayoutParams(layoutParams);
 
-
-        Button buttonKeepAcquaintance = new Button(this);
-        buttonKeepAcquaintance.setText("예제) 배송지 정보 좀 알려줄래?");
-        buttonKeepAcquaintance.setTextColor(Color.WHITE);
-        buttonKeepAcquaintance.setTextSize(18);
-        buttonKeepAcquaintance.setBackgroundResource(R.drawable.rounded);
-        layoutForWorkButton.addView(buttonKeepAcquaintance);
+        Button buttonKeepAcquaintance = setButtonLayout("예제) 배송지 정보 좀 알려줄래?");
         buttonKeepAcquaintance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","F");
                 deliveryHelper.changeManagerInfoToNext();
-                //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }
         });
-        buttonKeepAcquaintance.setLayoutParams(layoutParams);
 
-
-        Button buttonKeepDoor = new Button(this);
-        buttonKeepDoor.setText("예제) 배송 처리 부탁해.");
-        buttonKeepDoor.setTextColor(Color.WHITE);
-        buttonKeepDoor.setTextSize(18);
-        buttonKeepDoor.setBackgroundResource(R.drawable.rounded);
-        layoutForWorkButton.addView(buttonKeepDoor);
+        Button buttonKeepDoor = setButtonLayout("예제) 배송 처리 부탁해.");
         buttonKeepDoor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","D");
                 deliveryHelper.changeManagerInfoToNext();
-                //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }
         });
-        buttonKeepDoor.setLayoutParams(layoutParams);
 
-        Button buttonKeepSecurityOffice = new Button(this);
-        buttonKeepSecurityOffice.setText("예제) 아냐, 괜찮아.");
-        buttonKeepSecurityOffice.setTextColor(Color.WHITE);
-        buttonKeepSecurityOffice.setTextSize(18);
-        buttonKeepSecurityOffice.setBackgroundResource(R.drawable.rounded);
-        layoutForWorkButton.addView(buttonKeepSecurityOffice);
+        Button buttonKeepSecurityOffice = setButtonLayout("예제) 아냐, 괜찮아.");
         buttonKeepSecurityOffice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,14 +132,8 @@ public class AdvisorDialog extends Activity implements TextToSpeechListener {
                 finish();
             }
         });
-        buttonKeepSecurityOffice.setLayoutParams(layoutParams);
 
-        Button buttonKeepUnmannedCourier = new Button(this);
-        buttonKeepUnmannedCourier.setText("무인택배함");
-        buttonKeepUnmannedCourier.setTextColor(Color.WHITE);
-        buttonKeepUnmannedCourier.setTextSize(18);
-        buttonKeepUnmannedCourier.setBackgroundResource(R.drawable.rounded);
-        layoutForWorkButton.addView(buttonKeepUnmannedCourier);
+        Button buttonKeepUnmannedCourier = setButtonLayout("무인택배함");
         buttonKeepUnmannedCourier.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -208,7 +143,6 @@ public class AdvisorDialog extends Activity implements TextToSpeechListener {
                 finish();
             }
         });
-        buttonKeepUnmannedCourier.setLayoutParams(layoutParams);
     }
 
     private void drawProcessDeliveryButton(final String[] currentDeliveryInfo){
@@ -219,17 +153,7 @@ public class AdvisorDialog extends Activity implements TextToSpeechListener {
         textViewQuestion.setText(sentence);
         clovaTTS.sayThis("tts_"+currentDeliveryInfo[2],sentence);
 
-        Button buttonKeepSelf = new Button(this);
-        buttonKeepSelf.setText("본인이 수령");
-        buttonKeepSelf.setTextColor(Color.WHITE);
-        buttonKeepSelf.setTextSize(18);
-        buttonKeepSelf.setBackgroundResource(R.drawable.rounded);
-        layoutForWorkButton.addView(buttonKeepSelf);
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) buttonKeepSelf.getLayoutParams();
-        layoutParams.leftMargin = 15;
-        layoutParams.rightMargin = 15;
-        layoutParams.topMargin = 10;
-        layoutParams.bottomMargin = 10;
+        Button buttonKeepSelf = setButtonLayout("본인이 수령");
         buttonKeepSelf.setOnClickListener(new View.OnClickListener() {  //S:본인  F: 지인  O: 경비실  E: 기타 U:무인택배함
             @Override
             public void onClick(View v) {
@@ -239,15 +163,8 @@ public class AdvisorDialog extends Activity implements TextToSpeechListener {
                 finish();
             }
         });
-        buttonKeepSelf.setLayoutParams(layoutParams);
 
-
-        Button buttonKeepAcquaintance = new Button(this);
-        buttonKeepAcquaintance.setText("[가족,동료,어머니]가 수령했어");
-        buttonKeepAcquaintance.setTextColor(Color.WHITE);
-        buttonKeepAcquaintance.setTextSize(18);
-        buttonKeepAcquaintance.setBackgroundResource(R.drawable.rounded);
-        layoutForWorkButton.addView(buttonKeepAcquaintance);
+        Button buttonKeepAcquaintance = setButtonLayout("[가족,동료,어머니]가 수령했어");
         buttonKeepAcquaintance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -257,15 +174,8 @@ public class AdvisorDialog extends Activity implements TextToSpeechListener {
                 finish();
             }
         });
-        buttonKeepAcquaintance.setLayoutParams(layoutParams);
 
-
-        Button buttonKeepDoor = new Button(this);
-        buttonKeepDoor.setText("문 앞에 두었어");
-        buttonKeepDoor.setTextColor(Color.WHITE);
-        buttonKeepDoor.setTextSize(18);
-        buttonKeepDoor.setBackgroundResource(R.drawable.rounded);
-        layoutForWorkButton.addView(buttonKeepDoor);
+        Button buttonKeepDoor = setButtonLayout("문 앞에 두었어");
         buttonKeepDoor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -275,14 +185,8 @@ public class AdvisorDialog extends Activity implements TextToSpeechListener {
                 finish();
             }
         });
-        buttonKeepDoor.setLayoutParams(layoutParams);
 
-        Button buttonKeepSecurityOffice = new Button(this);
-        buttonKeepSecurityOffice.setText("경비실에 맡겨뒀어.");
-        buttonKeepSecurityOffice.setTextColor(Color.WHITE);
-        buttonKeepSecurityOffice.setTextSize(18);
-        buttonKeepSecurityOffice.setBackgroundResource(R.drawable.rounded);
-        layoutForWorkButton.addView(buttonKeepSecurityOffice);
+        Button buttonKeepSecurityOffice = setButtonLayout("경비실에 맡겨뒀어.");
         buttonKeepSecurityOffice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -292,14 +196,8 @@ public class AdvisorDialog extends Activity implements TextToSpeechListener {
                 finish();
             }
         });
-        buttonKeepSecurityOffice.setLayoutParams(layoutParams);
 
-        Button buttonKeepUnmannedCourier = new Button(this);
-        buttonKeepUnmannedCourier.setText("무인택배함");
-        buttonKeepUnmannedCourier.setTextColor(Color.WHITE);
-        buttonKeepUnmannedCourier.setTextSize(18);
-        buttonKeepUnmannedCourier.setBackgroundResource(R.drawable.rounded);
-        layoutForWorkButton.addView(buttonKeepUnmannedCourier);
+        Button buttonKeepUnmannedCourier = setButtonLayout("무인택배함");
         buttonKeepUnmannedCourier.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -309,80 +207,21 @@ public class AdvisorDialog extends Activity implements TextToSpeechListener {
                 finish();
             }
         });
-        buttonKeepUnmannedCourier.setLayoutParams(layoutParams);
     }
 
-    @Override
-    public void onError(int code, String message) {
-        handleError(code);
-//
-//        ttsClient = null;
-    }
-
-    @Override
-    public void onFinished() {
-//        int intSentSize = ttsClient.getSentDataSize();
-//        int intRecvSize = ttsClient.getReceivedDataSize();
-//
-//        final String strInacctiveText = "onFinished() SentSize : " + intSentSize + " RecvSize : " + intRecvSize;
-//
-//        Log.i(TAG, strInacctiveText);
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                mStatus.setText(strInacctiveText);
-//            }
-//        });
-//
-//        ttsClient = null;
-    }
-
-    private void handleError(int errorCode) {
-        String errorText;
-        switch (errorCode) {
-            case TextToSpeechClient.ERROR_NETWORK:
-                errorText = "네트워크 오류";
-                break;
-            case TextToSpeechClient.ERROR_NETWORK_TIMEOUT:
-                errorText = "네트워크 지연";
-                break;
-            case TextToSpeechClient.ERROR_CLIENT_INETRNAL:
-                errorText = "음성합성 클라이언트 내부 오류";
-                break;
-            case TextToSpeechClient.ERROR_SERVER_INTERNAL:
-                errorText = "음성합성 서버 내부 오류";
-                break;
-            case TextToSpeechClient.ERROR_SERVER_TIMEOUT:
-                errorText = "음성합성 서버 최대 접속시간 초과";
-                break;
-            case TextToSpeechClient.ERROR_SERVER_AUTHENTICATION:
-                errorText = "음성합성 인증 실패";
-                break;
-            case TextToSpeechClient.ERROR_SERVER_SPEECH_TEXT_BAD:
-                errorText = "음성합성 텍스트 오류";
-                break;
-            case TextToSpeechClient.ERROR_SERVER_SPEECH_TEXT_EXCESS:
-                errorText = "음성합성 텍스트 허용 길이 초과";
-                break;
-            case TextToSpeechClient.ERROR_SERVER_UNSUPPORTED_SERVICE:
-                errorText = "음성합성 서비스 모드 오류";
-                break;
-            case TextToSpeechClient.ERROR_SERVER_ALLOWED_REQUESTS_EXCESS:
-                errorText = "허용 횟수 초과";
-                break;
-            default:
-                errorText = "정의하지 않은 오류";
-                break;
-        }
-
-        final String statusMessage = errorText + " (" + errorCode + ")";
-
-        Log.i(TAG, statusMessage);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d("error",statusMessage);
-            }
-        });
+    private Button setButtonLayout(String btnContents){
+        Button createdButton = new Button(this);
+        createdButton.setText(btnContents);
+        createdButton.setTextColor(Color.WHITE);
+        createdButton.setTextSize(18);
+        createdButton.setBackgroundResource(R.drawable.rounded);
+        layoutForWorkButton.addView(createdButton);
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) createdButton.getLayoutParams();
+        layoutParams.leftMargin = 15;
+        layoutParams.rightMargin = 15;
+        layoutParams.topMargin = 10;
+        layoutParams.bottomMargin = 10;
+        createdButton.setLayoutParams(layoutParams);
+        return  createdButton;
     }
 }
