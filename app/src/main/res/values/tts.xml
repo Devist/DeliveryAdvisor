@@ -8,15 +8,22 @@
     <string name="adv_hello5">뭐든지 시켜만 주세요!</string>
 
 
+
     <!--추가 정보 획득 관련-->
     <string name="adv_need_more1">다 이해하지 못했어요.</string>
     <string name="adv_need_more2">조금 더 정보를 주시겠어요?</string>
 
+
+
+
     <!--전화 연결 -->
     <string name="adv_call_consignee">수하인에게 전화 연결합니다.</string>
 
+
     <!--길 안내-->
     <string name="adv_path_consignee">현재 목적지의 길 안내를 시작하겠습니다.</string>
+
+
 
     <!--배송 처리 관련-->
     <string name="adv_process_delivery">으로 배송 처리했습니다!</string>

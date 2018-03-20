@@ -58,118 +58,72 @@ import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
-    private SharedPreferences prefs;
-    private FloatingActionButton buttonSpeechRecognition;
+    private SharedPreferences prefs;                        // 앱이 최초 실행인지 확인하기 위한 변수
+    private FloatingActionButton buttonSpeechRecognition;   // 음성 인식 활성화 버튼
 
-    private ListView currentWorkListView;
-    private ListAdapter currentWorkListAdapter;
+    private ListView currentWorkListView;                   // 상단 현재 업무 리스트 화면
+    private ListAdapter currentWorkListAdapter;             // 상단 현재 업무 리스트 어댑터
 
-    private ListView allWorkListView;
-    private ListAdapter allWorkListAdapter;
+    private ListView allWorkListView;                       // 하단 모든 업무 리스트 화면
+    private ListAdapter allWorkListAdapter;                 // 하단 모든 업무 리스트 어댑터
 
-    private ProgressBar progressBarDelivery;
-    private TextView progressTextDelivery;
+    private ProgressBar progressBarDelivery;                // 중단 모든업무 대비 업무 완료 진행 표시바
+    private TextView progressTextDelivery;                  // 중단 모든업무 대비 업무 완료 진행 텍스트
 
-    private DeliveryHelper deliveryHelper;
-    private ManagerHelper managerHelper;
+    private DeliveryHelper deliveryHelper;                  // 업무 데이터베이스 처리 객체
+    private ManagerHelper managerHelper;                    // 현재 업무 데이터베이스 처리 객체
+    private RealmChangeListener workDataChangeListener;     // 데이터베이스 상태변화 감지 리스너
 
-    private WorkUtil workUtil;
+    private WorkUtil workUtil;                              // 업무 처리(전화,문자,어드바이저활성,배송처리 등) 객체
 
+    //상단 현재 업무 리스트에 존재하는 버튼들
     private Button buttonShowDetails, buttonProcDelivery, buttonCallCustomer, buttonNaviPath;
-    private RealmChangeListener workDataChangeListener;
+
+    //현재 처리해야 하는 업무 정보를 담고 있는 배열
     private String[] managerInfo = new String[7];
-    private String[] invoice,
-            customerName,
-            customerProduct,
-            customerAddress,
-            status;
+
+    //모든 업무 정보를 담고 있는 배열
+    private String[] invoice, customerName, customerProduct, customerAddress, status;
 
     private RealmResults<Delivery> results;
     private int deliveryDoneCount;
     private Realm mRealm;
     private Manager ddd;
 
-    ProgressBar mprogressBar;
 
-    //세팅에서 초기화시, 남아있는 메인액티비티에서 Realm 디비 변화를 감지하여 처리하려다 에러나지 않도록 처리하는 변수
-    public static Activity fa;
+    private ProgressBar mprogressBar;   //동작하지 않으나, 쓰레드의 빠른 반환을 위해 사용
+    public static Activity fa;          //세팅에서 초기화시, 남아있는 메인액티비티에서 Realm 디비 변화를 감지하여 처리하려다 에러나지 않도록 처리하는 변수
 
-    ProcessorNLP processorNLP = new ProcessorNLP();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String result;
-        try{
-
-            result = processorNLP.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"송장번호 1 3 5 7 8 배송 처리해줘").get();
-
-            Log.d("result222",result);
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-            result = "fail";
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            result = "fail";
-        }
-        try{
-            JSONObject flattenJson = new JSONObject(result);
-            JSONArray abc = flattenJson.getJSONArray("token_strings");
-            for(int i = 0 ;i <abc.length() ; i++){
-                Log.d("토큰들 : ",abc.getString(i));
-            }
-        }catch(Exception e){
-
-        }
-
-
-
-
-
-        fa = this;
-        prefs = getSharedPreferences("Pref", MODE_PRIVATE);
-        boolean isFirstRun = checkFirstRun();
-
-        if(isFirstRun) finish(); else init();
+        if(checkFirstRun())             //앱이 최초 실행인지 확인
+            goHomePage();
+        else                            //최초 실행 아닐 경우 [init() 초기세팅] => [setLayout() 화면세팅] => [setListener() 이벤트처리]
+            init();
     }
+
 
     private void init(){
+
+        fa = this;
+        workUtil = new WorkUtil();
+
+        //데이터베이스 세팅
         Realm.init(this);
         mRealm = Realm.getDefaultInstance();
-        initSetting();
-        setLayout();
+        deliveryHelper = new DeliveryHelper(this);
+        managerHelper = new ManagerHelper((this));
+
+        changeWorkData();
+
+        //음성인식 서비스 활성
         startService(new Intent(this, AdvisorService.class));
 
-    }
-
-    private void initSetting(){
-        changeWorkData();
-        workUtil = new WorkUtil();
-    }
-
-    private void changeWorkData() {
-        deliveryHelper = new DeliveryHelper(this);
-
-        managerHelper = new ManagerHelper((this));
-        managerInfo = managerHelper.getCurrentDeliveryInfo(MainActivity.this);
-
-        results = deliveryHelper.getAllDeliveryList();
-        invoice = new String[results.size()];
-        customerName = new String[results.size()];
-        customerProduct = new String[results.size()];
-        customerAddress = new String[results.size()];
-        status = new String[results.size()];
-
-        deliveryDoneCount = Integer.parseInt(managerInfo[6])-1;
-        for(int i = 0 ; i<results.size() ; i++){
-            invoice[i] = results.get(i).getINV_NUMB();
-            customerName[i] = results.get(i).getRECV_NM();
-            customerProduct[i] = results.get(i).getITEM_NM();
-            customerAddress[i] = results.get(i).getRECV_ADDR();
-            status[i] = results.get(i).getSHIP_STAT();
-        }
+        setLayout();
     }
 
     private void setLayout(){
@@ -189,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -199,7 +152,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         buttonProcDelivery = (Button) findViewById(R.id.button_proc_delivery);
         buttonCallCustomer= (Button) findViewById(R.id.button_call_customer);
         buttonNaviPath = (Button) findViewById(R.id.button_navi_path);
-
         currentWorkListAdapter = new CurrentWorkListAdapter(MainActivity.this, managerInfo);
         currentWorkListView.setAdapter(currentWorkListAdapter);
 
@@ -234,34 +186,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        // A. 모든 업무 리스트 화면 중 특정 아이템을 오래 클릭할 경우,
         allWorkListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                TextView temp;
 
+                TextView temp;
                 if(position==deliveryDoneCount){
                     temp = (TextView) view.findViewById(R.id.textWorkTitle_ongoing);
                 }else{
                     temp = (TextView) view.findViewById(R.id.textWorkTitle);
                 }
 
+                // B.상세정보 표시 팝업 표출
                 String selectedInvoiceNumber = temp.getText().toString().split(":")[1].substring(1);    //송장번호를 잘라서 가져옴.
-
                 final DetailInfoDialog detailInfoDialog = new DetailInfoDialog(MainActivity.this, selectedInvoiceNumber);
                 detailInfoDialog.show();
 
-                //다이얼로그에서 "현재 목적지로 변경" 버튼을 눌렀을 때의 처리
+                // 1.상세정보 표시 팝업에서 "현재 목적지로 변경" 버튼을 눌렀을 때의 처리
                 detailInfoDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
-                        String addCategoryStr = detailInfoDialog.getAddCategoryStr();
-
+                        // 2.단순 쓰레드 처리
                         mprogressBar = (ProgressBar) findViewById(R.id.circular_progress_bar);
                         ObjectAnimator anim = ObjectAnimator.ofInt(mprogressBar, "progress", 0, 100);
-                        anim.setDuration(15000);
-                        anim.setInterpolator(new DecelerateInterpolator());
                         anim.start();
+
+                        // 3. 현재 처리해야 할 업무 변경
+                        String addCategoryStr = detailInfoDialog.getAddCategoryStr();
                         if(addCategoryStr!=null)
                             deliveryHelper.changeManagerInfo(addCategoryStr);
                     }
@@ -318,12 +270,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        //데이터베이스에서 현재 업무가 변경되었을 때, 이를 감지하여 [현재 업무 화면, 진행 프로그레스바, 전체 업무 화면] 내용을 변경해준다.
         ddd = mRealm.where(Manager.class).equalTo("userName",managerHelper.getManagerName()).findFirstAsync();
         workDataChangeListener = new RealmChangeListener() {
             @Override
             public void onChange(Object o) {
 
-                Log.d("Realm", "개를 찾았거나 갱신됐습니다!");
                 try{
                     changeWorkData();
                     currentWorkListAdapter = new CurrentWorkListAdapter(MainActivity.this, managerInfo);
@@ -332,7 +284,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     progressBarDelivery.setProgress(deliveryDoneCount);
                     progressTextDelivery.setText("할당된 배송 리스트 (" + deliveryDoneCount + "/" + results.size()+")");
 
-                    status[deliveryDoneCount]="O";
                     allWorkListAdapter = new AllWorkListAdapter(invoice,customerName, customerProduct,customerAddress,status,deliveryDoneCount);
                     allWorkListView.setAdapter(allWorkListAdapter);
                     allWorkListView.setSelection(deliveryDoneCount);
@@ -363,6 +314,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void changeWorkData() {
+        managerInfo = managerHelper.getCurrentDeliveryInfo(MainActivity.this);
+
+        results = deliveryHelper.getAllDeliveryList();
+        invoice = new String[results.size()];
+        customerName = new String[results.size()];
+        customerProduct = new String[results.size()];
+        customerAddress = new String[results.size()];
+        status = new String[results.size()];
+
+        deliveryDoneCount = Integer.parseInt(managerInfo[6])-1;
+        for(int i = 0 ; i<results.size() ; i++){
+            invoice[i] = results.get(i).getINV_NUMB();
+            customerName[i] = results.get(i).getRECV_NM();
+            customerProduct[i] = results.get(i).getITEM_NM();
+            customerAddress[i] = results.get(i).getRECV_ADDR();
+            status[i] = results.get(i).getSHIP_STAT();
+        }
+        status[deliveryDoneCount]="O";
+    }
+
     //왼쪽에 숨겨져 있는 네비게이션 메뉴 중 특정 버튼을 누르면, 해당 페이지로 이동시킵니다.
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -380,7 +352,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(MainActivity.this, "로그 기록을 확인합니다.", Toast.LENGTH_SHORT).show();
             Intent newIntent = new Intent(this, LogActivity.class);
             startActivity(newIntent);
-
         } else if (id == R.id.nav_settings) {
             Intent newIntent = new Intent(this, SettingActivity.class);
             startActivity(newIntent);
@@ -404,7 +375,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(newIntent);
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -426,14 +396,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //앱이 최초 실행인지 검출하여, 최초 페이지로 이동시키거나 메인 페이지에 머무릅니다.
     private boolean checkFirstRun(){
-        boolean isFirstRun = prefs.getBoolean("isFirstRun",true);
-        if(isFirstRun) {
-            Intent newIntent = new Intent(this, HomeActivity.class);
-            startActivity(newIntent);
+        prefs = getSharedPreferences("Pref", MODE_PRIVATE);
+        return prefs.getBoolean("isFirstRun",true);
+    }
 
-            prefs.edit().putBoolean("isFirstRun",false).apply();
-        }
-        return isFirstRun;
+    private void goHomePage(){
+        Intent newIntent = new Intent(this, HomeActivity.class);
+        startActivity(newIntent);
+        prefs.edit().putBoolean("isFirstRun",false).apply();
+        finish();
     }
 
     //앱 실행시 업무 리스트뷰에 현재 업무를 중앙에 표시하기 위해 사용됩니다.
@@ -449,9 +420,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public void onGlobalLayout() {
             if(!isAlreadyDone){
                 ListView v = (ListView) findViewById(R.id.allWorkList);
-
-                int h1 = v.getHeight();
                 v.measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
+                int h1 = v.getHeight();
                 int h2 = v.getMeasuredHeight();
                 allWorkListView.setSelectionFromTop(pos, h1/2-h2/2);
                 isAlreadyDone = true;
@@ -459,6 +429,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void test(){
+        ProcessorNLP processorNLP = new ProcessorNLP();  //테스트용. 추후 삭제
+        String result;
+        try{
 
+            result = processorNLP.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"송장번호 1 3 5 7 8 배송 처리해줘").get();
 
+            Log.d("result222",result);
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+            result = "fail";
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            result = "fail";
+        }
+        try{
+            JSONObject flattenJson = new JSONObject(result);
+            JSONArray abc = flattenJson.getJSONArray("token_strings");
+            for(int i = 0 ;i <abc.length() ; i++){
+                Log.d("토큰들 : ",abc.getString(i));
+            }
+        }catch(Exception e){
+
+        }
+    }
 }
