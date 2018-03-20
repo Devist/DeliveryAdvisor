@@ -24,41 +24,32 @@ import com.ldcc.pliss.deliveryadvisor.advisor.AdvisorDialog;
 public class WorkUtil {
 
     private Context context;
-    Bundle bundle = new Bundle();
+    private Bundle bundle = new Bundle();
 
     //음성인식 - 사용자가 음성인식을 활성화했을 때, 시작 팝업을 띄우는 기능
     public void showFirstQuestionDialog (Context context, String[] managerInfo){
         this.context = context;
-
         bundle.putString("Work-keyword","initialQuestion");
         bundle.putStringArray("Delivery-data",managerInfo);
-        Intent popupIntent = new Intent(context, AdvisorDialog.class);
-        popupIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        popupIntent.putExtras(bundle);
-        PendingIntent pie= PendingIntent.getActivity(context, 0, popupIntent, PendingIntent.FLAG_ONE_SHOT);
-
-        try {
-            pie.send();
-        } catch (PendingIntent.CanceledException e) {
-            //LogUtil.degug(e.getMessage());
-        }
     }
 
     //음성인식 - 사용자가 배송 처리를 할 때, 배송 처리 팝업을 띄우는 기능
     public void showProcessDeliveryDialog (Context context,String[] managerInfo){
         this.context = context;
-
         bundle.putString("Work-keyword","processDelivery");
         bundle.putStringArray("Delivery-data",managerInfo);
+        popupAdvisorDialog(bundle);
+    }
+
+    private void popupAdvisorDialog(Bundle bundle) {
         Intent popupIntent = new Intent(context, AdvisorDialog.class);
-        popupIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        popupIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         popupIntent.putExtras(bundle);
         PendingIntent pie= PendingIntent.getActivity(context, 0, popupIntent, PendingIntent.FLAG_ONE_SHOT);
-
         try {
             pie.send();
-        } catch (PendingIntent.CanceledException e) {
-            //LogUtil.degug(e.getMessage());
+        }catch (PendingIntent.CanceledException e) {
+
         }
     }
 
@@ -69,6 +60,8 @@ public class WorkUtil {
         intent.setData(Uri.parse("tel:"+phoneNumber));
         if (!(ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED)) {
             this.context.startActivity(intent);
+        }else{
+            Toast.makeText(this.context,"전화 권한을 허용한 후, 다시 버튼을 눌러주세요.",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -110,5 +103,9 @@ public class WorkUtil {
 
         SmsManager sms = SmsManager.getDefault();
         sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
+    }
+
+    public void recordLog(){
+
     }
 }
