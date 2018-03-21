@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ldcc.pliss.deliveryadvisor.R;
+import com.ldcc.pliss.deliveryadvisor.advisor.VoiceAnalyzer;
 import com.ldcc.pliss.deliveryadvisor.advisor.VoiceRecorder;
 
 import static android.content.Context.BIND_AUTO_CREATE;
@@ -97,6 +98,7 @@ public class SpeechHelper implements MessageDialogFragment.Listener{
                             public void run() {
                                 if (isFinal) {
                                     Toast.makeText(activity,"인식된 문서는 : "+text,Toast.LENGTH_SHORT).show();
+                                    VoiceAnalyzer.getAnalyzedAction(VoiceAnalyzer.POPUP_HELLO_MODE,text);
 
                                 } else {
                                     //실시간 인식에서 사용

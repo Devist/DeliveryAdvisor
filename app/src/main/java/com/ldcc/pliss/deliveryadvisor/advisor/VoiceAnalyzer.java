@@ -23,7 +23,7 @@ public class VoiceAnalyzer {
     private static final int DELIVERY_THE_CURRENT_CUSTOMER      = 1002;
 
     public static int getAnalyzedAction(int mode, String voice){
-        String kewords = NLP("지정된 담당자는 관련 기술의 주된 역할 담당이며, 필요한 작업은 협업을 통해 진행합니다");
+        String kewords = NLP(voice);
         String [] kewordArray = getTokens(kewords);
 
         int result = POPUP_HELLO_MODE;
