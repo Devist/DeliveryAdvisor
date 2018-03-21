@@ -98,9 +98,8 @@ public class SpeechHelper implements MessageDialogFragment.Listener{
                                 if (isFinal) {
                                     Toast.makeText(activity,"인식된 문서는 : "+text,Toast.LENGTH_SHORT).show();
 
-
                                 } else {
-//                                    mText.setText(text);
+                                    //실시간 인식에서 사용
                                 }
                             }
                         });

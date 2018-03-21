@@ -143,6 +143,8 @@ public class AdvisorDialog extends Activity {
                 finish();
             }
         });
+
+        VoiceAnalyzer.getAnalyzedAction(VoiceAnalyzer.POPUP_HELLO_MODE,"안녕");
     }
 
     private void drawProcessDeliveryButton(final String[] currentDeliveryInfo){

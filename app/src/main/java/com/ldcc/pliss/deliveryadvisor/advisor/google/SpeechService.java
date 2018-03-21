@@ -92,7 +92,6 @@ public class SpeechService extends Service {
     }
 
     private static final String TAG = "SpeechService";
-
     private static final String PREFS = "SpeechService";
     private static final String PREF_ACCESS_TOKEN_VALUE = "access_token_value";
     private static final String PREF_ACCESS_TOKEN_EXPIRATION_TIME = "access_token_expiration_time";
