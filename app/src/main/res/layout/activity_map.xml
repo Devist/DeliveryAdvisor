@@ -20,12 +20,113 @@
             android:layout_height="wrap_content"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-
-            <fragment
-                android:id="@+id/fragment_map"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                class="com.google.android.gms.maps.MapFragment"/>
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Map Page"
+                    android:textSize="25sp"
+                    android:textColor="#FFF"
+                    android:background="#383838"
+                    android:gravity="center" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="87">
+                    <fragment
+                        android:id="@+id/fragment_map"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="10dp"
+                        class="com.google.android.gms.maps.MapFragment"/>
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingBottom="@dimen/activity_vertical_margin"
+                        android:paddingLeft="@dimen/activity_horizontal_margin"
+                        android:paddingRight="@dimen/activity_horizontal_margin"
+                        android:paddingTop="@dimen/activity_vertical_margin"
+                        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                        <TextView
+                            android:id="@+id/latitude_text"
+                            android:textColor="#555555"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:id="@+id/longitude_text"
+                            android:textColor="#555555"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:id="@+id/last_update_time_text"
+                            android:textColor="#555555"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:id="@+id/location_inadequate_warning"
+                            android:textColor="#555555"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="장치의 위치 설정을 허용해 주십시오"
+                            android:visibility="invisible" />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:baselineAligned="false"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_weight="8"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/navigation_button"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginBottom="10dp"
+                        android:gravity="center"
+                        android:textColor="#fff"
+                        android:background="#555555"
+                        android:textSize="15sp"
+                        android:onClick="startNavigationButtonHandler"
+                        android:text="현재 배송지 보기" />
+
+                    <Button
+                        android:id="@+id/destinations_button"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="#fff"
+                        android:textSize="15sp"
+                        android:background="#555555"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:onClick="startAllShippingButtonHandler"
+                        android:text="전체 배송지 보기" />
+                </LinearLayout>
+            </LinearLayout>
+
+
 
 
     </android.support.design.widget.AppBarLayout>

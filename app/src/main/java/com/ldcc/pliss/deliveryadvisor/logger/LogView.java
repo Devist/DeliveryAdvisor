@@ -17,6 +17,7 @@ package com.ldcc.pliss.deliveryadvisor.logger;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
@@ -40,7 +41,7 @@ public class LogView extends android.support.v7.widget.AppCompatTextView {
      * Formats the log data and prints it out to the LogView.
      * @param msg The actual message to be logged. The actual message to be logged.
      */
-    public void println(final String msg) {
+    public void println(final String msg, final int mode) {
 
         // In case this was originally called from an AsyncTask or some other off-UI thread,
         // make sure the update occurs within the UI thread.
@@ -48,13 +49,27 @@ public class LogView extends android.support.v7.widget.AppCompatTextView {
             @Override
             public void run() {
                 // Display the text we just generated within the LogView.
-                appendToLog(msg);
+                appendToLog(msg, mode);
             }
         })));
     }
 
     /** Outputs the string as a new line of log data in the LogView. */
-    public void appendToLog(String s) {
-        append("\n" + s);
+    public void appendToLog(String s, int mode) {
+        if(mode==1){
+            String text="";
+            String textTime = "⫸⫸" + s + "⫷⫷";
+            for(int i = 0 ; i < textTime.length()+1;i++){
+                text+="=";
+            }
+            text+="==";
+            setText(text+"\n"+textTime+"\n"+text+"\n" + getText());
+
+        }else{
+            setText(s+"\n" + getText());
+        }
+
+
+
     }
 }

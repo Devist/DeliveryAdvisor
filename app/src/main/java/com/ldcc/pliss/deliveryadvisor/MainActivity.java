@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -56,6 +57,7 @@ import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
+// hello
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     private SharedPreferences prefs;                        // 앱이 최초 실행인지 확인하기 위한 변수
@@ -98,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
         if(checkFirstRun())             //앱이 최초 실행인지 확인
@@ -403,7 +407,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void goHomePage(){
         Intent newIntent = new Intent(this, HomeActivity.class);
         startActivity(newIntent);
-        prefs.edit().putBoolean("isFirstRun",false).apply();
         finish();
     }
 
@@ -426,31 +429,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 allWorkListView.setSelectionFromTop(pos, h1/2-h2/2);
                 isAlreadyDone = true;
             }
-        }
-    }
-
-    private void test(){
-        ProcessorNLP processorNLP = new ProcessorNLP();  //테스트용. 추후 삭제
-        String result;
-        try{
-            result = processorNLP.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"송장번호 1 3 5 7 8 배송 처리해줘").get();
-
-            Log.d("result222",result);
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-            result = "fail";
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            result = "fail";
-        }
-        try{
-            JSONObject flattenJson = new JSONObject(result);
-            JSONArray abc = flattenJson.getJSONArray("token_strings");
-            for(int i = 0 ;i <abc.length() ; i++){
-                Log.d("토큰들 : ",abc.getString(i));
-            }
-        }catch(Exception e){
-
         }
     }
 }

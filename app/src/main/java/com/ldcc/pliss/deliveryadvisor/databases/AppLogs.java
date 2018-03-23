@@ -1,14 +1,17 @@
 package com.ldcc.pliss.deliveryadvisor.databases;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmClass;
 
 /**
  * Created by pliss on 2018. 2. 23..
  */
-
-public class Log extends RealmObject {
-
+@RealmClass
+public class AppLogs extends RealmObject {
+    @PrimaryKey
     private String TIME_STAMP;
+
     private String CONTENTS;
 
     public String getTIME_STAMP() {

@@ -9,7 +9,7 @@ import io.realm.RealmObject;
 public class Manager extends RealmObject {
 
     private String userName;
-    private String currentInvoice;
+    private String invoice;
 
     public String getUserName() {
         return userName;
@@ -19,11 +19,11 @@ public class Manager extends RealmObject {
         this.userName = userName;
     }
 
-    public String getCurrentInvoice() {
-        return currentInvoice;
+    public String getInvoice() {
+        return invoice;
     }
 
-    public void setCurrentInvoice(String currentInvoice) {
-        this.currentInvoice = currentInvoice;
+    public void setInvoice(String invoice) {
+        this.invoice = invoice;
     }
 }

@@ -7,19 +7,46 @@
     android:orientation="vertical"
     tools:context="com.ldcc.pliss.deliveryadvisor.page.ExplanationActivity">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="87" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="87"
+        android:orientation="vertical">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="63" />
+
+
+        <LinearLayout
+            android:id="@+id/SliderDots"
+            android:layout_below="@+id/viewPager"
+            android:orientation="horizontal"
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="5"/>
+
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="20"/>
+
+    </LinearLayout>
 
 
     <android.support.v7.widget.AppCompatButton
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5.62"
-        android:background="#14579B"
+        android:background="#0096FF"
         android:text="계속하기"
         android:textSize="20dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
         android:layout_gravity="center_horizontal"
         android:textColor="#FFFFFF"
         android:textStyle="bold"

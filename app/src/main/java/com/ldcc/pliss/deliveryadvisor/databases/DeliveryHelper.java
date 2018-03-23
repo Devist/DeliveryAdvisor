@@ -58,7 +58,7 @@ public class DeliveryHelper {
         mRealm.beginTransaction();
         Delivery delivery = mRealm.where(Delivery.class).equalTo("INV_NUMB", invoice).findFirst();
         Manager managerINFO = mRealm.where(Manager.class).findAll().first();
-        managerINFO.setCurrentInvoice(delivery.getINV_NUMB());
+        managerINFO.setInvoice(delivery.getINV_NUMB());
         mRealm.commitTransaction();
     }
 
@@ -73,7 +73,7 @@ public class DeliveryHelper {
 
         mRealm.beginTransaction();
         Manager managerINFO = mRealm.where(Manager.class).findAll().first();
-        managerINFO.setCurrentInvoice(yetInvoiceNumber);
+        managerINFO.setInvoice(yetInvoiceNumber);
         mRealm.commitTransaction();
     }
 
@@ -93,7 +93,7 @@ public class DeliveryHelper {
                 for(int i = 1 ; i<workData.size();i++){
 
                     Delivery deliveryINFO = realm.createObject(Delivery.class,workData.get(i)[1]);
-                    deliveryINFO.setSHIP_ID(Integer.parseInt(workData.get(i)[0]));
+                    deliveryINFO.setSHIP_ID(i);
                     deliveryINFO.setSHIP_TYPE(workData.get(i)[2]);
                     deliveryINFO.setSHIP_ORD(Integer.parseInt(workData.get(i)[3]));
                     deliveryINFO.setSHIP_GRP_NM(workData.get(i)[4]);
@@ -112,8 +112,8 @@ public class DeliveryHelper {
                     deliveryINFO.setRECV_1_TELNO(workData.get(i)[16]);
                     deliveryINFO.setRECV_2_TELNO(workData.get(i)[17]);
                     deliveryINFO.setSHIP_MSG(workData.get(i)[18]);
-
                     deliveryINFO.setINV_KW(workData.get(i)[1].substring(7,10));
+
                     deliveryINFO.setSHIP_STAT("B");
                 }
             }

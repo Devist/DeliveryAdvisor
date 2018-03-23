@@ -61,6 +61,8 @@ import com.google.cloud.speech.v1.StreamingRecognizeRequest;
 import com.google.cloud.speech.v1.StreamingRecognizeResponse;
 import com.google.protobuf.ByteString;
 import com.ldcc.pliss.deliveryadvisor.R;
+import com.ldcc.pliss.deliveryadvisor.advisor.VoiceAnalyzer;
+import com.ldcc.pliss.deliveryadvisor.databases.AppLogsHelper;
 
 import io.grpc.CallOptions;
 import io.grpc.Channel;
@@ -112,6 +114,8 @@ public class SpeechService extends Service {
     private SpeechGrpc.SpeechStub mApi;
     private static Handler mHandler;
 
+    private AppLogsHelper appLogsHelper = new AppLogsHelper(this);
+
     private final StreamObserver<StreamingRecognizeResponse> mResponseObserver
             = new StreamObserver<StreamingRecognizeResponse>() {
         @Override
@@ -129,6 +133,12 @@ public class SpeechService extends Service {
             if (text != null) {
                 for (Listener listener : mListeners) {
                     listener.onSpeechRecognized(text, isFinal);
+                    if (isFinal){
+                        appLogsHelper = new AppLogsHelper(getApplicationContext());
+                        appLogsHelper.addAppLogs("Step1.음성 -> 텍스트 : \n"+text );
+                        VoiceAnalyzer voiceAnalyzer = new VoiceAnalyzer(getApplicationContext());
+                        voiceAnalyzer.getAnalyzedAction(voiceAnalyzer.POPUP_HELLO_MODE,text);
+                    }
                 }
             }
         }

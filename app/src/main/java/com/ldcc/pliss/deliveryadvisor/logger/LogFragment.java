@@ -97,7 +97,7 @@ public class LogFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                mScrollView.fullScroll(ScrollView.FOCUS_FORWARD);
             }
         });
         return result;

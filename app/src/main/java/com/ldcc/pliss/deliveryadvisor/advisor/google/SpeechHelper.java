@@ -33,13 +33,17 @@ public class SpeechHelper implements MessageDialogFragment.Listener{
     private SpeechService mSpeechService;
 
     private Activity activity;
-    private VoiceRecorder mVoiceRecorder;
+    private Context context;
+    private static VoiceRecorder mVoiceRecorder;
 
     private TextView mStatus;
-
-    public SpeechHelper(Activity activity){
+    private VoiceAnalyzer voiceAnalyzer;
+    public SpeechHelper(Activity activity, VoiceAnalyzer voiceAnalyzer){
         this.activity=activity;
+        this.voiceAnalyzer = voiceAnalyzer;
     }
+
+    private static String finalMessage ="";
 
 
     private final VoiceRecorder.Callback mVoiceCallback = new VoiceRecorder.Callback() {
@@ -98,7 +102,6 @@ public class SpeechHelper implements MessageDialogFragment.Listener{
                             public void run() {
                                 if (isFinal) {
                                     Toast.makeText(activity,"인식된 문서는 : "+text,Toast.LENGTH_SHORT).show();
-                                    VoiceAnalyzer.getAnalyzedAction(VoiceAnalyzer.POPUP_HELLO_MODE,text);
 
                                 } else {
                                     //실시간 인식에서 사용

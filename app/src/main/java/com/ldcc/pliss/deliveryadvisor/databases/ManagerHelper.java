@@ -25,23 +25,30 @@ public class ManagerHelper {
         mRealm.beginTransaction();
         Manager managerINFO = mRealm.createObject(Manager.class);
         managerINFO.setUserName(name);
-        managerINFO.setCurrentInvoice(invoice);
+        managerINFO.setInvoice(invoice);
         mRealm.commitTransaction();
     }
 
     public String[] getCurrentDeliveryInfo(Context context){
         String [] deliveryInfo = new String[7];
         mRealm.beginTransaction();
-        Delivery currentDelivery = mRealm.where(Delivery.class).equalTo("INV_NUMB", results.get(0).getCurrentInvoice()).findFirst();
+        Delivery currentDelivery = mRealm.where(Delivery.class).equalTo("INV_NUMB", results.get(0).getInvoice()).findFirst();
         deliveryInfo[0] = currentDelivery.getRECV_NM();
         deliveryInfo[1] = currentDelivery.getITEM_NM();
         deliveryInfo[2] = currentDelivery.getINV_NUMB();
         deliveryInfo[3] = currentDelivery.getRECV_ADDR();
         deliveryInfo[4] = currentDelivery.getRECV_1_TELNO();
         deliveryInfo[5] = currentDelivery.getSHIP_MSG();
-        deliveryInfo[6] = String.valueOf(currentDelivery.getSHIP_ORD());
+        deliveryInfo[6] = String.valueOf(currentDelivery.getSHIP_ID());
         mRealm.commitTransaction();
         return deliveryInfo;
+    }
+
+    public Delivery getCurrentDeliveryInfoDetail(Context context){
+        mRealm.beginTransaction();
+        Delivery currentDelivery = mRealm.where(Delivery.class).equalTo("INV_NUMB", results.get(0).getInvoice()).findFirst();
+        mRealm.commitTransaction();
+        return currentDelivery;
     }
 
     public String getManagerName(){

@@ -69,7 +69,8 @@ public class AdvisorDialog extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        speechHelper = new SpeechHelper(this);
+        VoiceAnalyzer voiceAnalyzer = new VoiceAnalyzer(getApplicationContext());
+        speechHelper = new SpeechHelper(this, voiceAnalyzer);
         speechHelper.startVoiceRecognition();
     }
 

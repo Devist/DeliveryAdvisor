@@ -1,9 +1,6 @@
 package com.ldcc.pliss.deliveryadvisor.databases;
 
-import android.util.Log;
-
 import io.realm.RealmObject;
-import io.realm.RealmResults;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.RealmClass;
 

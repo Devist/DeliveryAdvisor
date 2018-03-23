@@ -1,14 +1,24 @@
 package com.ldcc.pliss.deliveryadvisor.page;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.WindowManager;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.ToggleButton;
 
 import com.ldcc.pliss.deliveryadvisor.MainActivity;
 import com.ldcc.pliss.deliveryadvisor.R;
@@ -16,15 +26,98 @@ import com.ldcc.pliss.deliveryadvisor.databases.DeliveryHelper;
 import com.ldcc.pliss.deliveryadvisor.databases.ManagerHelper;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class SettingActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
+    private ImageView navigationIcon;
+    private ToggleButton toggleSpeechBtn;
+    private ToggleButton toggleAwarenessBtn;
+    private ToggleButton togglePresentationBtn;
+    private ToggleButton toggleSMSBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_setting);
+
+        initSetting();
+    }
+
+    private void initSetting(){
+
+         prefs= getSharedPreferences("Pref", MODE_PRIVATE);
+        setLayout();
+    }
+
+    private void setLayout(){
+
+        navigationIcon          = (ImageView)findViewById(R.id.back_icon);
+        toggleSpeechBtn         = (ToggleButton)findViewById(R.id.toggle_speech_api);
+        toggleAwarenessBtn      = (ToggleButton) findViewById(R.id.toggle_awareness);
+        togglePresentationBtn   = (ToggleButton) findViewById(R.id.toggle_hi_advisor);
+        toggleSMSBtn            = (ToggleButton) findViewById(R.id.toggle_sms);
+
+        toggleSpeechBtn.setChecked(prefs.getBoolean("isSpeechAPI",true));
+        toggleAwarenessBtn.setChecked(prefs.getBoolean("isAwarenessAPI",true));
+        togglePresentationBtn.setChecked(prefs.getBoolean("isPresentation",false));
+        toggleSMSBtn.setChecked(prefs.getBoolean("isSMS",true));
+
+        setListener();
+    }
+
+    private void setListener(){
+
+        toggleSpeechBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    prefs.edit().putBoolean("isSpeechAPI",true).apply();
+                }
+                else{
+                    prefs.edit().putBoolean("isSpeechAPI",false).apply();
+                }
+            }
+        });
+
+        toggleAwarenessBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    prefs.edit().putBoolean("isAwarenessAPI",true).apply();
+                }
+                else{
+                    prefs.edit().putBoolean("isAwarenessAPI",false).apply();
+                }
+            }
+        });
+
+        togglePresentationBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    prefs.edit().putBoolean("isPresentation",true).apply();
+                }
+                else{
+                    prefs.edit().putBoolean("isPresentation",false).apply();
+                }
+            }
+        });
+
+        toggleSMSBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    prefs.edit().putBoolean("isSMS",true).apply();
+                }
+                else{
+                    prefs.edit().putBoolean("isSMS",false).apply();
+                }
+            }
+        });
     }
 
     public void showDialogInit(View v){
@@ -92,9 +185,28 @@ public class SettingActivity extends AppCompatActivity {
         DeliveryHelper deliveryHelper = new DeliveryHelper(this);
         deliveryHelper.deleteAllList();
 
-        prefs = getSharedPreferences("Pref", MODE_PRIVATE);
         prefs.edit().clear().commit();
 
         System.exit(0);
     }
+
+    public void onClickBackButton(View v){finish();}
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            Intent newIntent = new Intent(this, SettingActivity.class);
+            startActivity(newIntent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 }

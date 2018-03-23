@@ -1,8 +1,9 @@
 package com.ldcc.pliss.deliveryadvisor.advisor;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Switch;
+import com.ldcc.pliss.deliveryadvisor.databases.AppLogsHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,6 +22,11 @@ public class VoiceAnalyzer {
     private static final int CALL_THE_CURRENT_CUSTOMER          = 1000;
     private static final int GUIDE_THE_CURRENT_CUSTOMER         = 1001;
     private static final int DELIVERY_THE_CURRENT_CUSTOMER      = 1002;
+    private static AppLogsHelper logsHelper;
+
+    public VoiceAnalyzer(Context context){
+        logsHelper = new AppLogsHelper(context);
+    }
 
     public static int getAnalyzedAction(int mode, String voice){
         String kewords = NLP(voice);
@@ -58,12 +64,25 @@ public class VoiceAnalyzer {
             JSONObject flattenJson = new JSONObject(kewords);
             JSONArray jsonArrayTokens = flattenJson.getJSONArray("tokens");
             tokens = new String[jsonArrayTokens.length()];
+            String str="Step2.텍스트 -> 키워드(Noun): \n";
             for(int i = 0 ;i <jsonArrayTokens.length() ; i++){
                 if(jsonArrayTokens.getString(i).contains("Noun")) {
                     tokens[i] = jsonArrayTokens.getString(i).split("\\(")[0];
-                    Log.d("명사만 뽑아냄", tokens[i]);
+                    str+="["+tokens[i]+"]";
                 }
             }
+
+            tokens = new String[jsonArrayTokens.length()];
+            str+="\n\n Step3.텍스트 -> 키워드(Adj): \n";
+            for(int i = 0 ;i <jsonArrayTokens.length() ; i++){
+                if(jsonArrayTokens.getString(i).contains("Adjective")) {
+                    tokens[i] = jsonArrayTokens.getString(i).split("\\)")[0];
+                    tokens[i] = tokens[i].split("\\(")[2];
+                    str+="["+tokens[i]+"]";
+                }
+            }
+            logsHelper.addAppLogs(str);
+
         }catch(Exception e){
             e.printStackTrace();
         }
