@@ -4,6 +4,8 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:id="@+id/layout_all_work"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
     android:padding="8dp">
 
     <LinearLayout
@@ -50,7 +52,7 @@
     <ImageView
         android:id="@+id/imageWorkState"
         android:src="@drawable/icon_check"
-        android:layout_width="60dp"
+        android:layout_width="40dp"
         android:layout_height="match_parent" />
 
 
