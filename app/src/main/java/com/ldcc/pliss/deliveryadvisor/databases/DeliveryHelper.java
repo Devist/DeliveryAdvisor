@@ -43,6 +43,7 @@ public class DeliveryHelper {
     }
 
     public String getLastYetDelivery(){
+        results = mRealm.where(Delivery.class).findAll();
         String yetInvoiceNumber = null;
 
         for(int i=0; i<results.size();i++){
@@ -54,27 +55,39 @@ public class DeliveryHelper {
         return yetInvoiceNumber;
     }
 
-    public void changeManagerInfo(String invoice){
+    public boolean changeManagerInfo(String invoice){
+        boolean result = false;
         mRealm.beginTransaction();
         Delivery delivery = mRealm.where(Delivery.class).equalTo("INV_NUMB", invoice).findFirst();
-        Manager managerINFO = mRealm.where(Manager.class).findAll().first();
-        managerINFO.setInvoice(delivery.getINV_NUMB());
+        if(!delivery.getSHIP_STAT().equals("C") && !delivery.getSHIP_STAT().equals("N")){
+            Manager managerINFO = mRealm.where(Manager.class).findAll().first();
+            managerINFO.setInvoice(delivery.getINV_NUMB());
+        }
         mRealm.commitTransaction();
+        return result;
     }
 
-    public void changeManagerInfoToNext(){
+    public void changeManagerInfoToNext(String invoice){
         String yetInvoiceNumber = null;
         for(int i=0; i<results.size();i++){
-            if(results.get(i).getSHIP_STAT().equals("B")){
-                yetInvoiceNumber = results.get(i).getINV_NUMB();
-                break;
+            if(results.get(i).getINV_NUMB().equals(invoice)){
+                for(int j=i+1; j<results.size();j++){
+                    if(j<results.size()){
+                        if(!results.get(j).getSHIP_STAT().equals("C") && !results.get(j).getSHIP_STAT().equals("N")){
+                            yetInvoiceNumber = results.get(j).getINV_NUMB();
+                            break;
+                        }
+                    }
+
+                }
             }
         }
-
-        mRealm.beginTransaction();
-        Manager managerINFO = mRealm.where(Manager.class).findAll().first();
-        managerINFO.setInvoice(yetInvoiceNumber);
-        mRealm.commitTransaction();
+        if(yetInvoiceNumber!=null){
+            mRealm.beginTransaction();
+            Manager managerINFO = mRealm.where(Manager.class).findAll().first();
+            managerINFO.setInvoice(yetInvoiceNumber);
+            mRealm.commitTransaction();
+        }
     }
 
     public Delivery getSearchedInfo(String invoiceNumber){
@@ -90,31 +103,34 @@ public class DeliveryHelper {
         mRealm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
+                results = realm.where(Delivery.class).findAll();
+                results.deleteAllFromRealm();
+                Delivery deliveryINFO;
                 for(int i = 1 ; i<workData.size();i++){
+                        deliveryINFO = realm.createObject(Delivery.class,workData.get(i)[1]);
 
-                    Delivery deliveryINFO = realm.createObject(Delivery.class,workData.get(i)[1]);
-                    deliveryINFO.setSHIP_ID(i);
-                    deliveryINFO.setSHIP_TYPE(workData.get(i)[2]);
-                    deliveryINFO.setSHIP_ORD(Integer.parseInt(workData.get(i)[3]));
-                    deliveryINFO.setSHIP_GRP_NM(workData.get(i)[4]);
-                    deliveryINFO.setSEND_NM(workData.get(i)[5]);
-                    deliveryINFO.setSEND_ADDR(workData.get(i)[6]);
-                    deliveryINFO.setSEND_ADDR_LAT(workData.get(i)[7]);
-                    deliveryINFO.setSEND_ADDR_LNG(workData.get(i)[8]);
-                    deliveryINFO.setSEND_1_TELNO(workData.get(i)[9]);
-                    deliveryINFO.setSEND_2_TELNO(workData.get(i)[10]);
+                        deliveryINFO.setSHIP_ID(i);
+                        deliveryINFO.setSHIP_TYPE(workData.get(i)[2]);
+                        deliveryINFO.setSHIP_ORD(Integer.parseInt(workData.get(i)[3]));
+                        deliveryINFO.setSHIP_GRP_NM(workData.get(i)[4]);
+                        deliveryINFO.setSEND_NM(workData.get(i)[5]);
+                        deliveryINFO.setSEND_ADDR(workData.get(i)[6]);
+                        deliveryINFO.setSEND_ADDR_LAT(workData.get(i)[7]);
+                        deliveryINFO.setSEND_ADDR_LNG(workData.get(i)[8]);
+                        deliveryINFO.setSEND_1_TELNO(workData.get(i)[9]);
+                        deliveryINFO.setSEND_2_TELNO(workData.get(i)[10]);
 
-                    deliveryINFO.setITEM_NM(workData.get(i)[11]);
-                    deliveryINFO.setRECV_NM(workData.get(i)[12]);
-                    deliveryINFO.setRECV_ADDR(workData.get(i)[13]);
-                    deliveryINFO.setRECV_ADDR_LAT(workData.get(i)[14]);
-                    deliveryINFO.setRECV_ADDR_LNG(workData.get(i)[15]);
-                    deliveryINFO.setRECV_1_TELNO(workData.get(i)[16]);
-                    deliveryINFO.setRECV_2_TELNO(workData.get(i)[17]);
-                    deliveryINFO.setSHIP_MSG(workData.get(i)[18]);
-                    deliveryINFO.setINV_KW(workData.get(i)[1].substring(7,10));
+                        deliveryINFO.setITEM_NM(workData.get(i)[11]);
+                        deliveryINFO.setRECV_NM(workData.get(i)[12]);
+                        deliveryINFO.setRECV_ADDR(workData.get(i)[13]);
+                        deliveryINFO.setRECV_ADDR_LAT(workData.get(i)[14]);
+                        deliveryINFO.setRECV_ADDR_LNG(workData.get(i)[15]);
+                        deliveryINFO.setRECV_1_TELNO(workData.get(i)[16]);
+                        deliveryINFO.setRECV_2_TELNO(workData.get(i)[17]);
+                        deliveryINFO.setSHIP_MSG(workData.get(i)[18]);
+                        deliveryINFO.setINV_KW(workData.get(i)[1].substring(7,10));
 
-                    deliveryINFO.setSHIP_STAT("B");
+                        deliveryINFO.setSHIP_STAT("B");
                 }
             }
         });

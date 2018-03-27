@@ -104,33 +104,33 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="25dp"
+                android:gravity="center"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 android:layout_marginTop="10dp">
 
-                <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    xmlns:tools="http://schemas.android.com/tools"
-                    android:layout_width="match_parent" android:layout_height="match_parent" >
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
 
                     <ProgressBar
                         android:id="@+id/progress_bar_delivery"
                         android:layout_width="match_parent"
-                        android:layout_height="20sp"
+                        android:layout_height="25dp"
                         style="@android:style/Widget.ProgressBar.Horizontal"
                         android:progressDrawable="@drawable/progressbar_linear"
-                        android:progress="50"
                         />
 
                     <TextView
                         android:id="@+id/progress_text_delivery"
                         android:layout_width="match_parent"
-                        android:textSize="16sp"
-                        android:layout_height="20sp"
+                        android:textSize="17sp"
+                        android:layout_height="25dp"
                         android:layout_alignLeft="@id/progress_bar_delivery"
                         android:layout_alignRight="@id/progress_bar_delivery"
                         android:background="@android:color/transparent"
-                        android:text="할당된 배송 리스트 (8/10)"
+                        android:text="업무 리스트 (8/10)"
                         android:gravity="center"
                         android:textColor="#FFF"
                         />
@@ -144,6 +144,8 @@
                 android:fillViewport="true"
                 android:visibility="visible"
                 android:scrollbars="none"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
                 android:layout_weight="59">
 
                 <ListView

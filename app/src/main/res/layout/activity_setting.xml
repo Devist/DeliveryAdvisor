@@ -167,7 +167,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:textSize="18.5dp"
-                android:text="발표용 입니다. 버튼 대신 하이 어드바이저!  라고 말하면 음성인식이 활성화 돼요."
+                android:text="핸드폰 마이크를 사용하고, 버튼 대신 하이 어드바이저! 라고 말할 때 기능이 활성화 돼요."
                 />
         </LinearLayout>
 

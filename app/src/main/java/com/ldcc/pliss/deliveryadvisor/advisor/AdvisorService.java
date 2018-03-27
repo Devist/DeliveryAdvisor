@@ -41,7 +41,7 @@ public class AdvisorService extends Service {
                 final int action = event.getAction();
                 if (event.getRepeatCount() == 0 && action == KeyEvent.ACTION_DOWN) {
                     Intent popupIntent = new Intent(getApplicationContext(), AdvisorDialog.class);
-                    popupIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    popupIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     PendingIntent pie= PendingIntent.getActivity(getApplicationContext(), 0, popupIntent, PendingIntent.FLAG_ONE_SHOT);
                     try {
                         pie.send();

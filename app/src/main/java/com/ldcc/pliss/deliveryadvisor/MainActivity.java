@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         progressTextDelivery = (TextView) findViewById(R.id.progress_text_delivery);
         progressBarDelivery.setMax(results.size());
         progressBarDelivery.setProgress(deliveryDoneCount);
-        progressTextDelivery.setText("할당된 배송 리스트 (" + deliveryDoneCount + "/" + results.size()+")");
+        progressTextDelivery.setText("업무 리스트 (" + deliveryDoneCount + "/" + results.size()+")");
 
         //하단 모든 업무 뷰 세팅
         allWorkListView = (ListView) findViewById(R.id.allWorkList);
@@ -281,12 +281,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onChange(Object o) {
 
                 try{
+                    Log.d("변화감지!","변화감지");
                     changeWorkData();
                     currentWorkListAdapter = new CurrentWorkListAdapter(MainActivity.this, managerInfo);
                     currentWorkListView.setAdapter(currentWorkListAdapter);
 
                     progressBarDelivery.setProgress(deliveryDoneCount);
-                    progressTextDelivery.setText("할당된 배송 리스트 (" + deliveryDoneCount + "/" + results.size()+")");
+                    progressTextDelivery.setText("업무 리스트 (" + deliveryDoneCount + "/" + results.size()+")");
 
                     allWorkListAdapter = new AllWorkListAdapter(invoice,customerName, customerProduct,customerAddress,status,deliveryDoneCount);
                     allWorkListView.setAdapter(allWorkListAdapter);
@@ -349,9 +350,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_main) {
             Toast.makeText(MainActivity.this, "업무 내용을 확인합니다.", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_navigation) {
-            Toast.makeText(MainActivity.this, "위치를 허용하지 않았을 경우, 앱 설정에서 위치 권한 허용을 클릭해주시기 바랍니다.", Toast.LENGTH_SHORT).show();
-            Intent newIntent = new Intent(this, NavigationActivity.class);
-            startActivity(newIntent);
+            boolean isGetLocationPossible = checkPermission();
+            if(isGetLocationPossible) {
+                Intent newIntent = new Intent(this, NavigationActivity.class);
+                startActivity(newIntent);
+            }else{
+                Toast.makeText(MainActivity.this, "팝업, 또는 앱 설정에서 위치 권한 허용을 클릭해주시기 바랍니다.", Toast.LENGTH_SHORT).show();
+            }
+
+
         } else if (id == R.id.nav_logs) {
             Toast.makeText(MainActivity.this, "로그 기록을 확인합니다.", Toast.LENGTH_SHORT).show();
             Intent newIntent = new Intent(this, LogActivity.class);

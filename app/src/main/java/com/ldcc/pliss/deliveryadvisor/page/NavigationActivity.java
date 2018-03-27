@@ -374,7 +374,7 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
             }
         }
 
-        Toast.makeText(this,"현재 목적지와 내 위치를 확인합니다.",Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this,"현재 목적지와 내 위치를 확인합니다.",Toast.LENGTH_SHORT).show();
     }
 
     public void startAllShippingButtonHandler(View view) {
@@ -565,7 +565,7 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         mRequestingLocationUpdates = false;
-                        Toast.makeText(NavigationActivity.this,"전체 배송지를 확인합니다.",Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(NavigationActivity.this,"전체 배송지를 확인합니다.",Toast.LENGTH_SHORT).show();
                         addAllShippingMarkerList();
                         setButtonsEnabledState();
                     }

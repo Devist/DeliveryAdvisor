@@ -1,7 +1,9 @@
 package com.ldcc.pliss.deliveryadvisor.advisor;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -29,6 +31,7 @@ public class AdvisorDialog extends Activity {
     private ClovaTTS clovaTTS = AdvisorService.clovaTTS;
 
     private WorkUtil workUtil;
+    AudioManager audioManager;
 
 //    Intent intent = new Intent(this, MainActivity.class);
 
@@ -42,12 +45,23 @@ public class AdvisorDialog extends Activity {
         deliveryHelper = new DeliveryHelper(this);
         managerHelper = new ManagerHelper(this);
         workUtil = new WorkUtil();
-
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         layoutForWorkButton = (LinearLayout) findViewById(R.id.layout_for_work_button);
         textViewQuestion = (TextView) findViewById(R.id.text_advisor);
 
         if(clovaTTS==null)
             clovaTTS = new ClovaTTS(getFilesDir());
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        audioManager.startBluetoothSco();
+        VoiceAnalyzer voiceAnalyzer = new VoiceAnalyzer(getApplicationContext());
+        speechHelper = new SpeechHelper(this, voiceAnalyzer);
+        speechHelper.startVoiceRecognition();
 
         String myWork = getIntent().getStringExtra("Work-keyword");
         String[] currentDeliveryInfo;
@@ -64,19 +78,12 @@ public class AdvisorDialog extends Activity {
             case "howToProcess":
                 break;
         }
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        VoiceAnalyzer voiceAnalyzer = new VoiceAnalyzer(getApplicationContext());
-        speechHelper = new SpeechHelper(this, voiceAnalyzer);
-        speechHelper.startVoiceRecognition();
     }
 
     @Override
     protected void onStop() {
-
+        audioManager.stopBluetoothSco();
         clovaTTS.stopClovaTTS();
         try{
             Thread a = speechHelper.stopVoiceRecognition();
@@ -108,7 +115,7 @@ public class AdvisorDialog extends Activity {
             @Override
             public void onClick(View v) {
                 deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","F");
-                deliveryHelper.changeManagerInfoToNext();
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 finish();
             }
         });
@@ -118,7 +125,7 @@ public class AdvisorDialog extends Activity {
             @Override
             public void onClick(View v) {
                 deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","D");
-                deliveryHelper.changeManagerInfoToNext();
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 finish();
             }
         });
@@ -128,7 +135,7 @@ public class AdvisorDialog extends Activity {
             @Override
             public void onClick(View v) {
                 deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","O");
-                deliveryHelper.changeManagerInfoToNext();
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }
@@ -139,7 +146,7 @@ public class AdvisorDialog extends Activity {
             @Override
             public void onClick(View v) {
                 deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","U");
-                deliveryHelper.changeManagerInfoToNext();
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }
@@ -154,12 +161,21 @@ public class AdvisorDialog extends Activity {
         textViewQuestion.setText(sentence);
         clovaTTS.sayThis("tts_"+currentDeliveryInfo[2],sentence);
 
+
+//        deliveryInfo[0] = currentDelivery.getRECV_NM();
+//        deliveryInfo[1] = currentDelivery.getITEM_NM();
+//        deliveryInfo[2] = currentDelivery.getINV_NUMB();
+//        deliveryInfo[3] = currentDelivery.getRECV_ADDR();
+//        deliveryInfo[4] = currentDelivery.getRECV_1_TELNO();
+//        deliveryInfo[5] = currentDelivery.getSHIP_MSG();
+//        deliveryInfo[6] = String.valueOf(currentDelivery.getSHIP_ID());
         Button buttonKeepSelf = setButtonLayout("본인이 수령");
         buttonKeepSelf.setOnClickListener(new View.OnClickListener() {  //S:본인  F: 지인  O: 경비실  E: 기타 U:무인택배함
             @Override
             public void onClick(View v) {
+                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 본인이 수령하셨습니다.");
                 deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","S");
-                deliveryHelper.changeManagerInfoToNext();
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }
@@ -169,8 +185,9 @@ public class AdvisorDialog extends Activity {
         buttonKeepAcquaintance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 지인이 수령하셨습니다.");
                 deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","F");
-                deliveryHelper.changeManagerInfoToNext();
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }
@@ -180,8 +197,9 @@ public class AdvisorDialog extends Activity {
         buttonKeepDoor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 문 앞에 두었습니다.");
                 deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","D");
-                deliveryHelper.changeManagerInfoToNext();
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }
@@ -191,8 +209,9 @@ public class AdvisorDialog extends Activity {
         buttonKeepSecurityOffice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
                 deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","O");
-                deliveryHelper.changeManagerInfoToNext();
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }
@@ -202,8 +221,21 @@ public class AdvisorDialog extends Activity {
         buttonKeepUnmannedCourier.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 무인택배함에 보관했습니다.");
                 deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","U");
-                deliveryHelper.changeManagerInfoToNext();
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                finish();
+            }
+        });
+
+        Button buttonNoShipping = setButtonLayout("미배송[취소] 처리할께");
+        buttonNoShipping.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품이 미배송 처리되었습니다.");
+                deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"N","");
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }

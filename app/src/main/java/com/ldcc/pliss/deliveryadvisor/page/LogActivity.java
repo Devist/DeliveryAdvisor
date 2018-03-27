@@ -125,12 +125,13 @@ public class LogActivity extends AppCompatActivity implements NavigationView.OnN
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent newIntent = new Intent(this, SettingActivity.class);
+            startActivity(newIntent);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {

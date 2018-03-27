@@ -159,9 +159,10 @@
             android:id="@+id/textview_dialog_sender_name"
             android:layout_width="match_parent"
             android:gravity="center_vertical|right"
-            android:layout_height="match_parent"
-            android:text="정경진"
-            android:layout_marginRight="10dp"
+            android:layout_height="wrap_content"
+            android:text="주왕산 "
+            android:maxLines="2"
+            android:layout_marginEnd="10dp"
             android:textColor="#000"
             android:textSize="18dp" />
 
@@ -256,7 +257,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="#DDD">
 
@@ -274,7 +275,8 @@
             android:layout_width="match_parent"
             android:gravity="center_vertical|right"
             android:layout_height="match_parent"
-            android:text="2018 메리다 스컬트라 5000"
+            android:text="2018 메리다 스컬트라 5000 9Kig~ 12kg"
+            android:maxLines="2"
             android:layout_marginRight="10dp"
             android:textColor="#000"
             android:textSize="14dp" />
@@ -288,7 +290,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="#fff">
 

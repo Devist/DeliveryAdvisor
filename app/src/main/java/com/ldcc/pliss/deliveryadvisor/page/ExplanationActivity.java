@@ -33,11 +33,11 @@ public class ExplanationActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_explanation);
 
-        try {
-            requestPermissionForReadExtertalStorage();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            requestPermissionForReadExtertalStorage();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         sliderDotspanel = (LinearLayout) findViewById(R.id.SliderDots);
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);
@@ -71,14 +71,12 @@ public class ExplanationActivity extends AppCompatActivity {
                 for(int i = 0; i< dotscount; i++){
                     dots[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
                 }
-
                 dots[position].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
 
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
         });
 
