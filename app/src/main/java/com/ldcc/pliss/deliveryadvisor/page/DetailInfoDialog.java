@@ -20,6 +20,8 @@ public class DetailInfoDialog extends Dialog {
     private Delivery deliveryInfo;
     private String selectedInvoiceNumber;
     private DeliveryHelper deliveryHelper;
+    private String addCategoryStr;
+
     private TextView tvInvoice;
     private TextView tvDeliveryType;
     private TextView tvDeliveryOrder;
@@ -35,6 +37,8 @@ public class DetailInfoDialog extends Dialog {
     private TextView tvRecipientTel1;
     private TextView tvRecipientTel2;
     private TextView tvMessage;
+    private Button buttonChange;
+    private Button buttonDone;
 
     public DetailInfoDialog(Context context,String selectedInvoiceNumber){
         super(context);
@@ -42,10 +46,7 @@ public class DetailInfoDialog extends Dialog {
         this.selectedInvoiceNumber = selectedInvoiceNumber;
 
     }
-    private String addCategoryStr;
 
-    private Button buttonChange;
-    private Button buttonDone;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -82,7 +83,7 @@ public class DetailInfoDialog extends Dialog {
         tvDeliveryType.setText(deliveryInfo.getSHIP_TYPE());
         tvDeliveryOrder.setText(String.valueOf(deliveryInfo.getSHIP_ORD()));
         tvDeliveryGroup.setText(deliveryInfo.getSHIP_GRP_NM());
-        tvID.setText(deliveryInfo.getSHIP_ID()+"");
+        tvID.setText(String.valueOf(deliveryInfo.getSHIP_ID()));
         tvSenderName.setText(deliveryInfo.getSEND_NM());
         tvSenderAddr.setText(deliveryInfo.getSEND_ADDR());
         tvSenderTel1.setText(deliveryInfo.getSEND_1_TELNO());
@@ -114,7 +115,7 @@ public class DetailInfoDialog extends Dialog {
     }
 
     public String getAddCategoryStr() {return addCategoryStr;}
-    public void setAddCategoryStr(String addCategoryStr) { this.addCategoryStr = addCategoryStr; }
+    private void setAddCategoryStr(String addCategoryStr) { this.addCategoryStr = addCategoryStr; }
 
 
 }

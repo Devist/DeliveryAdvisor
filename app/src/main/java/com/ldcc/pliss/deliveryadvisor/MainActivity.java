@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -18,13 +17,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListAdapter;
@@ -36,7 +33,6 @@ import android.widget.Toast;
 import com.ldcc.pliss.deliveryadvisor.adapter.AllWorkListAdapter;
 import com.ldcc.pliss.deliveryadvisor.adapter.CurrentWorkListAdapter;
 import com.ldcc.pliss.deliveryadvisor.advisor.AdvisorService;
-import com.ldcc.pliss.deliveryadvisor.advisor.ProcessorNLP;
 import com.ldcc.pliss.deliveryadvisor.databases.Delivery;
 import com.ldcc.pliss.deliveryadvisor.databases.DeliveryHelper;
 import com.ldcc.pliss.deliveryadvisor.databases.Manager;
@@ -47,17 +43,11 @@ import com.ldcc.pliss.deliveryadvisor.page.LogActivity;
 import com.ldcc.pliss.deliveryadvisor.page.NavigationActivity;
 import com.ldcc.pliss.deliveryadvisor.page.SettingActivity;
 import com.ldcc.pliss.deliveryadvisor.util.WorkUtil;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.concurrent.ExecutionException;
-
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
-// hello
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     private SharedPreferences prefs;                        // 앱이 최초 실행인지 확인하기 위한 변수
@@ -287,7 +277,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onChange(Object o) {
 
                 try{
-                    Log.d("변화감지!","변화감지");
                     changeWorkData();
                     currentWorkListAdapter = new CurrentWorkListAdapter(MainActivity.this, managerInfo);
                     currentWorkListView.setAdapter(currentWorkListAdapter);
@@ -326,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void changeWorkData() {
-        managerInfo = managerHelper.getCurrentDeliveryInfo(MainActivity.this);
+        managerInfo = managerHelper.getCurrentDeliveryInfoSimple();
 
         results = deliveryHelper.getAllDeliveryList();
         invoice = new String[results.size()];

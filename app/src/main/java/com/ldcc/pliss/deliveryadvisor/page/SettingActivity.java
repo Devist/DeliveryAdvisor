@@ -1,20 +1,13 @@
 package com.ldcc.pliss.deliveryadvisor.page;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -23,15 +16,14 @@ import android.widget.ToggleButton;
 import com.ldcc.pliss.deliveryadvisor.MainActivity;
 import com.ldcc.pliss.deliveryadvisor.R;
 import com.ldcc.pliss.deliveryadvisor.databases.DeliveryHelper;
-import com.ldcc.pliss.deliveryadvisor.databases.ManagerHelper;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class SettingActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
-    private ImageView navigationIcon;
+
+    // UI 위젯
     private ToggleButton toggleSpeechBtn;
     private ToggleButton toggleAwarenessBtn;
     private ToggleButton togglePresentationBtn;
@@ -49,13 +41,12 @@ public class SettingActivity extends AppCompatActivity {
 
     private void initSetting(){
 
-         prefs= getSharedPreferences("Pref", MODE_PRIVATE);
+        prefs= getSharedPreferences("Pref", MODE_PRIVATE);
         setLayout();
     }
 
     private void setLayout(){
 
-        navigationIcon          = (ImageView)findViewById(R.id.back_icon);
         toggleSpeechBtn         = (ToggleButton)findViewById(R.id.toggle_speech_api);
         toggleAwarenessBtn      = (ToggleButton) findViewById(R.id.toggle_awareness);
         togglePresentationBtn   = (ToggleButton) findViewById(R.id.toggle_hi_advisor);
@@ -181,32 +172,12 @@ public class SettingActivity extends AppCompatActivity {
     private void initData(){
         MainActivity.fa.finish();
         clearApplicationData(getApplicationContext());
-
         DeliveryHelper deliveryHelper = new DeliveryHelper(this);
         deliveryHelper.deleteAllList();
-
-        prefs.edit().clear().commit();
-
+        prefs.edit().clear().apply();
         System.exit(0);
     }
 
     public void onClickBackButton(View v){finish();}
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent newIntent = new Intent(this, SettingActivity.class);
-            startActivity(newIntent);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
 }

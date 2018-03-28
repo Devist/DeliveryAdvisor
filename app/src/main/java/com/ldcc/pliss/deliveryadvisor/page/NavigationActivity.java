@@ -80,102 +80,87 @@ import java.util.Random;
 import io.realm.RealmResults;
 
 
-/**
- * Using location settings.
- * <p/>
- * Uses the {@link com.google.android.gms.location.SettingsApi} to ensure that the device's system
- * settings are properly configured for the app's location needs. When making a request to
- * Location services, the device's system settings may be in a state that prevents the app from
- * obtaining the location data that it needs. For example, GPS or Wi-Fi scanning may be switched
- * off. The {@code SettingsApi} makes it possible to determine if a device's system settings are
- * adequate for the location request, and to optionally invoke a dialog that allows the user to
- * enable the necessary settings.
- * <p/>
- * This sample allows the user to request location updates using the ACCESS_FINE_LOCATION setting
- * (as specified in AndroidManifest.xml).
- */
 public class NavigationActivity extends AppCompatActivity  implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener{
 
     private static final String TAG = NavigationActivity.class.getSimpleName();
 
     /**
-     * Code used in requesting runtime permissions.
+     * 런타임 권한 요청에 사용되는 코드입니다.
      */
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     /**
-     * Constant used in the location settings dialog.
+     * location 설정 다이얼로그에 사용되는 정수입니다.
      */
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     /**
-     * The desired interval for location updates. Inexact. Updates may be more or less frequent.
+     * 위치 업데이트를 위한 간격입니다. 완전 정확하지 않으며, 업데이트 횟수가 다소 다를 수 있음
      */
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
 
     /**
-     * The fastest rate for active location updates. Exact. Updates will never be more frequent
-     * than this value.
+     * 활성 Location 업데이트를 위한 가장 빠른 속도
      */
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
-    // Keys for storing activity state in the Bundle.
+    // Bundle에 activity 상태를 저장하기 위한 키
     private final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
     private final static String KEY_LOCATION = "location";
     private final static String KEY_LAST_UPDATED_TIME_STRING = "last-updated-time-string";
 
     /**
-     * Provides access to the Fused Location Provider API.
+     * Fused Location Provider API에 대한 액세스를 제공.
      */
     private FusedLocationProviderClient mFusedLocationClient;
 
     /**
-     * Provides access to the Location Settings API.
+     * Location Settings API에 대한 액세스를 제공.
      */
     private SettingsClient mSettingsClient;
 
     /**
-     * Stores parameters for requests to the FusedLocationProviderApi.
+     * FusedLocationProviderApi에 대한 요청 매개 변수를 저장.
      */
     private LocationRequest mLocationRequest;
 
     /**
-     * Stores the types of location services the client is interested in using. Used for checking
-     * settings to determine if the device has optimal location settings.
+     * 클라이언트가 사용하고자 하는 위치 서비스 유형을 저장한다
+     * 설정을 확인해서 장치에 최적의 위치 설정이 있는지 확인하는데 사용된다.
      */
     private LocationSettingsRequest mLocationSettingsRequest;
 
     /**
-     * Callback for Location events.
+     * 위치 이벤트에 대한 콜백
      */
     private LocationCallback mLocationCallback;
 
     /**
-     * Represents a geographical location.
+     * 현재 위치를 나타냄
      */
     private Location mCurrentLocation;
 
-    // UI Widgets.
+    // UI 위젯
     private Button mStartNavigationButton;
     private Button mAllShippingButton;
     private TextView mLastUpdateTimeTextView;
     private TextView mLatitudeTextView;
     private TextView mLongitudeTextView;
 
-    // Labels.
+    // 라벨
     private String mLatitudeLabel;
     private String mLongitudeLabel;
     private String mLastUpdateTimeLabel;
 
     /**
-     * Tracks the status of the location updates request. Value changes when the user presses the
-     * Start Updates and Stop Updates buttons.
+     * 위치 업데이트 요청 상태를 추적한다
+     * 사용자가 현재 목적지(업데이트 시작) / 전체 목적지(업데이트 중지) 버튼을 누르면 값이 변경된다.
      */
     private Boolean mRequestingLocationUpdates;
 
     /**
-     * Time when the location was updated represented as a String.
+     * 위치가 갱신된 시간을 String으로 나타낸다.
      */
     private String mLastUpdateTime;
 
@@ -196,10 +181,6 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
         setSupportActionBar(toolbar);
 
 
-
-        // Kick off the process of building the LocationCallback, LocationRequest, and
-        // LocationSettingsRequest objects.
-
         initSetting(savedInstanceState);
     }
 
@@ -207,7 +188,7 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
         mRequestingLocationUpdates = false;
         mLastUpdateTime = "";
 
-        // Update values using data stored in the Bundle.
+        // Bundle에 저장된 데이터를 사용하여 값을 업데이트한다.
         updateValuesFromBundle(savedInstanceState);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -237,29 +218,30 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
         MapFragment mapFragment = (MapFragment)fragmentManager.findFragmentById(R.id.fragment_map);
         mapFragment.getMapAsync(this);
 
-        // Locate the UI widgets.
+        // 왼쪽 상단의 현재 위치와 업데이트 시간을 표시하는 TextView 세팅
         mLatitudeTextView = (TextView) findViewById(R.id.latitude_text);
         mLongitudeTextView = (TextView) findViewById(R.id.longitude_text);
         mLastUpdateTimeTextView = (TextView) findViewById(R.id.last_update_time_text);
 
-        // Set labels.
+        // 왼쪽 상단의 현재 위치와 업데이트 시간을 표시하는 TextView의 라벨
         mLatitudeLabel = getResources().getString(R.string.latitude_label);
         mLongitudeLabel = getResources().getString(R.string.longitude_label);
         mLastUpdateTimeLabel = getResources().getString(R.string.last_update_time_label);
 
+        // 현재 목적지/ 전체 목적지 버튼 세팅
         mStartNavigationButton = (Button)findViewById(R.id.navigation_button);
         mAllShippingButton = (Button) findViewById(R.id.destinations_button);
     }
 
     /**
-     * Updates fields based on data stored in the bundle.
+     * Bundle에 저장된 데이터를 기반으로 필드를 업데이트한다.
      *
-     * @param savedInstanceState The activity state saved in the Bundle.
+     * @param savedInstanceState Bundle에 저장된 Activity 상태
      */
     private void updateValuesFromBundle(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            // Update the value of mRequestingLocationUpdates from the Bundle, and make sure that
-            // the Start Updates and Stop Updates buttons are correctly enabled or disabled.
+            // Bundle에서 가져온 mRequestingLocationUpdates의 값을 업데이트한다.
+            // 현재 목적지(업데이트 시작), 전체 목적지(업데이트 중지) 버튼이 제대로 활성/비활성 되는지 확인 필요
             if (savedInstanceState.keySet().contains(KEY_REQUESTING_LOCATION_UPDATES)) {
                 mRequestingLocationUpdates = savedInstanceState.getBoolean(
                         KEY_REQUESTING_LOCATION_UPDATES);
@@ -492,7 +474,7 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
                         .icon(bitmapDescriptorFromVector(this, R.mipmap.ic_launcher)));
                 builder.include(new LatLng(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude()));
 
-                Delivery delivery = managerHelper.getCurrentDeliveryInfoDetail(this);
+                Delivery delivery = managerHelper.getCurrentDeliveryInfoDetail();
                 myMarker[1] = myMap.addMarker(new MarkerOptions()
                         .title(delivery.getITEM_NM())
                         .snippet(delivery.getRECV_ADDR())
@@ -508,7 +490,7 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
                         .icon(bitmapDescriptorFromVector(this, R.mipmap.ic_launcher)));
                 builder.include(new LatLng(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude()));
 
-                Delivery delivery = managerHelper.getCurrentDeliveryInfoDetail(this);
+                Delivery delivery = managerHelper.getCurrentDeliveryInfoDetail();
                 myMarker[1] = myMap.addMarker(new MarkerOptions()
                         .title(delivery.getITEM_NM())
                         .snippet(delivery.getRECV_ADDR())
@@ -523,7 +505,7 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
                         .icon(bitmapDescriptorFromVector(this, R.mipmap.ic_launcher)));
                 builder.include(new LatLng(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude()));
 
-                Delivery delivery = managerHelper.getCurrentDeliveryInfoDetail(this);
+                Delivery delivery = managerHelper.getCurrentDeliveryInfoDetail();
                 builder.include(new LatLng(Double.parseDouble(delivery.getRECV_ADDR_LAT()),Double.parseDouble(delivery.getRECV_ADDR_LNG())));
             }
 

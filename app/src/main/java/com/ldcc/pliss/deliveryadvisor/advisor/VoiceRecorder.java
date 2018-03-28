@@ -22,15 +22,14 @@ import android.media.MediaRecorder;
 import android.support.annotation.NonNull;
 
 /**
- * Continuously records audio and notifies the {@link VoiceRecorder.Callback} when voice (or any
- * sound) is heard.
+ * 음성을 계속하여 연속으로 녹음하고 음성 (또는 소리)가 들리면 {@link VoiceRecorder.Callback}에 알립니다.
  *
- * <p>The recorded audio format is always {@link AudioFormat#ENCODING_PCM_16BIT} and
- * {@link AudioFormat#CHANNEL_IN_MONO}. This class will automatically pick the right sample rate
- * for the device. Use {@link #getSampleRate()} to get the selected value.</p>
+ * <p>녹음된 오디오 형식은 항상 {@link AudioFormat#ENCODING_PCM_16BIT} 와 {@link AudioFormat#CHANNEL_IN_MONO}.
+ *  이 클래스는 자동으로 장치의 올바른 샘플 속도를 선택합니다. 선택된 Sample late를 얻으려면 {@link #getSampleRate()}를 이용하면 됩니다. </p>
  */
 public class VoiceRecorder {
 
+    /** Sample late 후보 군 */
     private static final int[] SAMPLE_RATE_CANDIDATES = new int[]{16000, 11025, 22050, 44100};
 
     private static final int CHANNEL = AudioFormat.CHANNEL_IN_MONO;
@@ -43,13 +42,13 @@ public class VoiceRecorder {
     public static abstract class Callback {
 
         /**
-         * Called when the recorder starts hearing voice.
+         * recorder가 음성 청취를 start 했을 때 호출됩니다.
          */
         public void onVoiceStart() {
         }
 
         /**
-         * Called when the recorder is hearing voice.
+         * recorder가 음성 청취 중일 때 호출됩니다.
          *
          * @param data The audio data in {@link AudioFormat#ENCODING_PCM_16BIT}.
          * @param size The size of the actual data in {@code data}.
@@ -58,7 +57,7 @@ public class VoiceRecorder {
         }
 
         /**
-         * Called when the recorder stops hearing voice.
+         * recorder가 음성을 청취하는 걸 stop 했을 때 호출됩니다.
          */
         public void onVoiceEnd() {
         }
@@ -74,10 +73,10 @@ public class VoiceRecorder {
 
     private final Object mLock = new Object();
 
-    /** The timestamp of the last time that voice is heard. */
+    /** 음성의 끝이 들렸을 때의 시각 */
     private long mLastVoiceHeardMillis = Long.MAX_VALUE;
 
-    /** The timestamp when the current voice is started. */
+    /** 현재의 음성이 시작되는 시각입니다. */
     private long mVoiceStartedMillis;
 
     public VoiceRecorder(@NonNull Callback callback) {
@@ -85,27 +84,27 @@ public class VoiceRecorder {
     }
 
     /**
-     * Starts recording audio.
+     * 오디오 녹음을 시작합니다.
      *
-     * <p>The caller is responsible for calling {@link #stop()} later.</p>
+     * <p>이 함수의 호출 진원지는 나중에 {@link #stop()} 를 꼭 호출해야 합니다.</p>
      */
     public void start() {
-        // Stop recording if it is currently ongoing.
+        // 현재 진행 중이던 녹음이 있으면, 이를 중지
         stop();
-        // Try to create a new recording session.
+        // 새로운 녹음 세션 만들기 시도
         mAudioRecord = createAudioRecord();
         if (mAudioRecord == null) {
             throw new RuntimeException("Cannot instantiate VoiceRecorder");
         }
-        // Start recording.
+        // 녹음 시작
         mAudioRecord.startRecording();
-        // Start processing the captured audio.
+        // 캡처되는 오디오 처리를 시작
         mThread = new Thread(new ProcessVoice());
         mThread.start();
     }
 
     /**
-     * Stops recording audio.
+     * 오디오 녹음을 중지합니다.
      */
     public void stop() {
         synchronized (mLock) {
@@ -128,7 +127,7 @@ public class VoiceRecorder {
     }
 
     /**
-     * Dismisses the currently ongoing utterance.
+     * 현재 진행 중인 음성을 닫습니다.
      */
     public void dismiss() {
         if (mLastVoiceHeardMillis != Long.MAX_VALUE) {
@@ -138,9 +137,9 @@ public class VoiceRecorder {
     }
 
     /**
-     * Retrieves the sample rate currently used to record audio.
+     * 오디오를 녹음하기 위해서 현재 사용되고 있는 Sample rate를 얻어 옵니다.
      *
-     * @return The sample rate of recorded audio.
+     * @return 녹음된 오디오의 Sample late.
      */
     public int getSampleRate() {
         if (mAudioRecord != null) {
@@ -150,10 +149,9 @@ public class VoiceRecorder {
     }
 
     /**
-     * Creates a new {@link AudioRecord}.
+     * 새로운 {@link AudioRecord} 생성하여 반환합니다.
      *
-     * @return A newly created {@link AudioRecord}, or null if it cannot be created (missing
-     * permissions?).
+     * @return 새롭게 만들어진 {@link AudioRecord}, 또는 권한이 없을 경우 null
      */
     private AudioRecord createAudioRecord() {
         for (int sampleRate : SAMPLE_RATE_CANDIDATES) {
@@ -174,8 +172,7 @@ public class VoiceRecorder {
     }
 
     /**
-     * Continuously processes the captured audio and notifies {@link #mCallback} of corresponding
-     * events.
+     * 캡처된 오디오를 계속 처리해서 이벤트를 {@link #mCallback}에 통보합니다.
      */
     private class ProcessVoice implements Runnable {
 
@@ -226,7 +223,5 @@ public class VoiceRecorder {
             }
             return false;
         }
-
     }
-
 }

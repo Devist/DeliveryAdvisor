@@ -33,71 +33,48 @@ public class ExplanationActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_explanation);
 
-//        try {
-//            requestPermissionForReadExtertalStorage();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        setLayout();
+    }
+
+    private void setLayout(){
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         sliderDotspanel = (LinearLayout) findViewById(R.id.SliderDots);
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);
 
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);
         viewPager.setAdapter(viewPagerAdapter);
         dotscount = viewPagerAdapter.getCount();
         dots = new ImageView[dotscount];
 
+        //초기 뷰페이저 셋팅
         for(int i = 0; i < dotscount; i++){
-
             dots[i] = new ImageView(this);
             dots[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
-
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
             params.setMargins(8, 0, 8, 0);
-
             sliderDotspanel.addView(dots[i], params);
         }
         dots[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
 
+        setListener();
+    }
+
+    private void setListener(){
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
-            }
+            @Override
+            public void onPageScrollStateChanged(int state) {}
 
             @Override
             public void onPageSelected(int position) {
-
-                for(int i = 0; i< dotscount; i++){
+                for(int i = 0; i< dotscount; i++)
                     dots[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
-                }
+
                 dots[position].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
 
             }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
         });
-
-    }
-
-    public boolean checkPermissionForReadExtertalStorage() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int result = this.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-            return result == PackageManager.PERMISSION_GRANTED;
-        }
-        return false;
-    }
-
-    public void requestPermissionForReadExtertalStorage() throws Exception {
-        try {
-            ActivityCompat.requestPermissions((Activity) this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    READ_STORAGE_PERMISSION_REQUEST_CODE);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
     }
 
     public void goSignInPage(View v){

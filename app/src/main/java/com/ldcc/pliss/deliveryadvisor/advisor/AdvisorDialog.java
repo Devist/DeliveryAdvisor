@@ -39,36 +39,40 @@ public class AdvisorDialog extends Activity {
     private WorkUtil workUtil;
     AudioManager audioManager;
 
-    private VoiceAnalyzerListener voiceAnalyzerListener;
-
-//    Intent intent = new Intent(this, MainActivity.class);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_advisor);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 
-        VoiceAnalyzer voiceAnalyzer = new VoiceAnalyzer(getApplicationContext());
-        speechHelper = new SpeechHelper(this, voiceAnalyzer);
+        initSetting();
+    }
+
+    private void initSetting(){
+        layoutForWorkButton = (LinearLayout) findViewById(R.id.layout_for_work_button);
+        textViewQuestion = (TextView) findViewById(R.id.text_advisor);
+
+        speechHelper = new SpeechHelper(this);
         speechHelper.startVoiceRecognition();
+
+        if(clovaTTS==null)
+            clovaTTS = new ClovaTTS(getFilesDir());
 
         prefs = this.getSharedPreferences("Pref", MODE_PRIVATE);
         deliveryHelper = new DeliveryHelper(this);
         managerHelper = new ManagerHelper(this);
         workUtil = new WorkUtil();
 
-        layoutForWorkButton = (LinearLayout) findViewById(R.id.layout_for_work_button);
-        textViewQuestion = (TextView) findViewById(R.id.text_advisor);
+        setListener();
+    }
 
-        if(clovaTTS==null)
-            clovaTTS = new ClovaTTS(getFilesDir());
+    private void setListener(){
 
         speechHelper.addListener(new SpeechHelper.Listener() {
             @Override
             public void onVoiceAnalyed(int analyzeResult) {
-                    Log.d("분석","다이얼로그" + analyzeResult) ;
+                Log.d("분석","다이얼로그" + analyzeResult) ;
             }
         });
 
@@ -80,9 +84,8 @@ public class AdvisorDialog extends Activity {
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.startBluetoothSco();
 
-
-
-
+        //audioManager가 블루투스 마이크 사용을 가져오는 잠깐의 시간 동안 Delay가 발생하고,
+        //이에 따라 재생하는 음성이 끊길 수 있습니다. 따라서 블루투스 마이크 사용 설정하는 잠깐의 시간 후에(0.5초 정도) 음성을 재생합니다.
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run(){
@@ -103,8 +106,6 @@ public class AdvisorDialog extends Activity {
                 }
             }
         },500);
-
-
     }
 
     @Override
@@ -114,13 +115,9 @@ public class AdvisorDialog extends Activity {
         try{
             Thread a = speechHelper.stopVoiceRecognition();
         }catch (Exception e){
-
+            e.printStackTrace();
         }
-//        try{
-//            a.join();
-//        }catch (InterruptedException e) {
-//
-//        }
+
         super.onStop();
     }
 
@@ -266,7 +263,6 @@ public class AdvisorDialog extends Activity {
                 finish();
             }
         });
-
 
     }
 

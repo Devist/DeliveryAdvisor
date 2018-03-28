@@ -7,9 +7,9 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
- * Created by pliss on 2018. 2. 27..
+ *  Manager(택배기사)의 현재 업무 정보 데이터베이스를 조작하는 Helper입니다.
+ *  Manager의 현재 업무 변경은 DeliveryHelper에서 처리하였습니다.
  */
-
 public class ManagerHelper {
 
     private Realm mRealm;
@@ -29,7 +29,11 @@ public class ManagerHelper {
         mRealm.commitTransaction();
     }
 
-    public String[] getCurrentDeliveryInfo(Context context){
+    public String getManagerName(){
+        return results.get(0).getUserName();
+    }
+
+    public String[] getCurrentDeliveryInfoSimple(){
         String [] deliveryInfo = new String[7];
         mRealm.beginTransaction();
         Delivery currentDelivery = mRealm.where(Delivery.class).equalTo("INV_NUMB", results.get(0).getInvoice()).findFirst();
@@ -44,33 +48,10 @@ public class ManagerHelper {
         return deliveryInfo;
     }
 
-    public Delivery getCurrentDeliveryInfoDetail(Context context){
+    public Delivery getCurrentDeliveryInfoDetail(){
         mRealm.beginTransaction();
         Delivery currentDelivery = mRealm.where(Delivery.class).equalTo("INV_NUMB", results.get(0).getInvoice()).findFirst();
         mRealm.commitTransaction();
         return currentDelivery;
-    }
-
-    public String getManagerName(){
-        return results.get(0).getUserName();
-    }
-
-    public void showLogs(){
-        mRealm.beginTransaction();
-        RealmResults<Delivery> results = mRealm.where(Delivery.class).findAll();
-        Log.d("조회값","good" + results.size());
-        //for (int i = 0; i<results.size(); i++) {
-        Log.d("조회값",results.get(0).getINV_KW());
-        Log.d("조회값",results.get(0).getINV_NUMB());
-        Log.d("조회값",results.get(0).getSHIP_TYPE());
-        Log.d("조회값",results.get(0).getSHIP_ORD()+"");
-        //}
-        mRealm.commitTransaction();
-    }
-
-    public void deleteAllList(){
-        //mRealm.beginTransaction();
-        results.deleteAllFromRealm();
-        //mRealm.commitTransaction();
     }
 }

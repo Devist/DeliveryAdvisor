@@ -15,11 +15,6 @@ import android.view.KeyEvent;
 
 import com.ldcc.pliss.deliveryadvisor.advisor.naver.ClovaTTS;
 
-
-/**
- * Created by pliss on 2018. 3. 9..
- */
-
 public class AdvisorService extends Service {
     public static final String TAG = "MPS";
     private MediaSessionCompat mediaSession;

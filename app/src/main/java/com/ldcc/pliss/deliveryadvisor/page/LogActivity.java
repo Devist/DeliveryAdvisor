@@ -73,8 +73,9 @@ public class LogActivity extends AppCompatActivity implements NavigationView.OnN
 
         mLogFragment = (LogFragment) getSupportFragmentManager().findFragmentById(R.id.log_fragment);
 
-
+        //기록된 모든 Log 를 화면에 표시합니다.
         for(int i = 0 ; i<results.size();i++){
+            //첫번째 줄은 시간을 표시하도록, 두번째 줄은 로그 내용을 표시하도록 합니다.
             mLogFragment.getLogView().println(results.get(i).getCONTENTS(),2);
             mLogFragment.getLogView().println(results.get(i).getTIME_STAMP(),1);
         }
@@ -83,8 +84,8 @@ public class LogActivity extends AppCompatActivity implements NavigationView.OnN
     }
 
     private void setListener(){
-        //데이터베이스에서 현재 업무가 변경되었을 때, 이를 감지하여 [현재 업무 화면, 진행 프로그레스바, 전체 업무 화면] 내용을 변경해준다.
-
+        // 쌓이는 로그들을 실시간으로 표시할 수 있도록, 즉 로그 페이지에서 바로 반영하여 확인할 수 있도록,
+        // 데이터베이스 로그 테이블에 데이터가 추가되었을 때 이를 감지하여 로그 페이지 표시해 줍니다.
         logDataChangeListener = new RealmChangeListener() {
             @Override
             public void onChange(Object o) {
@@ -92,6 +93,7 @@ public class LogActivity extends AppCompatActivity implements NavigationView.OnN
                     mLogFragment.getLogView().println(results.get(results.size()-1).getCONTENTS(),2);
                     mLogFragment.getLogView().println(results.get(results.size()-1).getTIME_STAMP(),1);
                 }catch(Exception e){
+                    e.printStackTrace();
                 }
 
             }
@@ -118,18 +120,13 @@ public class LogActivity extends AppCompatActivity implements NavigationView.OnN
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent newIntent = new Intent(this, SettingActivity.class);
-            startActivity(newIntent);
+            startActivity(new Intent(this, SettingActivity.class));
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
     @SuppressWarnings("StatementWithEmptyBody")
@@ -140,20 +137,15 @@ public class LogActivity extends AppCompatActivity implements NavigationView.OnN
 
         if (id == R.id.nav_main) {
             Toast.makeText(LogActivity.this, "업무 내용을 확인합니다.", Toast.LENGTH_SHORT).show();
-            Intent newIntent = new Intent(this, MainActivity.class);
-            startActivity(newIntent);
+            startActivity(new Intent(this, MainActivity.class));
             finish();
         } else if (id == R.id.nav_navigation) {
             Toast.makeText(LogActivity.this, "경로를 확인합니다.", Toast.LENGTH_SHORT).show();
-            Intent newIntent = new Intent(this, NavigationActivity.class);
-            startActivity(newIntent);
+            startActivity(new Intent(this, NavigationActivity.class));
             finish();
-        } else if (id == R.id.nav_logs) {
-            Toast.makeText(LogActivity.this, "로그 기록을 확인합니다.", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_settings) {
             Toast.makeText(LogActivity.this, "환경 설정", Toast.LENGTH_SHORT).show();
-            Intent newIntent = new Intent(this, SettingActivity.class);
-            startActivity(newIntent);
+            startActivity(new Intent(this, SettingActivity.class));
             finish();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.log_drawer_layout);

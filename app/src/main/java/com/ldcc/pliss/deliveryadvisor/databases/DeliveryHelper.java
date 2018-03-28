@@ -9,9 +9,8 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
- * Created by pliss on 2018. 2. 27..
+ *  모든 업무(배송) 정보 데이터베이스를 조작하는 Helper입니다.
  */
-
 public class DeliveryHelper {
 
     private Realm mRealm;
@@ -35,28 +34,30 @@ public class DeliveryHelper {
         return results;
     }
 
+
+    /**
+     * Realm 데이터베이스의 모든 정보를 삭제하고 초기화 합니다.
+     */
     public void deleteAllList(){
         mRealm.beginTransaction();
-        results.deleteAllFromRealm();
         mRealm.deleteAll();
         mRealm.commitTransaction();
     }
 
-    public String getLastYetDelivery(){
+    /**
+     * 최초 로그인시, 첫 번째 배송 목록을 반환해줍니다. SignActivity에서 사용됩니다.
+     * @return 배송 목록 중 첫번째 배송 목록
+     */
+    public String getFirstShippingInfo(){
         results = mRealm.where(Delivery.class).findAll();
-        String yetInvoiceNumber = null;
-
-        for(int i=0; i<results.size();i++){
-            if(results.get(i).getSHIP_STAT().equals("B")){
-                yetInvoiceNumber = results.get(i).getINV_NUMB();
-                break;
-            }
-        }
-        return yetInvoiceNumber;
+        return results.get(0).getINV_NUMB();
     }
 
-    public boolean changeManagerInfo(String invoice){
-        boolean result = false;
+    /**
+     * 매니저(택배 기사)의 현재 업무를 해당 송장번호의 배송 정보로 변경합니다.
+     * @param invoice 현재 업무로 사용할 송장 번호
+     */
+    public void changeManagerInfo(String invoice){
         mRealm.beginTransaction();
         Delivery delivery = mRealm.where(Delivery.class).equalTo("INV_NUMB", invoice).findFirst();
         if(!delivery.getSHIP_STAT().equals("C") && !delivery.getSHIP_STAT().equals("N")){
@@ -64,9 +65,13 @@ public class DeliveryHelper {
             managerINFO.setInvoice(delivery.getINV_NUMB());
         }
         mRealm.commitTransaction();
-        return result;
     }
 
+    /**
+     * 매니저\(택배 기사)의 현재 업무를 해당 송장번호의 다음 송장번호의 배송지로 변경합니다.
+     * 다음 배송지가 이미 배송 완료가 되었을 경우, 그 다음 배송지로 변경됩니다.
+     * @param invoice 기준이 되는 송장 번호
+     */
     public void changeManagerInfoToNext(String invoice){
         String yetInvoiceNumber = null;
         for(int i=0; i<results.size();i++){
@@ -78,10 +83,10 @@ public class DeliveryHelper {
                             break;
                         }
                     }
-
                 }
             }
         }
+
         if(yetInvoiceNumber!=null){
             mRealm.beginTransaction();
             Manager managerINFO = mRealm.where(Manager.class).findAll().first();
@@ -94,9 +99,7 @@ public class DeliveryHelper {
         mRealm.beginTransaction();
         Delivery deliveryProcessed = mRealm.where(Delivery.class).equalTo("INV_NUMB", invoiceNumber).findFirst();
         mRealm.commitTransaction();
-
         return deliveryProcessed;
-
     }
 
     public void setAllDeliveryList(final List<String[]> workData){
@@ -108,7 +111,7 @@ public class DeliveryHelper {
                 Delivery deliveryINFO;
                 for(int i = 1 ; i<workData.size();i++){
                         deliveryINFO = realm.createObject(Delivery.class,workData.get(i)[1]);
-
+                        deliveryINFO.setINV_KW(workData.get(i)[1].substring(7));
                         deliveryINFO.setSHIP_ID(i);
                         deliveryINFO.setSHIP_TYPE(workData.get(i)[2]);
                         deliveryINFO.setSHIP_ORD(Integer.parseInt(workData.get(i)[3]));
@@ -146,13 +149,6 @@ public class DeliveryHelper {
         } else if(state.equals("N")) {
             deliveryProcessed.setSHIP_STAT("N");
         }
-        mRealm.commitTransaction();
-    }
-
-    public void showLogs(){
-        mRealm.beginTransaction();
-        RealmResults<Delivery> results = mRealm.where(Delivery.class).findAll();
-        Log.d("조회값","good" + results.size());
         mRealm.commitTransaction();
     }
 }

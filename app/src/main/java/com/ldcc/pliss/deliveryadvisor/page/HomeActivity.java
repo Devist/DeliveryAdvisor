@@ -12,6 +12,9 @@ import android.widget.ImageView;
 
 import com.ldcc.pliss.deliveryadvisor.R;
 
+/**
+ *
+ */
 public class HomeActivity extends AppCompatActivity {
 
     @Override
@@ -26,6 +29,10 @@ public class HomeActivity extends AppCompatActivity {
         image.startAnimation(alphaAnim);
     }
 
+    /**
+     *
+     * @param v
+     */
     public void goExplanationPage(View v){
         Intent newIntent = new Intent(this, ExplanationActivity.class);
         startActivity(newIntent);

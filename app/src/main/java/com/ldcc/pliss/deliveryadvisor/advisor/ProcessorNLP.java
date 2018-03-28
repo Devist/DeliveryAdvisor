@@ -1,14 +1,6 @@
 package com.ldcc.pliss.deliveryadvisor.advisor;
 
-
-import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,15 +8,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Created by pliss on 2018. 3. 19..
- */
-
 public class ProcessorNLP extends AsyncTask<String, Void, String> {
     private static final String REQUEST_METHOD = "GET";
     private static final int READ_TIMEOUT = 15000;
     private static final int CONNECTION_TIMEOUT = 15000;
-
 
     @Override
     protected void onPreExecute() {
@@ -48,7 +35,7 @@ public class ProcessorNLP extends AsyncTask<String, Void, String> {
     }
 
     //Twitter-Korean-text 에 키워드 추출 요청
-    public String requestKeywordExtraction(String sentence){
+    private String requestKeywordExtraction(String sentence){
         InputStream is = null;
         String result = "";
         try {

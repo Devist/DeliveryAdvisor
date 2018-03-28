@@ -43,7 +43,7 @@ import android.view.ViewGroup;
 import android.widget.ScrollView;
 
 /**
- * Simple fragment which contains a LogView and uses is to output log data it receives to the screen.
+ * LogView가 포함되어 있으며 사용하는 로그 데이터를 화면에 출력하는 간단한 Fragment
  */
 public class LogFragment extends Fragment {
 
@@ -67,7 +67,6 @@ public class LogFragment extends Fragment {
         mLogView.setFocusable(true);
         mLogView.setTypeface(Typeface.MONOSPACE);
 
-        // Want to set padding as 16 dips, setPadding takes pixels.  Hooray math!
         int paddingDips = 16;
         double scale = getResources().getDisplayMetrics().density;
         int paddingPixels = (int) ((paddingDips * (scale)) + .5);
@@ -83,8 +82,7 @@ public class LogFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View result = inflateViews();
 

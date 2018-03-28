@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -30,11 +29,15 @@ import io.realm.RealmResults;
 public class SignInActivity extends AppCompatActivity {
 
     private List<String[]> workData;
+
+    //UI 위젯
     private TextView successProgressText;
     private TextView failProgressText;
     private EditText editTextManager;
     private DeliveryHelper deliveryHelper;
-    private SharedPreferences prefs;                        // 앱이 최초 실행인지 확인하기 위한 변수
+
+    // 앱이 최초 실행인지 확인하기 위한 변수
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,31 +73,31 @@ public class SignInActivity extends AppCompatActivity {
         RealmResults<Delivery> delivery = mRealm.where(Delivery.class).findAll();
         RealmChangeListener callback = new RealmChangeListener() {
             @Override
-            public void onChange(Object o) { // called once the query complete and on every update
-                Log.d("오브젝트",o+"");
+            public void onChange(Object o) {
                 RealmResults<Delivery> results = (RealmResults) o;
-                // use the result
                 successProgressText.setText(results.size()+ "개 Success");
                 failProgressText.setText(workData.size()-results.size()-1+ "개 Fail");
             }
         };
         delivery.addChangeListener(callback);
         deliveryHelper.setAllDeliveryList(workData);
-
-
-
     }
 
+    /**
+     * 로그이 업무 시작하기 버튼을 누를 때, 초기값을 세팅한 후 메인 페이지로 이동합니다.
+     * @param v
+     */
     public void goMainPage(View v){
+        //SharedPreferences의 초기값을 세팅합니다.
         prefs = getSharedPreferences("Pref", MODE_PRIVATE);
-        prefs.edit().putBoolean("isFirstRun",false).apply();
-        prefs.edit().putBoolean("isSpeechAPI",true).apply();
-        prefs.edit().putBoolean("isAwarenessAPI",true).apply();
-        prefs.edit().putBoolean("isPresentation",false).apply();
-        prefs.edit().putBoolean("isSMS",true).apply();
+        prefs.edit().putBoolean("isFirstRun",false).apply();        //앱 최초 실행 값을 false로 변경하여, 다음 접속시 바로 MainActivity 가 열리도록 함.
+        prefs.edit().putBoolean("isSpeechAPI",true).apply();        //Google Speech API 사용 설정을 true로 함.
+        prefs.edit().putBoolean("isAwarenessAPI",true).apply();     //Awareness API 를 이용한 위치 감지를 true로 함.
+        prefs.edit().putBoolean("isPresentation",false).apply();    //Presentation 모드를 false로 하여, 블루투스를 이용하도록 함.
+        prefs.edit().putBoolean("isSMS",true).apply();              //문자 전송 기능을 true로 함.
 
         ManagerHelper managerHelper = new ManagerHelper(this);
-        managerHelper.setManager(editTextManager.getText().toString(),deliveryHelper.getLastYetDelivery());
+        managerHelper.setManager(editTextManager.getText().toString(),deliveryHelper.getFirstShippingInfo());
         Toast.makeText(this,editTextManager.getText().toString() + "님 환영합니다.",Toast.LENGTH_SHORT).show();
         Intent newIntent = new Intent(this, MainActivity.class);
         startActivity(newIntent);

@@ -12,13 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Created by pliss on 2018. 3. 20..
- */
+
 
 public class VoiceAnalyzer {
 
-    public static final int POPUP_HELLO_MODE                   = 0;
+    public static final int POPUP_HELLO_MODE                    = 0;
     private static final int POPUP_INVOICE_NUMBER_MODE          = 1;
 
     private static final int CALL_THE_CURRENT_CUSTOMER          = 1000;
@@ -31,6 +29,13 @@ public class VoiceAnalyzer {
         logsHelper = new AppLogsHelper(context);
     }
 
+    /**
+     * String으로 변환된 음성 문장을 키워드 분리(function NLP) 한 후, 키워드를 분석하여 애플리케이션이 수행해야 할 업무를 도출해냅니다.
+     *
+     * @param mode     mode에 따라서, [문장 완전 분석, 송장번호 분석] 과 같은 분석을 통해 애플리케이션이 수행해야 할 업무를 추출합니다.
+     * @param voice    String으로 변환된 음성 문장
+     * @return
+     */
     public static int getAnalyzedAction(int mode, String voice){
         String kewords = NLP(voice);
         List<String> kewordArray = getTokens(kewords);
@@ -49,6 +54,12 @@ public class VoiceAnalyzer {
 
     }
 
+    /**
+     * 자연 언어 처리(NLP, Natural Language Processing)을 통해 문장에서 명사, 형용사, 조사 등 키워드를 json string 형태로 추출합니다.
+     *
+     * @param voice String으로 변환된 음성 문장
+     * @return
+     */
     private static String NLP(String voice){
         ProcessorNLP processorNLP = new ProcessorNLP();
         String result = "fail";
@@ -62,33 +73,37 @@ public class VoiceAnalyzer {
         return result;
     }
 
+    /**
+     * 토큰이 저장되어 있는 파라미터 json string에서, noun과 adj 를 추출해 냅니다.
+     *
+     * @param kewords
+     * @return
+     */
     private static List<String> getTokens(String kewords){
         String[] nouns = null;
         String[] adjs = null;
         List<String> tokens = new ArrayList<String>();
 
         try{
-            int tokenCounts=0;
-
             JSONObject flattenJson = new JSONObject(kewords);
             JSONArray jsonArrayTokens = flattenJson.getJSONArray("tokens");
             nouns = new String[jsonArrayTokens.length()];
-            String str="Step2.텍스트 -> 키워드(Noun): \n";
+            String str="Step2.텍스트 -> 키워드(Noun): \n"; //로그 기록하기 위한 Source Code
             for(int i = 0 ;i <jsonArrayTokens.length() ; i++){
                 if(jsonArrayTokens.getString(i).contains("Noun")) {
-                    nouns[i] = jsonArrayTokens.getString(i).split("\\(")[0];
-                    str+="["+nouns[i]+"]";
+                    nouns[i] = jsonArrayTokens.getString(i).split("\\(")[0];      //로그 기록하기 위한 Source Code
+                    str+="["+nouns[i]+"]"; //로그 기록하기 위한 Source Code
                     tokens.add(nouns[i]);
                 }
             }
 
             adjs = new String[jsonArrayTokens.length()];
-            str+="\n\n Step3.텍스트 -> 키워드(Adj): \n";
+            str+="\n\n Step3.텍스트 -> 키워드(Adj): \n"; //로그 기록하기 위한 Source Code
             for(int i = 0 ;i <jsonArrayTokens.length() ; i++){
                 if(jsonArrayTokens.getString(i).contains("Adjective")) {
                     adjs[i] = jsonArrayTokens.getString(i).split("\\)")[0];
                     adjs[i] = adjs[i].split("\\(")[2];
-                    str+="["+adjs[i]+"]";
+                    str+="["+adjs[i]+"]"; //로그 기록하기 위한 Source Code
                     tokens.add(adjs[i]);
                 }
             }

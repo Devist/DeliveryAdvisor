@@ -23,11 +23,9 @@ import com.ldcc.pliss.deliveryadvisor.advisor.VoiceRecorder;
 import static android.content.Context.BIND_AUTO_CREATE;
 import static com.ldcc.pliss.deliveryadvisor.MainActivity.fa;
 
-/**
- * Created by pliss on 2018. 3. 13..
- */
+public class SpeechHelper {
 
-public class SpeechHelper implements MessageDialogFragment.Listener{
+    // 음성 문장 분석을 통한 취해야 할 액션을 얻기 위해, AdvisorDialog에서 구현됩니다.
     public interface Listener {
 
         void onVoiceAnalyed(int analyzeResult);
@@ -48,10 +46,8 @@ public class SpeechHelper implements MessageDialogFragment.Listener{
     private static VoiceRecorder mVoiceRecorder;
 
     private TextView mStatus;
-    private VoiceAnalyzer voiceAnalyzer;
-    public SpeechHelper(Activity activity, VoiceAnalyzer voiceAnalyzer){
+    public SpeechHelper(Activity activity){
         this.activity=activity;
-        this.voiceAnalyzer = voiceAnalyzer;
     }
 
     private static String finalMessage ="";
@@ -180,17 +176,5 @@ public class SpeechHelper implements MessageDialogFragment.Listener{
         }
 
         return thread;
-    }
-
-//    private void showPermissionMessageDialog() {
-//        MessageDialogFragment
-//                .newInstance("안녕하세요.")
-//                .show(getSupportFragmentManager(), FRAGMENT_MESSAGE_DIALOG);
-//    }
-
-    @Override
-    public void onMessageDialogDismissed() {
-        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO},
-                REQUEST_RECORD_AUDIO_PERMISSION);
     }
 }
