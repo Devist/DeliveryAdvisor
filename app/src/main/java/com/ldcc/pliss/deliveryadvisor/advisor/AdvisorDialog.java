@@ -39,6 +39,8 @@ public class AdvisorDialog extends Activity {
     private WorkUtil workUtil;
     AudioManager audioManager;
 
+    private String[] currentDeliveryInfo;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,7 @@ public class AdvisorDialog extends Activity {
     }
 
     private void initSetting(){
+
         layoutForWorkButton = (LinearLayout) findViewById(R.id.layout_for_work_button);
         textViewQuestion = (TextView) findViewById(R.id.text_advisor);
 
@@ -64,6 +67,11 @@ public class AdvisorDialog extends Activity {
         managerHelper = new ManagerHelper(this);
         workUtil = new WorkUtil();
 
+        currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
+        if(currentDeliveryInfo==null)
+            currentDeliveryInfo = managerHelper.getCurrentDeliveryInfoSimple();
+
+
         setListener();
     }
 
@@ -72,7 +80,24 @@ public class AdvisorDialog extends Activity {
         speechHelper.addListener(new SpeechHelper.Listener() {
             @Override
             public void onVoiceAnalyed(int analyzeResult) {
-                Log.d("분석","다이얼로그" + analyzeResult) ;
+                switch (analyzeResult){
+                    case VoiceAnalyzer.CALL_THE_CURRENT_CUSTOMER:
+                        new Handler().postDelayed(new Runnable(){
+                            @Override
+                            public void run(){
+                                workUtil.callTheCustomer(getApplicationContext(),currentDeliveryInfo[4]);
+                            }
+                        },2000);
+                        finish();
+                        break;
+
+                    case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_DEFAULT:
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 본인이 수령하셨습니다.");
+                        deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","S");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        finish();
+                        break;
+                }
             }
         });
 
@@ -90,15 +115,12 @@ public class AdvisorDialog extends Activity {
             @Override
             public void run(){
                 String myWork = getIntent().getStringExtra("Work-keyword");
-                String[] currentDeliveryInfo;
+
                 switch (String.valueOf(myWork)){
                     case "null":
-                        currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
                         drawFirstQuestionButton(currentDeliveryInfo);
-
                         break;
                     case "processDelivery":
-                        currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
                         drawProcessDeliveryButton(currentDeliveryInfo);
                         break;
                     case "howToProcess":

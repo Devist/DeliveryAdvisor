@@ -17,12 +17,25 @@ import java.util.concurrent.ExecutionException;
 public class VoiceAnalyzer {
 
     public static final int POPUP_HELLO_MODE                    = 0;
-    private static final int POPUP_INVOICE_NUMBER_MODE          = 1;
+    public static final int POPUP_INVOICE_NUMBER_MODE          = 1;
 
-    private static final int CALL_THE_CURRENT_CUSTOMER          = 1000;
-    private static final int GUIDE_THE_CURRENT_CUSTOMER         = 1001;
-    private static final int DELIVERY_THE_CURRENT_CUSTOMER      = 1002;
+    public static final int CALL_THE_CURRENT_CUSTOMER          = 1000;
+    public static final int GUIDE_THE_CURRENT_CUSTOMER         = 1001;
+
+    public static final int DELIVERY_THE_CURRENT_CUSTOMER_DEFAULT              = 1002;
+    public static final int DELIVERY_THE_CURRENT_CUSTOMER_SECURITY_OFFICE      = 1003;
+
+
     private static AppLogsHelper logsHelper;
+
+    /** 전화 키워드 셋. */
+    private static final String[] callArray= {"전화","콜","call"};
+
+    /** 배송 처리 키워드 셋. */
+    private static final String[] processArray= {"배송","처리","배송처리","배송 처리"};
+
+    /** 배송 처리 디테일 장소 키워드 셋. */
+    private static final String[] processDetailSecurityOffice= {"경비","경비실"};
 
 
     public VoiceAnalyzer(Context context){
@@ -117,8 +130,20 @@ public class VoiceAnalyzer {
 
     private static int analyzeAll(List<String> keywordsArray){
 
-      if(keywordsArray.contains("전화"))
-          return CALL_THE_CURRENT_CUSTOMER;
+        for (String call : callArray) {
+            if(keywordsArray.contains(call))
+                return CALL_THE_CURRENT_CUSTOMER;
+        }
+
+        for (String processing : processArray){
+
+            if(keywordsArray.contains(processing)){
+                if(kewordsA)
+                return DELIVERY_THE_CURRENT_CUSTOMER_DEFAULT;
+            }
+
+        }
+
 
       return -1;
     }
