@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,6 +28,16 @@ import static com.ldcc.pliss.deliveryadvisor.MainActivity.fa;
  */
 
 public class SpeechHelper implements MessageDialogFragment.Listener{
+    public interface Listener {
+
+        void onVoiceAnalyed(int analyzeResult);
+
+    }
+
+    Listener mListener;
+    public void addListener(@NonNull SpeechHelper.Listener listener) {
+        mListener = listener;
+    }
     //private static final String STATE_RESULTS = "results";
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
@@ -91,7 +102,7 @@ public class SpeechHelper implements MessageDialogFragment.Listener{
     private final SpeechService.Listener mSpeechServiceListener =
             new SpeechService.Listener() {
                 @Override
-                public void onSpeechRecognized(final String text, final boolean isFinal) {
+                public void onSpeechRecognized(final String text, final boolean isFinal, final int analyzeResult) {
                     if (isFinal) {
                         mVoiceRecorder.dismiss();
                     }
@@ -102,7 +113,7 @@ public class SpeechHelper implements MessageDialogFragment.Listener{
                             public void run() {
                                 if (isFinal) {
                                     Toast.makeText(activity,"인식된 문서는 : "+text,Toast.LENGTH_SHORT).show();
-
+                                    mListener.onVoiceAnalyed(analyzeResult);
                                 } else {
                                     //실시간 인식에서 사용
                                 }

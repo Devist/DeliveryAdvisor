@@ -2,12 +2,14 @@ package com.ldcc.pliss.deliveryadvisor.advisor;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
+
 import com.ldcc.pliss.deliveryadvisor.databases.AppLogsHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -24,13 +26,14 @@ public class VoiceAnalyzer {
     private static final int DELIVERY_THE_CURRENT_CUSTOMER      = 1002;
     private static AppLogsHelper logsHelper;
 
+
     public VoiceAnalyzer(Context context){
         logsHelper = new AppLogsHelper(context);
     }
 
     public static int getAnalyzedAction(int mode, String voice){
         String kewords = NLP(voice);
-        String [] kewordArray = getTokens(kewords);
+        List<String> kewordArray = getTokens(kewords);
 
         int result = POPUP_HELLO_MODE;
 
@@ -43,6 +46,7 @@ public class VoiceAnalyzer {
         }
 
         return result;
+
     }
 
     private static String NLP(String voice){
@@ -58,27 +62,34 @@ public class VoiceAnalyzer {
         return result;
     }
 
-    private static String[] getTokens(String kewords){
-        String[] tokens = null;
+    private static List<String> getTokens(String kewords){
+        String[] nouns = null;
+        String[] adjs = null;
+        List<String> tokens = new ArrayList<String>();
+
         try{
+            int tokenCounts=0;
+
             JSONObject flattenJson = new JSONObject(kewords);
             JSONArray jsonArrayTokens = flattenJson.getJSONArray("tokens");
-            tokens = new String[jsonArrayTokens.length()];
+            nouns = new String[jsonArrayTokens.length()];
             String str="Step2.텍스트 -> 키워드(Noun): \n";
             for(int i = 0 ;i <jsonArrayTokens.length() ; i++){
                 if(jsonArrayTokens.getString(i).contains("Noun")) {
-                    tokens[i] = jsonArrayTokens.getString(i).split("\\(")[0];
-                    str+="["+tokens[i]+"]";
+                    nouns[i] = jsonArrayTokens.getString(i).split("\\(")[0];
+                    str+="["+nouns[i]+"]";
+                    tokens.add(nouns[i]);
                 }
             }
 
-            tokens = new String[jsonArrayTokens.length()];
+            adjs = new String[jsonArrayTokens.length()];
             str+="\n\n Step3.텍스트 -> 키워드(Adj): \n";
             for(int i = 0 ;i <jsonArrayTokens.length() ; i++){
                 if(jsonArrayTokens.getString(i).contains("Adjective")) {
-                    tokens[i] = jsonArrayTokens.getString(i).split("\\)")[0];
-                    tokens[i] = tokens[i].split("\\(")[2];
-                    str+="["+tokens[i]+"]";
+                    adjs[i] = jsonArrayTokens.getString(i).split("\\)")[0];
+                    adjs[i] = adjs[i].split("\\(")[2];
+                    str+="["+adjs[i]+"]";
+                    tokens.add(adjs[i]);
                 }
             }
             logsHelper.addAppLogs(str);
@@ -89,9 +100,11 @@ public class VoiceAnalyzer {
         return tokens;
     }
 
-    private static int analyzeAll(String[] keywordsArray){
+    private static int analyzeAll(List<String> keywordsArray){
 
+      if(keywordsArray.contains("전화"))
+          return CALL_THE_CURRENT_CUSTOMER;
 
-      return 0;
+      return -1;
     }
 }

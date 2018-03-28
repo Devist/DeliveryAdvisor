@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +17,8 @@ import android.widget.Toast;
 
 import com.ldcc.pliss.deliveryadvisor.advisor.AdvisorDialog;
 
+import static android.content.Context.MODE_PRIVATE;
+
 
 /**
  * Created by pliss on 2018. 2. 27..
@@ -23,6 +26,7 @@ import com.ldcc.pliss.deliveryadvisor.advisor.AdvisorDialog;
 
 public class WorkUtil {
 
+    private SharedPreferences prefs;
     private Context context;
     private Bundle bundle = new Bundle();
 
@@ -31,6 +35,7 @@ public class WorkUtil {
         this.context = context;
         bundle.putString("Work-keyword","initialQuestion");
         bundle.putStringArray("Delivery-data",managerInfo);
+
     }
 
     //음성인식 - 사용자가 배송 처리를 할 때, 배송 처리 팝업을 띄우는 기능
@@ -67,6 +72,7 @@ public class WorkUtil {
 
     //사용자가 고객에메 문자 메시지를 전송할 때 사용하는 기능
     public void sendSMS(Context context, String phoneNumber, String message){
+        prefs = context.getSharedPreferences("Pref", MODE_PRIVATE);
 
         String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
@@ -101,8 +107,10 @@ public class WorkUtil {
             }
         }, new IntentFilter("SMS_SENT_ACTION"));
 
-        SmsManager sms = SmsManager.getDefault();
-        sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
+        if(prefs.getBoolean("isSMS",false)){
+            SmsManager sms = SmsManager.getDefault();
+            sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
+        }
     }
 
     public void recordLog(){

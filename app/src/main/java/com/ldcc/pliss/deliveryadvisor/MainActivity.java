@@ -240,7 +240,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         buttonProcDelivery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                workUtil.showProcessDeliveryDialog(v.getContext(),managerInfo);
+                boolean isCallandMessagePossible = checkPermission();
+                if(isCallandMessagePossible) {
+                    workUtil.showProcessDeliveryDialog(v.getContext(),managerInfo);
+                }else{
+                    Toast.makeText(MainActivity.this, "권한이 부족하여 실행하지 못했습니다.", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 

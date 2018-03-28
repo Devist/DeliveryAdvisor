@@ -89,7 +89,7 @@ public class SpeechService extends Service {
          * @param text    The text.
          * @param isFinal {@code true} when the API finished processing audio.
          */
-        void onSpeechRecognized(String text, boolean isFinal);
+        void onSpeechRecognized(String text, boolean isFinal, int analyzeResult);
 
     }
 
@@ -132,12 +132,13 @@ public class SpeechService extends Service {
             }
             if (text != null) {
                 for (Listener listener : mListeners) {
-                    listener.onSpeechRecognized(text, isFinal);
+
                     if (isFinal){
                         appLogsHelper = new AppLogsHelper(getApplicationContext());
                         appLogsHelper.addAppLogs("Step1.음성 -> 텍스트 : \n"+text );
                         VoiceAnalyzer voiceAnalyzer = new VoiceAnalyzer(getApplicationContext());
-                        voiceAnalyzer.getAnalyzedAction(voiceAnalyzer.POPUP_HELLO_MODE,text);
+                        int result = voiceAnalyzer.getAnalyzedAction(voiceAnalyzer.POPUP_HELLO_MODE,text);
+                        listener.onSpeechRecognized(text, isFinal,result);
                     }
                 }
             }
@@ -169,7 +170,7 @@ public class SpeechService extends Service {
             }
             if (text != null) {
                 for (Listener listener : mListeners) {
-                    listener.onSpeechRecognized(text, true);
+                    listener.onSpeechRecognized(text, true,-1);
                 }
             }
         }

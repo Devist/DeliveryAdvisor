@@ -2,9 +2,13 @@ package com.ldcc.pliss.deliveryadvisor.advisor;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -23,15 +27,19 @@ import com.ldcc.pliss.deliveryadvisor.util.WorkUtil;
 
 public class AdvisorDialog extends Activity {
 
+    private SharedPreferences prefs;
     private LinearLayout layoutForWorkButton;
     private TextView textViewQuestion;
     private DeliveryHelper deliveryHelper;
     private ManagerHelper managerHelper;
     private SpeechHelper speechHelper;
     private ClovaTTS clovaTTS = AdvisorService.clovaTTS;
+    private MediaPlayer mediaPlayer;
 
     private WorkUtil workUtil;
     AudioManager audioManager;
+
+    private VoiceAnalyzerListener voiceAnalyzerListener;
 
 //    Intent intent = new Intent(this, MainActivity.class);
 
@@ -42,42 +50,60 @@ public class AdvisorDialog extends Activity {
         setContentView(R.layout.dialog_advisor);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 
+        VoiceAnalyzer voiceAnalyzer = new VoiceAnalyzer(getApplicationContext());
+        speechHelper = new SpeechHelper(this, voiceAnalyzer);
+        speechHelper.startVoiceRecognition();
+
+        prefs = this.getSharedPreferences("Pref", MODE_PRIVATE);
         deliveryHelper = new DeliveryHelper(this);
         managerHelper = new ManagerHelper(this);
         workUtil = new WorkUtil();
-        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
         layoutForWorkButton = (LinearLayout) findViewById(R.id.layout_for_work_button);
         textViewQuestion = (TextView) findViewById(R.id.text_advisor);
 
         if(clovaTTS==null)
             clovaTTS = new ClovaTTS(getFilesDir());
 
+        speechHelper.addListener(new SpeechHelper.Listener() {
+            @Override
+            public void onVoiceAnalyed(int analyzeResult) {
+                    Log.d("분석","다이얼로그" + analyzeResult) ;
+            }
+        });
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.startBluetoothSco();
-        VoiceAnalyzer voiceAnalyzer = new VoiceAnalyzer(getApplicationContext());
-        speechHelper = new SpeechHelper(this, voiceAnalyzer);
-        speechHelper.startVoiceRecognition();
 
-        String myWork = getIntent().getStringExtra("Work-keyword");
-        String[] currentDeliveryInfo;
 
-        switch (String.valueOf(myWork)){
-            case "null":
-                currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
-                drawFirstQuestionButton(currentDeliveryInfo);
-                break;
-            case "processDelivery":
-                currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
-                drawProcessDeliveryButton(currentDeliveryInfo);
-                break;
-            case "howToProcess":
-                break;
-        }
+
+
+        new Handler().postDelayed(new Runnable(){
+            @Override
+            public void run(){
+                String myWork = getIntent().getStringExtra("Work-keyword");
+                String[] currentDeliveryInfo;
+                switch (String.valueOf(myWork)){
+                    case "null":
+                        currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
+                        drawFirstQuestionButton(currentDeliveryInfo);
+
+                        break;
+                    case "processDelivery":
+                        currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
+                        drawProcessDeliveryButton(currentDeliveryInfo);
+                        break;
+                    case "howToProcess":
+                        break;
+                }
+            }
+        },500);
+
 
     }
 
@@ -240,6 +266,8 @@ public class AdvisorDialog extends Activity {
                 finish();
             }
         });
+
+
     }
 
     private Button setButtonLayout(String btnContents){
@@ -257,4 +285,5 @@ public class AdvisorDialog extends Activity {
         createdButton.setLayoutParams(layoutParams);
         return  createdButton;
     }
+
 }
