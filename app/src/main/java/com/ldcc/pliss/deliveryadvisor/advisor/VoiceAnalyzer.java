@@ -138,7 +138,10 @@ public class VoiceAnalyzer {
         for (String processing : processArray){
 
             if(keywordsArray.contains(processing)){
-                if(kewordsA)
+                for (String securityKeywords : processDetailSecurityOffice){
+                    if(keywordsArray.contains(securityKeywords))
+                        return DELIVERY_THE_CURRENT_CUSTOMER_SECURITY_OFFICE;
+                }
                 return DELIVERY_THE_CURRENT_CUSTOMER_DEFAULT;
             }
 

@@ -97,6 +97,13 @@ public class AdvisorDialog extends Activity {
                         deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                         finish();
                         break;
+
+                    case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_SECURITY_OFFICE:
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
+                        deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","O");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        finish();
+                        break;
                 }
             }
         });
