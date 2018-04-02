@@ -115,6 +115,18 @@ public class ClovaTTS {
         }
     }
 
+    // Clova 는 12345 의 경우 일만이천삼백사십오..라고 읽기 때문에, "1 2 3 4 5"와 같이 변환이 필요
+    public String convertNumberToClova(String numbers){
+        if(numbers.length()<5){
+            String results = "";
+            for(int i =0 ; i<4 ;i++){
+                results += (numbers.charAt(i)+" ");
+            }
+            return results;
+        }else
+            return numbers;
+    }
+
     public void stopClovaTTS(){
         if(mediaPlayer!=null) {
             if(mediaPlayer.isPlaying())

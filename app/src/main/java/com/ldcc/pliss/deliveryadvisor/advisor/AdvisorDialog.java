@@ -34,7 +34,6 @@ public class AdvisorDialog extends Activity {
     private ManagerHelper managerHelper;
     private SpeechHelper speechHelper;
     private ClovaTTS clovaTTS = AdvisorService.clovaTTS;
-    private MediaPlayer mediaPlayer;
 
     private WorkUtil workUtil;
     AudioManager audioManager;
@@ -206,12 +205,15 @@ public class AdvisorDialog extends Activity {
     }
 
     private void drawProcessDeliveryButton(final String[] currentDeliveryInfo){
-
+        String invoiceKeword = clovaTTS.convertNumberToClova(deliveryHelper.getSearchedInfo(currentDeliveryInfo[2]).getINV_KW());
         String sentence = "\"송장번호 "+currentDeliveryInfo[2]+", "+currentDeliveryInfo[0]
                 +" 님에게 전달하는 상품을 배송처리하겠습니다. 수령자는 누구입니까?"+"\"";
 
+        String voice = "\"송장번호 "+invoiceKeword+", "+currentDeliveryInfo[0]
+                +" 님에게 전달하는 상품을 배송처리하겠습니다. 수령자는 누구입니까?"+"\"";
+
         textViewQuestion.setText(sentence);
-        clovaTTS.sayThis("tts_"+currentDeliveryInfo[2],sentence);
+        clovaTTS.sayThis("tts_"+currentDeliveryInfo[2],voice);
 
 
 //        deliveryInfo[0] = currentDelivery.getRECV_NM();

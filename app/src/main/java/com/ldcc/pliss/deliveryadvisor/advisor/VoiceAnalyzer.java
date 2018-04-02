@@ -29,7 +29,7 @@ public class VoiceAnalyzer {
     private static AppLogsHelper logsHelper;
 
     /** 전화 키워드 셋. */
-    private static final String[] callArray= {"전화","콜","call"};
+    private static final String[] callArray= {"전화","콜","call","전화하다"};
 
     /** 배송 처리 키워드 셋. */
     private static final String[] processArray= {"배송","처리","배송처리","배송 처리"};

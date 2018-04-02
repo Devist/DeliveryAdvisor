@@ -3,6 +3,7 @@ package com.ldcc.pliss.deliveryadvisor;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +18,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +34,7 @@ import android.widget.Toast;
 
 import com.ldcc.pliss.deliveryadvisor.adapter.AllWorkListAdapter;
 import com.ldcc.pliss.deliveryadvisor.adapter.CurrentWorkListAdapter;
+import com.ldcc.pliss.deliveryadvisor.advisor.AdvisorDialog;
 import com.ldcc.pliss.deliveryadvisor.advisor.AdvisorService;
 import com.ldcc.pliss.deliveryadvisor.databases.Delivery;
 import com.ldcc.pliss.deliveryadvisor.databases.DeliveryHelper;
@@ -118,6 +121,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startService(new Intent(this, AdvisorService.class));
 
         setLayout();
+        if(getIntent().getAction().equals(Intent.ACTION_VOICE_COMMAND)){
+            Intent popupIntent = new Intent(getApplicationContext(), AdvisorDialog.class);
+            popupIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            PendingIntent pie= PendingIntent.getActivity(getApplicationContext(), 0, popupIntent, PendingIntent.FLAG_ONE_SHOT);
+            try {
+                pie.send();
+            } catch (PendingIntent.CanceledException e) {
+                //LogUtil.degug(e.getMessage());
+            }
+            finishAffinity();
+        }
     }
 
     private void setLayout(){
@@ -175,8 +189,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View view) {
                 Snackbar.make(view, "무엇을 도와 드릴까요? ^^ [전화,배송 처리,길 안내]",Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-//                SpeechHelper speechHelper = new SpeechHelper(MainActivity.this);
-//                speechHelper.startVoiceRecognition();
+                Intent popupIntent = new Intent(getApplicationContext(), AdvisorDialog.class);
+                popupIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                PendingIntent pie= PendingIntent.getActivity(getApplicationContext(), 0, popupIntent, PendingIntent.FLAG_ONE_SHOT);
+                try {
+                    pie.send();
+                } catch (PendingIntent.CanceledException e) {
+                    //LogUtil.degug(e.getMessage());
+                }
             }
         });
 
@@ -260,6 +280,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
 
                 boolean isCallandMessagePossible = checkPermission();
+
                 if(isCallandMessagePossible) {
                     Intent newIntent = new Intent(MainActivity.this, NavigationActivity.class);
                     startActivity(newIntent);
