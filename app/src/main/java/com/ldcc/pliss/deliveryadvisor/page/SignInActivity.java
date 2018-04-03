@@ -74,7 +74,7 @@ public class SignInActivity extends AppCompatActivity {
         RealmChangeListener callback = new RealmChangeListener() {
             @Override
             public void onChange(Object o) {
-                RealmResults<Delivery> results = (RealmResults) o;
+                RealmResults results = (RealmResults) o;
                 successProgressText.setText(results.size()+ "개 Success");
                 failProgressText.setText(workData.size()-results.size()-1+ "개 Fail");
             }

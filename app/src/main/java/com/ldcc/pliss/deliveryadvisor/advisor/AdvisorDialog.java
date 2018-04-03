@@ -42,6 +42,8 @@ public class AdvisorDialog extends Activity {
     AudioManager audioManager;
 
     private String[] currentDeliveryInfo;
+    private Handler voiceHandler;
+    private Boolean listenFlag = false;
 
     /**
      * 블루투스 헤드셋의 버튼을 클릭할 때, 기본으로 제공되는 비프음이나 안내 음성이 있습니다.
@@ -76,7 +78,6 @@ public class AdvisorDialog extends Activity {
 
         speechHelper = new SpeechHelper(this);
         speechHelper.startVoiceRecognition();
-
         if(clovaTTS==null)
             clovaTTS = new ClovaTTS(getFilesDir());
 
@@ -98,6 +99,7 @@ public class AdvisorDialog extends Activity {
         speechHelper.addListener(new SpeechHelper.Listener() {
             @Override
             public void onVoiceAnalyed(int analyzeResult) {
+                Log.d("처리번호",analyzeResult+"");
                 switch (analyzeResult){
                     case VoiceAnalyzer.CALL_THE_CURRENT_CUSTOMER:
                         new Handler().postDelayed(new Runnable(){
@@ -121,9 +123,8 @@ public class AdvisorDialog extends Activity {
                         break;
 
                     case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_DEFAULT:
-                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 본인이 수령하셨습니다.");
-                        deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","S");
-                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        listenFlag = true;
+                        workUtil.showProcessDeliveryDialog(AdvisorDialog.this,currentDeliveryInfo);
                         finish();
                         break;
 
@@ -157,12 +158,13 @@ public class AdvisorDialog extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
+        voiceHandler = new Handler();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.startBluetoothSco();
 
         //audioManager가 블루투스 마이크 사용을 가져오는 잠깐의 시간 동안 Delay가 발생하고,
         //이에 따라 재생하는 음성이 끊길 수 있습니다. 따라서 블루투스 마이크 사용 설정하는 잠깐의 시간 후에(0.5초 정도) 음성을 재생합니다.
-        new Handler().postDelayed(new Runnable(){
+        voiceHandler.postDelayed(new Runnable(){
             @Override
             public void run(){
                 String myWork = getIntent().getStringExtra("Work-keyword");
@@ -186,14 +188,19 @@ public class AdvisorDialog extends Activity {
 
     @Override
     protected void onStop() {
-        audioManager.stopBluetoothSco();
-        clovaTTS.stopClovaTTS();
-        try{
-            Thread a = speechHelper.stopVoiceRecognition();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
 
+
+        clovaTTS.stopClovaTTS();
+        audioManager.stopBluetoothSco();
+        if(!listenFlag){
+            try{
+                speechHelper.stopVoiceRecognition();
+                speechHelper = null;
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        voiceHandler.removeCallbacksAndMessages(null);
         super.onStop();
     }
 
@@ -261,13 +268,6 @@ public class AdvisorDialog extends Activity {
         clovaTTS.sayThis("tts_"+currentDeliveryInfo[2],voice);
 
 
-//        deliveryInfo[0] = currentDelivery.getRECV_NM();
-//        deliveryInfo[1] = currentDelivery.getITEM_NM();
-//        deliveryInfo[2] = currentDelivery.getINV_NUMB();
-//        deliveryInfo[3] = currentDelivery.getRECV_ADDR();
-//        deliveryInfo[4] = currentDelivery.getRECV_1_TELNO();
-//        deliveryInfo[5] = currentDelivery.getSHIP_MSG();
-//        deliveryInfo[6] = String.valueOf(currentDelivery.getSHIP_ID());
         Button buttonKeepSelf = setButtonLayout("본인이 수령");
         buttonKeepSelf.setOnClickListener(new View.OnClickListener() {  //S:본인  F: 지인  O: 경비실  E: 기타 U:무인택배함
             @Override

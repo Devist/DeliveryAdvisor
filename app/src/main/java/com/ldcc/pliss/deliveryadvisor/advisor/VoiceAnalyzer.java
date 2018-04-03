@@ -18,12 +18,19 @@ public class VoiceAnalyzer {
 
     public static final int POPUP_HELLO_MODE                    = 0;
     public static final int POPUP_INVOICE_NUMBER_MODE          = 1;
+    public static final int POPUP_PROCESS                       = 2;
 
     public static final int CALL_THE_CURRENT_CUSTOMER          = 1000;
     public static final int GUIDE_THE_CURRENT_CUSTOMER         = 1001;
 
     public static final int DELIVERY_THE_CURRENT_CUSTOMER_DEFAULT              = 1002;
     public static final int DELIVERY_THE_CURRENT_CUSTOMER_SECURITY_OFFICE      = 1003;
+    public static final int DELIVERY_THE_CURRENT_CUSTOMER_ACQUAINTANCE         = 1004;
+    public static final int DELIVERY_THE_CURRENT_CUSTOMER_DOOR                 = 1005;
+    public static final int DELIVERY_THE_CURRENT_CUSTOMER_UNMANNED             = 1006;
+    public static final int DELIVERY_THE_CURRENT_CUSTOMER_CANCLE               = 1007;
+    public static final int DELIVERY_THE_CURRENT_CUSTOMER_SELF                 = 1008;
+
 
     public static final int HOW_TO_USE                                         = 8888;
     public static final int EXIT_ADVISOR                                       = 9999;
@@ -39,6 +46,11 @@ public class VoiceAnalyzer {
 
     /** 배송 처리 디테일 장소 키워드 셋. */
     private static final String[] processDetailSecurityOffice= {"경비","경비실"};
+    private static final String[] processDetailSelf= {"본인","자기"};
+    private static final String[] processDetailAcquaintance = {"가족","지인","어머니","아버지","친척","동생"};
+    private static final String[] processDetailDoor = {"문","앞","집","문 앞","집 앞"};
+    private static final String[] processDetailUnmannedCourier = {"무인택배함","무인","택배"};
+    private static final String[] processDetailCancle = {"취소","다음","미배송"};
 
     /** 길 안내 키워드 셋 */
     private static final String[] naviArray= {"안내하다","안내","길","경로"};
@@ -61,15 +73,17 @@ public class VoiceAnalyzer {
      * @return
      */
     public static int getAnalyzedAction(int mode, String voice){
-        String kewords = NLP(voice);
-        List<String> kewordArray = getTokens(kewords);
+        String keywords = NLP(voice);
+        List<String> keywordArray = getTokens(keywords);
 
         int result = POPUP_HELLO_MODE;
 
         switch(mode){
             case POPUP_HELLO_MODE:
-                result = analyzeAll(kewordArray);
+                result = analyzeAll(keywordArray);
                 break;
+            case POPUP_PROCESS:
+                result = analyzeHowToSHIP(keywordArray);
             default:
                 break;
         }
@@ -164,16 +178,41 @@ public class VoiceAnalyzer {
         for (String processing : processArray){
 
             if(keywordsArray.contains(processing)){
-                for (String securityKeywords : processDetailSecurityOffice){
-                    if(keywordsArray.contains(securityKeywords))
-                        return DELIVERY_THE_CURRENT_CUSTOMER_SECURITY_OFFICE;
-                }
-                return DELIVERY_THE_CURRENT_CUSTOMER_DEFAULT;
+                return analyzeHowToSHIP(keywordsArray);
             }
-
         }
 
 
       return -1;
+    }
+
+    private static int analyzeHowToSHIP(List<String> keywordsArray){
+
+        for (String securityKeywords : processDetailSecurityOffice){
+            if(keywordsArray.contains(securityKeywords))
+                return DELIVERY_THE_CURRENT_CUSTOMER_SECURITY_OFFICE;
+        }
+        for (String acquaintanceKeywords : processDetailAcquaintance){
+            if(keywordsArray.contains(acquaintanceKeywords))
+                return DELIVERY_THE_CURRENT_CUSTOMER_ACQUAINTANCE;
+        }
+        for (String doorKeywords : processDetailDoor){
+            if(keywordsArray.contains(doorKeywords))
+                return DELIVERY_THE_CURRENT_CUSTOMER_DOOR;
+        }
+        for (String selfKeywords : processDetailSelf){
+            if(keywordsArray.contains(selfKeywords))
+                return DELIVERY_THE_CURRENT_CUSTOMER_SELF;
+        }
+        for (String unmannedKeywords : processDetailUnmannedCourier){
+            if(keywordsArray.contains(unmannedKeywords))
+                return DELIVERY_THE_CURRENT_CUSTOMER_UNMANNED;
+        }
+        for (String cancleKeywords : processDetailCancle){
+            if(keywordsArray.contains(cancleKeywords))
+                return DELIVERY_THE_CURRENT_CUSTOMER_CANCLE;
+        }
+
+        return DELIVERY_THE_CURRENT_CUSTOMER_DEFAULT;
     }
 }

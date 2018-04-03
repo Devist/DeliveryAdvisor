@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 public class CurrentWorkListAdapter extends BaseAdapter {
 
-    Context context;
+    private Context context;
     private final String [] infos = new String[6];
     private final int[] images = {
             R.drawable.icon_customer_name,
@@ -37,8 +37,9 @@ public class CurrentWorkListAdapter extends BaseAdapter {
     public CurrentWorkListAdapter(Context context, String [] infos){
         //super(context, R.layout.single_list_app_item, utilsArrayList);
         this.context = context;
+
         for(int i = 0; i<6 ; i++){
-            this.infos[i] = infos[i];
+            System.arraycopy(infos,i,this.infos,i,1);
         }
     }
 

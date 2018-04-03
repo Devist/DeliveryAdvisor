@@ -33,10 +33,8 @@ public class CsvUtil {
             String[] s;
             while ((s = reader.readNext()) != null) { data.add(s); }
         } catch (FileNotFoundException e) {
-            Log.d("값","못찾음");
             e.printStackTrace();
         } catch (IOException e) {
-            Log.d("값","기타 에러");
             e.printStackTrace();
         }
 

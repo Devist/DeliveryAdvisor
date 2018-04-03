@@ -54,7 +54,6 @@ public class AllWorkListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        final int pos = position;
         final Context context = parent.getContext();
         AllWorkListVO allWorkListViewItem = allWorkListVO.get(position);
 
@@ -83,24 +82,17 @@ public class AllWorkListAdapter extends BaseAdapter {
         txtContents.setText(allWorkListViewItem.getTxtContents());
         txtAddress.setText(allWorkListViewItem.getTxtAddress());
 
-
-        if(allWorkListViewItem.getStatus().equals("C"))
-            icon.setImageResource(R.drawable.icon_check);
-        else if(allWorkListViewItem.getStatus().equals("B"))
-            icon.setImageResource(R.drawable.icon_delivery_yet);
-        else if(allWorkListViewItem.getStatus().equals("N"))
-            icon.setImageResource(R.drawable.icon_delevery_cancel);
-
-//        final View finalConvertView = convertView;
-//        convertView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(context, (pos+1)+"번째 리스트가 클릭되었습니다,",Toast.LENGTH_SHORT).show();
-//
-//                //finalConvertView.notify();
-//            }
-//        });
-
+        switch (allWorkListViewItem.getStatus()){
+            case "C":
+                icon.setImageResource(R.drawable.icon_check);
+                break;
+            case "B":
+                icon.setImageResource(R.drawable.icon_delivery_yet);
+                break;
+            case "N":
+                icon.setImageResource(R.drawable.icon_delevery_cancel);
+                break;
+        }
         return convertView;
     }
 

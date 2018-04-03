@@ -81,6 +81,7 @@ import io.grpc.stub.StreamObserver;
 
 public class SpeechService extends Service {
 
+    private int analyzerMode = VoiceAnalyzer.POPUP_HELLO_MODE;
     public interface Listener {
 
         /**
@@ -137,7 +138,7 @@ public class SpeechService extends Service {
                         appLogsHelper = new AppLogsHelper(getApplicationContext());
                         appLogsHelper.addAppLogs("Step1.음성 -> 텍스트 : \n"+text );
                         VoiceAnalyzer voiceAnalyzer = new VoiceAnalyzer(getApplicationContext());
-                        int result = voiceAnalyzer.getAnalyzedAction(voiceAnalyzer.POPUP_HELLO_MODE,text);
+                        int result = voiceAnalyzer.getAnalyzedAction(analyzerMode,text);
                         listener.onSpeechRecognized(text, isFinal,result);
                     }
                 }
@@ -155,6 +156,10 @@ public class SpeechService extends Service {
         }
 
     };
+
+    public void setVoiceAnalyzerMode(int mode){
+        analyzerMode = mode;
+    }
 
     private final StreamObserver<RecognizeResponse> mFileResponseObserver
             = new StreamObserver<RecognizeResponse>() {

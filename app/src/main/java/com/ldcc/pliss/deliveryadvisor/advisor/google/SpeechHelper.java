@@ -27,30 +27,23 @@ public class SpeechHelper {
 
     // 음성 문장 분석을 통한 취해야 할 액션을 얻기 위해, AdvisorDialog에서 구현됩니다.
     public interface Listener {
-
         void onVoiceAnalyed(int analyzeResult);
-
     }
 
     Listener mListener;
     public void addListener(@NonNull SpeechHelper.Listener listener) {
         mListener = listener;
     }
-    //private static final String STATE_RESULTS = "results";
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
     private SpeechService mSpeechService;
-
     private Activity activity;
-    private Context context;
     private static VoiceRecorder mVoiceRecorder;
 
-    private TextView mStatus;
     public SpeechHelper(Activity activity){
         this.activity=activity;
     }
 
-    private static String finalMessage ="";
 
 
     private final VoiceRecorder.Callback mVoiceCallback = new VoiceRecorder.Callback() {
@@ -85,6 +78,10 @@ public class SpeechHelper {
 
     };
 
+    public void setAnalyzerMode(int mode){
+        mSpeechService.setVoiceAnalyzerMode(mode);
+    }
+
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
         @Override
@@ -100,6 +97,9 @@ public class SpeechHelper {
 
     };
 
+    /**
+     * SpeechService 의 콜백
+     */
     private final SpeechService.Listener mSpeechServiceListener =
             new SpeechService.Listener() {
                 @Override
@@ -135,10 +135,10 @@ public class SpeechHelper {
     }
 
     public void startVoiceRecognition(){
-        // Prepare Cloud Speech API
+        // Cloud Speech API 준비.
         activity.bindService(new Intent(activity, SpeechService.class), mServiceConnection, BIND_AUTO_CREATE);
 
-        // Start listening to voices
+        // 목소리 듣기 시작.
         if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED) {
             startVoiceRecorder();
@@ -160,7 +160,6 @@ public class SpeechHelper {
         mSpeechService.removeListener(mSpeechServiceListener);
         activity.unbindService(mServiceConnection);
         mSpeechService = null;
-
         return thread;
 
     }
@@ -179,7 +178,6 @@ public class SpeechHelper {
             mVoiceRecorder.stop();
             mVoiceRecorder = null;
         }
-
         return thread;
     }
 }

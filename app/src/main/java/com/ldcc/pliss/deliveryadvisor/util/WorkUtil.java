@@ -58,6 +58,14 @@ public class WorkUtil {
         popupAdvisorDialog(bundle);
     }
 
+    public void showProcessDeliveryDialog (Context context,String[] managerInfo, int mode){
+        this.context = context;
+        bundle.putString("Work-keyword","processDelivery");
+        bundle.putInt("speech",-1);
+        bundle.putStringArray("Delivery-data",managerInfo);
+        popupAdvisorDialog(bundle);
+    }
+
     /**
      * 전화연결 - 고객에게 전화를 걸 때 사용합니다.
      *
@@ -134,7 +142,7 @@ public class WorkUtil {
         Intent popupIntent = new Intent(context, AdvisorDialog.class);
         popupIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         popupIntent.putExtras(bundle);
-        PendingIntent pie= PendingIntent.getActivity(context, 0, popupIntent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pie= PendingIntent.getActivity(context, 0, popupIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         try {
             pie.send();
         }catch (PendingIntent.CanceledException e) {
