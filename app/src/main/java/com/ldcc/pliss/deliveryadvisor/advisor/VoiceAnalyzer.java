@@ -25,6 +25,9 @@ public class VoiceAnalyzer {
     public static final int DELIVERY_THE_CURRENT_CUSTOMER_DEFAULT              = 1002;
     public static final int DELIVERY_THE_CURRENT_CUSTOMER_SECURITY_OFFICE      = 1003;
 
+    public static final int HOW_TO_USE                                         = 8888;
+    public static final int EXIT_ADVISOR                                       = 9999;
+
 
     private static AppLogsHelper logsHelper;
 
@@ -37,6 +40,14 @@ public class VoiceAnalyzer {
     /** 배송 처리 디테일 장소 키워드 셋. */
     private static final String[] processDetailSecurityOffice= {"경비","경비실"};
 
+    /** 길 안내 키워드 셋 */
+    private static final String[] naviArray= {"안내하다","안내","길","경로"};
+
+    /** 어드바이저 취소 */
+    private static final String[] finishArray={"굿바이","종료","괜찮아","아냐","아니야","아니다","괜찮다"};
+
+    /** 사용 방법 질의 */
+    private static final String[] helpArray={"사용방법","사용","방법","헬프"};
 
     public VoiceAnalyzer(Context context){
         logsHelper = new AppLogsHelper(context);
@@ -130,9 +141,24 @@ public class VoiceAnalyzer {
 
     private static int analyzeAll(List<String> keywordsArray){
 
-        for (String call : callArray) {
-            if(keywordsArray.contains(call))
+        for (String keyword : callArray) {
+            if(keywordsArray.contains(keyword))
                 return CALL_THE_CURRENT_CUSTOMER;
+        }
+
+        for (String keyword : naviArray) {
+            if(keywordsArray.contains(keyword))
+                return GUIDE_THE_CURRENT_CUSTOMER;
+        }
+
+        for (String keyword : finishArray) {
+            if(keywordsArray.contains(keyword))
+                return EXIT_ADVISOR;
+        }
+
+        for (String keyword : helpArray) {
+            if(keywordsArray.contains(keyword))
+                return HOW_TO_USE;
         }
 
         for (String processing : processArray){

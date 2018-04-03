@@ -2,6 +2,7 @@ package com.ldcc.pliss.deliveryadvisor.advisor;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioManager;
@@ -14,11 +15,13 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.ldcc.pliss.deliveryadvisor.R;
 import com.ldcc.pliss.deliveryadvisor.advisor.google.SpeechHelper;
 import com.ldcc.pliss.deliveryadvisor.advisor.naver.ClovaTTS;
 import com.ldcc.pliss.deliveryadvisor.databases.DeliveryHelper;
 import com.ldcc.pliss.deliveryadvisor.databases.ManagerHelper;
+import com.ldcc.pliss.deliveryadvisor.page.NavigationActivity;
 import com.ldcc.pliss.deliveryadvisor.util.WorkUtil;
 
 /**
@@ -39,6 +42,22 @@ public class AdvisorDialog extends Activity {
     AudioManager audioManager;
 
     private String[] currentDeliveryInfo;
+
+    /**
+     * 블루투스 헤드셋의 버튼을 클릭할 때, 기본으로 제공되는 비프음이나 안내 음성이 있습니다.
+     * Delivery Advisor 에서 제공되는 음성이 겹칠 수 있으므로,
+     * 블루투스 헤드셋의 기본 음성이 재생된 후 Delivery Advisor의 음성이 재생되도록
+     * 딜레이를 설정합니다.
+     */
+//    private static final int DELAY_MILLIS_FOR_TTS = 1000;
+
+    /**
+     * 블루투스 헤드셋의 버튼을 클릭할 때, 기본으로 제공되는 비프음이나 안내 음성이 있습니다.
+     * Delivery Advisor 에서 제공되는 음성이 겹칠 수 있으므로,
+     * 블루투스 헤드셋의 기본 음성이 재생된 후 Delivery Advisor의 음성이 재생되도록
+     * 딜레이를 설정합니다.
+     */
+    private static final int DELAY_MILLIS_FOR_TTS = 1500;
 
 
     @Override
@@ -90,6 +109,17 @@ public class AdvisorDialog extends Activity {
                         finish();
                         break;
 
+                    case VoiceAnalyzer.GUIDE_THE_CURRENT_CUSTOMER:
+                        clovaTTS.sayThis("tts_navigation","고객의 위치를 보여드릴께요.");
+                        new Handler().postDelayed(new Runnable(){
+                            @Override
+                            public void run(){
+                                startActivity(new Intent(AdvisorDialog.this, NavigationActivity.class));
+                                finishAffinity();
+                            }
+                        },3000);
+                        break;
+
                     case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_DEFAULT:
                         workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 본인이 수령하셨습니다.");
                         deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","S");
@@ -103,6 +133,21 @@ public class AdvisorDialog extends Activity {
                         deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                         finish();
                         break;
+
+                    case VoiceAnalyzer.EXIT_ADVISOR:
+                        clovaTTS.sayGoodBye();
+                        new Handler().postDelayed(new Runnable(){
+                            @Override
+                            public void run(){
+                                System.exit(0);
+                            }
+                        },3000);
+                        break;
+
+                    case VoiceAnalyzer.HOW_TO_USE:
+                        clovaTTS.sayHelp();;
+                        break;
+
                 }
             }
         });
@@ -126,6 +171,9 @@ public class AdvisorDialog extends Activity {
                     case "null":
                         drawFirstQuestionButton(currentDeliveryInfo);
                         break;
+                    case "initialQuestion":
+                        drawFirstQuestionButton(currentDeliveryInfo);
+                        break;
                     case "processDelivery":
                         drawProcessDeliveryButton(currentDeliveryInfo);
                         break;
@@ -133,7 +181,7 @@ public class AdvisorDialog extends Activity {
                         break;
                 }
             }
-        },500);
+        },DELAY_MILLIS_FOR_TTS);
     }
 
     @Override
@@ -150,8 +198,16 @@ public class AdvisorDialog extends Activity {
     }
 
     private void drawFirstQuestionButton(final String[] currentDeliveryInfo){
-        textViewQuestion.setText("무엇을 도와드릴까요?");
-        clovaTTS.sayThis("tts_welcome","무엇을 도와드릴까요?");
+        textViewQuestion.setText(clovaTTS.sayHello());
+
+        Button buttonHelp = setButtonLayout("예제) 사용 방법 알려줘.");
+        buttonHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clovaTTS.sayHelp();
+                //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+            }
+        });
 
         Button buttonKeepSelf = setButtonLayout("예제) 고객에게 전화 연결해줘.");
         buttonKeepSelf.setOnClickListener(new View.OnClickListener() {  //S:본인  F: 지인  O: 경비실  E: 기타 U:무인택배함
@@ -191,26 +247,15 @@ public class AdvisorDialog extends Activity {
                 finish();
             }
         });
-
-        Button buttonKeepUnmannedCourier = setButtonLayout("무인택배함");
-        buttonKeepUnmannedCourier.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","U");
-                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
-                //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
-                finish();
-            }
-        });
     }
 
     private void drawProcessDeliveryButton(final String[] currentDeliveryInfo){
         String invoiceKeword = clovaTTS.convertNumberToClova(deliveryHelper.getSearchedInfo(currentDeliveryInfo[2]).getINV_KW());
         String sentence = "\"송장번호 "+currentDeliveryInfo[2]+", "+currentDeliveryInfo[0]
-                +" 님에게 전달하는 상품을 배송처리하겠습니다. 수령자는 누구입니까?"+"\"";
+                +" 님의 상품을 배송처리할께요. 수령자는 누구입니까?"+"\"";
 
         String voice = "\"송장번호 "+invoiceKeword+", "+currentDeliveryInfo[0]
-                +" 님에게 전달하는 상품을 배송처리하겠습니다. 수령자는 누구입니까?"+"\"";
+                +" 님의 상품을 배송처리할께요. 수령자는 누구입니까?"+"\"";
 
         textViewQuestion.setText(sentence);
         clovaTTS.sayThis("tts_"+currentDeliveryInfo[2],voice);

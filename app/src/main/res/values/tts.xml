@@ -24,6 +24,12 @@
     <string name="adv_proc_delivery_self">으로 배송 처리했습니다!</string>
     <string name="adv_proc_delivery_unmanned_courier">무인택배함</string>
 
+    <!--어드바이저 취소-->
+    <string name="adv_bye1">감사합니다!</string>
+    <string name="adv_bye2">See you next time!</string>
+    <string name="adv_bye3">알겠습니다.</string>
+
+
     <!--Awareness. 그룹 벗어날 때 동시 처리 -->
     <string name="adv_aware_out_of_group">그룹에서 벗어나고 있어요. 기존 배송지는 </string>
 

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -120,18 +121,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //음성인식 서비스 활성
         startService(new Intent(this, AdvisorService.class));
 
-        setLayout();
-        if(getIntent().getAction().equals(Intent.ACTION_VOICE_COMMAND)){
-            Intent popupIntent = new Intent(getApplicationContext(), AdvisorDialog.class);
-            popupIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            PendingIntent pie= PendingIntent.getActivity(getApplicationContext(), 0, popupIntent, PendingIntent.FLAG_ONE_SHOT);
-            try {
-                pie.send();
-            } catch (PendingIntent.CanceledException e) {
-                //LogUtil.degug(e.getMessage());
+        //헤드셋 버튼으로 진입했을 경우 어드바이저를 활성
+        try{
+            if(getIntent().getAction().equals(Intent.ACTION_VOICE_COMMAND)){
+                workUtil.showFirstQuestionDialog (MainActivity.this, managerInfo);
+                finish();
             }
-            finishAffinity();
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
+        setLayout();
     }
 
     private void setLayout(){
@@ -189,14 +189,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View view) {
                 Snackbar.make(view, "무엇을 도와 드릴까요? ^^ [전화,배송 처리,길 안내]",Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                Intent popupIntent = new Intent(getApplicationContext(), AdvisorDialog.class);
-                popupIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                PendingIntent pie= PendingIntent.getActivity(getApplicationContext(), 0, popupIntent, PendingIntent.FLAG_ONE_SHOT);
-                try {
-                    pie.send();
-                } catch (PendingIntent.CanceledException e) {
-                    //LogUtil.degug(e.getMessage());
-                }
+                workUtil.showFirstQuestionDialog (MainActivity.this, managerInfo);
             }
         });
 
@@ -282,8 +275,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 boolean isCallandMessagePossible = checkPermission();
 
                 if(isCallandMessagePossible) {
-                    Intent newIntent = new Intent(MainActivity.this, NavigationActivity.class);
-                    startActivity(newIntent);
+                    startActivity(new Intent(MainActivity.this, NavigationActivity.class));
                 }else{
                     Toast.makeText(MainActivity.this, "위치를 허용하지 않았을 경우, 앱 설정에서 위치 권한 허용을 클릭해주시기 바랍니다.", Toast.LENGTH_SHORT).show();
                 }
@@ -320,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // 메뉴를 inflate 합니다 아이템이 있을 경우 아이템을 표시합니다.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }

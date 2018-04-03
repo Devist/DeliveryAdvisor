@@ -30,15 +30,27 @@ public class WorkUtil {
     private Context context;
     private Bundle bundle = new Bundle();
 
-    //음성인식 - 사용자가 음성인식을 활성화했을 때, 시작 팝업을 띄우는 기능
+    /**
+     * 음성인식 - 사용자가 음성인식을 활성화했을 때, 시작 팝업을 띄우는 기능입니다.
+     * (Ex. 무엇을 도와드릴까요?)
+     *
+     * @param context     Activity 로부터 가져온 context (getApplicationContext())
+     * @param managerInfo ManagerHelper.getCurrentDeliveryInfoSimple() 에서 가져온 값
+     */
     public void showFirstQuestionDialog (Context context, String[] managerInfo){
         this.context = context;
         bundle.putString("Work-keyword","initialQuestion");
         bundle.putStringArray("Delivery-data",managerInfo);
-
+        popupAdvisorDialog(bundle);
     }
 
-    //음성인식 - 사용자가 배송 처리를 할 때, 배송 처리 팝업을 띄우는 기능
+    /**
+     * 음성인식 - 사용자가 배송 처리를 할 때, 배송 처리 팝업을 띄우는 기능입니다.
+     * (Ex. 송장번호 0000 를 배송 처리하겠습니까?)
+     *
+     * @param context     Activity 로부터 가져온 context (getApplicationContext())
+     * @param managerInfo ManagerHelper.getCurrentDeliveryInfoSimple() 에서 가져온 값
+     */
     public void showProcessDeliveryDialog (Context context,String[] managerInfo){
         this.context = context;
         bundle.putString("Work-keyword","processDelivery");
@@ -46,19 +58,12 @@ public class WorkUtil {
         popupAdvisorDialog(bundle);
     }
 
-    private void popupAdvisorDialog(Bundle bundle) {
-        Intent popupIntent = new Intent(context, AdvisorDialog.class);
-        popupIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        popupIntent.putExtras(bundle);
-        PendingIntent pie= PendingIntent.getActivity(context, 0, popupIntent, PendingIntent.FLAG_ONE_SHOT);
-        try {
-            pie.send();
-        }catch (PendingIntent.CanceledException e) {
-
-        }
-    }
-
-    //사용자가 고객에게 전화 연결할 때 사용하는 기능
+    /**
+     * 전화연결 - 고객에게 전화를 걸 때 사용합니다.
+     *
+     * @param context       Activity 로부터 가져온 context (getApplicationContext())
+     * @param phoneNumber   고객 전화 번호. ( 가능한 형식 : "01012345678", "010-1234-5678" )
+     */
     public void callTheCustomer(Context context, String phoneNumber){
         this.context = context;
         Intent intent = new Intent(Intent.ACTION_CALL);
@@ -70,7 +75,13 @@ public class WorkUtil {
         }
     }
 
-    //사용자가 고객에메 문자 메시지를 전송할 때 사용하는 기능
+    /**
+     * 문자 전송 - 사용자가 고객에메 문자 메시지를 전송할 때 사용하는 기능입니다.
+     *
+     * @param context       Activity 로부터 가져온 context (getApplicationContext())
+     * @param phoneNumber   고객 전화 번호. ( 가능한 형식 : "01012345678", "010-1234-5678" )
+     * @param message       전송할 문자 내용
+     */
     public void sendSMS(Context context, String phoneNumber, String message){
         prefs = context.getSharedPreferences("Pref", MODE_PRIVATE);
 
@@ -113,7 +124,21 @@ public class WorkUtil {
         }
     }
 
-    public void recordLog(){
 
+    /**
+     *
+     *
+     * @param bundle
+     */
+    private void popupAdvisorDialog(Bundle bundle) {
+        Intent popupIntent = new Intent(context, AdvisorDialog.class);
+        popupIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        popupIntent.putExtras(bundle);
+        PendingIntent pie= PendingIntent.getActivity(context, 0, popupIntent, PendingIntent.FLAG_ONE_SHOT);
+        try {
+            pie.send();
+        }catch (PendingIntent.CanceledException e) {
+
+        }
     }
 }

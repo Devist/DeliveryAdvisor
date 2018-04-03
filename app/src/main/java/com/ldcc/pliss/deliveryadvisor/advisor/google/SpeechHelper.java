@@ -66,7 +66,12 @@ public class SpeechHelper {
         @Override
         public void onVoice(byte[] data, int size) {
             if (mSpeechService != null) {
-                mSpeechService.recognize(data, size);
+                try{
+                    mSpeechService.recognize(data, size);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
             }
         }
 
