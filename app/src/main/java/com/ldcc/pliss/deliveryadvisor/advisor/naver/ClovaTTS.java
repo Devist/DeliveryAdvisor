@@ -191,7 +191,6 @@ public class ClovaTTS {
 
             FileInputStream MyFile = new FileInputStream(myFile);
             mediaPlayer.setDataSource(MyFile.getFD());
-
             mediaPlayer.prepare();
             mediaPlayer.start();
 

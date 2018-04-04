@@ -19,8 +19,8 @@
     <!--블루투스 사용을 위한 퍼미션-->
     <!--https://developer.android.com/guide/topics/media-apps/mediabuttons.html-->
     <!--https://stackoverflow.com/questions/38289086/receive-callback-on-all-android-media-button-events-all-the-time-even-when-anot-->
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <!--<uses-permission android:name="android.permission.BLUETOOTH" />-->
+    <!--<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />-->
     <uses-feature android:name="android.hardware.bluetooth_le" />
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -31,7 +31,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
+
 
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
