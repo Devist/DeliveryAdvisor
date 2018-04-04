@@ -140,7 +140,7 @@ public class WorkUtil {
      */
     private void popupAdvisorDialog(Bundle bundle) {
         Intent popupIntent = new Intent(context, AdvisorDialog.class);
-        popupIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        popupIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         popupIntent.putExtras(bundle);
         PendingIntent pie= PendingIntent.getActivity(context, 0, popupIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         try {

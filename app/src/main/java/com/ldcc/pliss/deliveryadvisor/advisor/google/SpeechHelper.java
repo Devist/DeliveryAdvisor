@@ -44,6 +44,7 @@ public class SpeechHelper {
         this.activity=activity;
     }
 
+    private int analyzerMode = VoiceAnalyzer.POPUP_HELLO_MODE ;  // 1: 전체 분석, 2: 배송 처리 분석
 
 
     private final VoiceRecorder.Callback mVoiceCallback = new VoiceRecorder.Callback() {
@@ -64,7 +65,6 @@ public class SpeechHelper {
                 }catch (Exception e){
                     e.printStackTrace();
                 }
-
             }
         }
 
@@ -87,6 +87,8 @@ public class SpeechHelper {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder binder) {
             mSpeechService = SpeechService.from(binder);
+            Log.d("처리커넥션",analyzerMode+"");
+            mSpeechService.setVoiceAnalyzerMode(analyzerMode);
             mSpeechService.addListener(mSpeechServiceListener);
         }
 
@@ -134,7 +136,8 @@ public class SpeechHelper {
         });
     }
 
-    public void startVoiceRecognition(){
+    public void startVoiceRecognition(int mode){
+        analyzerMode = mode;
         // Cloud Speech API 준비.
         activity.bindService(new Intent(activity, SpeechService.class), mServiceConnection, BIND_AUTO_CREATE);
 
