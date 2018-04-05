@@ -110,7 +110,6 @@ public class SpeechHelper {
                         mVoiceRecorder.dismiss();
                     }
                     if (!TextUtils.isEmpty(text)) {
-
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

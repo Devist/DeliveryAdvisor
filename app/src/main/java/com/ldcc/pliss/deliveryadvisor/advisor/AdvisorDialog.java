@@ -68,6 +68,9 @@ public class AdvisorDialog extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_advisor);
 
+        speechHelper = new SpeechHelper(this);
+        setListener();
+
     }
 
     @Override
@@ -110,11 +113,11 @@ public class AdvisorDialog extends Activity {
         super.onNewIntent(intent);
         Log.d("처리","onNewIntent()");
         setIntent(intent);
-        speechHelper = new SpeechHelper(this);
+        speechHelper.stopVoiceRecognition();
         setLayout();
 
         voiceHandler = new Handler();
-        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        //audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.startBluetoothSco();
 
 
@@ -149,8 +152,7 @@ public class AdvisorDialog extends Activity {
         textViewQuestion = (TextView) findViewById(R.id.text_advisor);
         layoutForWorkButton.removeAllViewsInLayout();
 
-        speechHelper = new SpeechHelper(this);
-        setListener();
+
         String myWork = getIntent().getStringExtra("Work-keyword");
         Log.d("처리번호initSetting",myWork);
 
@@ -217,6 +219,41 @@ public class AdvisorDialog extends Activity {
                     case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_SECURITY_OFFICE:
                         workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
                         deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","O");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        finish();
+                        break;
+
+                    case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_DOOR:
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
+                        deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","D");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        finish();
+                        break;
+
+                    case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_SELF:
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
+                        deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","S");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        finish();
+                        break;
+
+                    case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_ACQUAINTANCE:
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
+                        deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","F");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        finish();
+                        break;
+
+                    case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_UNMANNED:
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
+                        deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","U");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        finish();
+                        break;
+
+                    case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_CANCLE:
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
+                        deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"N","U");
                         deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                         finish();
                         break;
@@ -321,7 +358,7 @@ public class AdvisorDialog extends Activity {
         clovaTTS.sayThis("tts_"+currentDeliveryInfo[2],voice);
 
 
-        Button buttonKeepSelf = setButtonLayout("본인이 수령");
+        Button buttonKeepSelf = setButtonLayout("예제) 본인이 수령");
         buttonKeepSelf.setOnClickListener(new View.OnClickListener() {  //S:본인  F: 지인  O: 경비실  E: 기타 U:무인택배함
             @Override
             public void onClick(View v) {
@@ -333,7 +370,7 @@ public class AdvisorDialog extends Activity {
             }
         });
 
-        Button buttonKeepAcquaintance = setButtonLayout("[가족,동료,어머니]가 수령했어");
+        Button buttonKeepAcquaintance = setButtonLayout("예제) 지인[엄마,친구]가 수령했어");
         buttonKeepAcquaintance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -345,7 +382,7 @@ public class AdvisorDialog extends Activity {
             }
         });
 
-        Button buttonKeepDoor = setButtonLayout("문 앞에 두었어");
+        Button buttonKeepDoor = setButtonLayout("예제) 문 앞에 두었어");
         buttonKeepDoor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -357,7 +394,7 @@ public class AdvisorDialog extends Activity {
             }
         });
 
-        Button buttonKeepSecurityOffice = setButtonLayout("경비실에 맡겨뒀어.");
+        Button buttonKeepSecurityOffice = setButtonLayout("예제) 경비실에 맡겨뒀어.");
         buttonKeepSecurityOffice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -369,7 +406,7 @@ public class AdvisorDialog extends Activity {
             }
         });
 
-        Button buttonKeepUnmannedCourier = setButtonLayout("무인택배함");
+        Button buttonKeepUnmannedCourier = setButtonLayout("예제) 무인택배함");
         buttonKeepUnmannedCourier.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -381,7 +418,7 @@ public class AdvisorDialog extends Activity {
             }
         });
 
-        Button buttonNoShipping = setButtonLayout("미배송[취소] 처리할께");
+        Button buttonNoShipping = setButtonLayout("예제) 미배송[취소] 처리할께");
         buttonNoShipping.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -393,12 +430,6 @@ public class AdvisorDialog extends Activity {
             }
         });
 
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        audioManager.stopBluetoothSco();
     }
 
     private Button setButtonLayout(String btnContents){
@@ -417,4 +448,9 @@ public class AdvisorDialog extends Activity {
         return  createdButton;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        audioManager.stopBluetoothSco();
+    }
 }
