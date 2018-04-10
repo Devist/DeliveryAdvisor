@@ -2,6 +2,7 @@ package com.ldcc.pliss.deliveryadvisor.advisor;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.ldcc.pliss.deliveryadvisor.databases.AppLogsHelper;
 
@@ -74,6 +75,7 @@ public class VoiceAnalyzer {
      */
     public static int getAnalyzedAction(int mode, String voice){
         String keywords = NLP(voice);
+        joinIndividualNumbers();
         List<String> keywordArray = getTokens(keywords);
 
         int result = POPUP_HELLO_MODE;
@@ -90,6 +92,24 @@ public class VoiceAnalyzer {
 
         return result;
 
+    }
+
+    private static void joinIndividualNumbers(){
+        String myTest = "송장번호 3 2 9 8 0 배송처 리 4 7 89";
+        StringBuffer buffer = new StringBuffer(myTest);
+        for(int i = 0; i<buffer.length()-1 ; i++){
+            char compareChar = buffer.charAt(i);
+            char spaceChar = buffer.charAt(i+1);
+            if (compareChar==('0')||compareChar==('1')||compareChar==('2')||compareChar==('3')
+                    ||compareChar==('4')||compareChar==('5')||compareChar==('6')
+                    ||compareChar==('7')||compareChar==('8')||compareChar==('9')){
+                if(spaceChar==' '){
+                    buffer.deleteCharAt(i+1);
+                }
+            }
+        }
+        myTest = buffer.toString();
+        Log.d("테스트",myTest);
     }
 
     /**
@@ -120,7 +140,10 @@ public class VoiceAnalyzer {
     private static List<String> getTokens(String kewords){
         String[] nouns = null;
         String[] adjs = null;
-        List<String> tokens = new ArrayList<String>();
+        String[] verbs = null;
+        String[] verbPrefixs = null;
+        String[] numbers = null;
+        List<String> tokens = new ArrayList<>();
 
         try{
             JSONObject flattenJson = new JSONObject(kewords);
@@ -145,6 +168,41 @@ public class VoiceAnalyzer {
                     tokens.add(adjs[i]);
                 }
             }
+
+            verbs = new String[jsonArrayTokens.length()];
+            str+="\n\n Step4.텍스트 -> 키워드(Verb): \n"; //로그 기록하기 위한 Source Code
+            for(int i = 0 ;i <jsonArrayTokens.length() ; i++){
+                if(jsonArrayTokens.getString(i).contains("Verb")) {
+                    verbs[i] = jsonArrayTokens.getString(i).split("\\)")[0];
+                    verbs[i] = verbs[i].split("\\(")[2];
+                    str+="["+verbs[i]+"]"; //로그 기록하기 위한 Source Code
+                    tokens.add(verbs[i]);
+                }
+            }
+
+            verbPrefixs = new String[jsonArrayTokens.length()];
+            str+="\n\n Step5.텍스트 -> 키워드(VerbPrefix): \n"; //로그 기록하기 위한 Source Code
+            for(int i = 0 ;i <jsonArrayTokens.length() ; i++){
+                Log.d("어레이스트링",jsonArrayTokens.getString(i));
+                if(jsonArrayTokens.getString(i).contains("VerbPrefix")) {
+                    verbPrefixs[i] = jsonArrayTokens.getString(i).split("\\)")[0];
+                    verbPrefixs[i] = verbPrefixs[i].split("\\(")[2];
+                    str+="["+verbPrefixs[i]+"]"; //로그 기록하기 위한 Source Code
+                    tokens.add(verbPrefixs[i]);
+                }
+            }
+
+            numbers = new String[jsonArrayTokens.length()];
+            str+="\n\n Step6.텍스트 -> 키워드(Number): \n"; //로그 기록하기 위한 Source Code
+            for(int i = 0 ;i <jsonArrayTokens.length() ; i++){
+                if(jsonArrayTokens.getString(i).contains("Number")) {
+                    numbers[i] = jsonArrayTokens.getString(i).split("\\)")[0];
+                    numbers[i] = numbers[i].split("\\(")[0];
+                    str+="["+numbers[i]+"]"; //로그 기록하기 위한 Source Code
+                    tokens.add(verbPrefixs[i]);
+                }
+            }
+
             logsHelper.addAppLogs(str);
 
         }catch(Exception e){

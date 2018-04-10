@@ -19,10 +19,14 @@ import android.widget.TextView;
 import com.ldcc.pliss.deliveryadvisor.R;
 import com.ldcc.pliss.deliveryadvisor.advisor.google.SpeechHelper;
 import com.ldcc.pliss.deliveryadvisor.advisor.naver.ClovaTTS;
+import com.ldcc.pliss.deliveryadvisor.analyzer.Analyzer;
+import com.ldcc.pliss.deliveryadvisor.analyzer.FinalAction;
 import com.ldcc.pliss.deliveryadvisor.databases.DeliveryHelper;
 import com.ldcc.pliss.deliveryadvisor.databases.ManagerHelper;
 import com.ldcc.pliss.deliveryadvisor.page.NavigationActivity;
 import com.ldcc.pliss.deliveryadvisor.util.WorkUtil;
+
+import java.util.List;
 
 /**
  * Created by pliss on 2018. 3. 6..
@@ -154,16 +158,15 @@ public class AdvisorDialog extends Activity {
 
 
         String myWork = getIntent().getStringExtra("Work-keyword");
-        Log.d("처리번호initSetting",myWork);
 
         switch (String.valueOf(myWork)){
             case "null":
                 break;
             case "initialQuestion":
-                speechHelper.startVoiceRecognition(VoiceAnalyzer.POPUP_HELLO_MODE);
+                speechHelper.startVoiceRecognition(Analyzer.POPUP_HELLO_MODE);
                 break;
             case "processDelivery":
-                speechHelper.startVoiceRecognition(VoiceAnalyzer.POPUP_PROCESS);
+                speechHelper.startVoiceRecognition(Analyzer.POPUP_PROCESS);
                 break;
             case "howToProcess":
                 break;
@@ -188,10 +191,10 @@ public class AdvisorDialog extends Activity {
 
         speechHelper.addListener(new SpeechHelper.Listener() {
             @Override
-            public void onVoiceAnalyed(int analyzeResult) {
+            public void onVoiceAnalyed(int analyzeResult, List<String> invoiceKeywords) {
                 Log.d("처리번호",analyzeResult+"");
                 switch (analyzeResult){
-                    case VoiceAnalyzer.CALL_THE_CURRENT_CUSTOMER:
+                    case FinalAction.CALL_CURRENT_CUSTOMER:
                         new Handler().postDelayed(new Runnable(){
                             @Override
                             public void run(){
@@ -201,7 +204,7 @@ public class AdvisorDialog extends Activity {
                         finish();
                         break;
 
-                    case VoiceAnalyzer.GUIDE_THE_CURRENT_CUSTOMER:
+                    case FinalAction.NAVI_CURRENT:
                         clovaTTS.sayThis("tts_navigation","고객의 위치를 보여드릴께요.");
                         new Handler().postDelayed(new Runnable(){
                             @Override
@@ -212,18 +215,18 @@ public class AdvisorDialog extends Activity {
                         },3000);
                         break;
 
-                    case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_DEFAULT:
+                    case FinalAction.DONE_SIMPLE_CURRENNT:
                         workUtil.showProcessDeliveryDialog(AdvisorDialog.this,currentDeliveryInfo);
                         break;
 
-                    case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_SECURITY_OFFICE:
+                    case FinalAction.DONE_KEEP_CURRENT_SECURITY:
                         workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
                         deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","O");
                         deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                         finish();
                         break;
 
-                    case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_DOOR:
+                    case FinaAction.DONE_KEEP_DOOR_:
                         workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
                         deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","D");
                         deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);

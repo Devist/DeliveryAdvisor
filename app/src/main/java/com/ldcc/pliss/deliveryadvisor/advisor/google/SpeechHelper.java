@@ -15,10 +15,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.ldcc.pliss.deliveryadvisor.R;
-import com.ldcc.pliss.deliveryadvisor.advisor.VoiceAnalyzer;
 import com.ldcc.pliss.deliveryadvisor.advisor.VoiceRecorder;
+import com.ldcc.pliss.deliveryadvisor.analyzer.Analyzer;
+
+import java.util.List;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 import static com.ldcc.pliss.deliveryadvisor.MainActivity.fa;
@@ -27,7 +27,7 @@ public class SpeechHelper {
 
     // 음성 문장 분석을 통한 취해야 할 액션을 얻기 위해, AdvisorDialog에서 구현됩니다.
     public interface Listener {
-        void onVoiceAnalyed(int analyzeResult);
+        void onVoiceAnalyed(int analyzeResult, List<String> invoiceKeywords);
     }
 
     Listener mListener;
@@ -44,7 +44,7 @@ public class SpeechHelper {
         this.activity=activity;
     }
 
-    private int analyzerMode = VoiceAnalyzer.POPUP_HELLO_MODE ;  // 1: 전체 분석, 2: 배송 처리 분석
+    private int analyzerMode = Analyzer.POPUP_HELLO_MODE ;  // 1: 전체 분석, 2: 배송 처리 분석
 
 
     private final VoiceRecorder.Callback mVoiceCallback = new VoiceRecorder.Callback() {
@@ -60,11 +60,7 @@ public class SpeechHelper {
         @Override
         public void onVoice(byte[] data, int size) {
             if (mSpeechService != null) {
-                try{
                     mSpeechService.recognize(data, size);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
             }
         }
 
@@ -105,7 +101,7 @@ public class SpeechHelper {
     private final SpeechService.Listener mSpeechServiceListener =
             new SpeechService.Listener() {
                 @Override
-                public void onSpeechRecognized(final String text, final boolean isFinal, final int analyzeResult) {
+                public void onSpeechRecognized(final String text, final boolean isFinal, final int analyzeResult, final List<String> invoiceKeywords) {
                     if (isFinal) {
                         mVoiceRecorder.dismiss();
                     }
@@ -115,7 +111,7 @@ public class SpeechHelper {
                             public void run() {
                                 if (isFinal) {
                                     Toast.makeText(activity,"인식된 문서는 : "+text,Toast.LENGTH_SHORT).show();
-                                    mListener.onVoiceAnalyed(analyzeResult);
+                                    mListener.onVoiceAnalyed(analyzeResult, invoiceKeywords);
                                 } else {
                                     //실시간 인식에서 사용
                                 }
@@ -154,15 +150,15 @@ public class SpeechHelper {
         }
     }
 
-    public Thread stopVoiceRecognition(){
+    public void stopVoiceRecognition(){
         // Prepare Cloud Speech API
-        Thread thread =stopVoiceRecorder();        // 이 코드로 인해 앱 지연
+        stopVoiceRecorder();        // 이 코드로 인해 앱 지연
 
         // Stop Cloud Speech API
         mSpeechService.removeListener(mSpeechServiceListener);
         activity.unbindService(mServiceConnection);
         mSpeechService = null;
-        return thread;
+        //return thread;
 
     }
 
@@ -174,12 +170,12 @@ public class SpeechHelper {
         mVoiceRecorder.start();
     }
 
-    private Thread stopVoiceRecorder() {
-        Thread thread = mVoiceRecorder.getThread();
+    private void stopVoiceRecorder() {
+//        Thread thread = mVoiceRecorder.getThread();
         if (mVoiceRecorder != null) {
             mVoiceRecorder.stop();
             mVoiceRecorder = null;
         }
-        return thread;
+//        return thread;
     }
 }

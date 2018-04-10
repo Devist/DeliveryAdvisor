@@ -164,7 +164,7 @@ option java_package = "com.google.api";
 // `GET /v1/messages/123456` | `GetMessage(message_id: "123456")`
 // `GET /v1/users/me/messages/123456` | `GetMessage(user_id: "me" message_id: "123456")`
 //
-// # Rules for HTTP mapping
+// # Params for HTTP mapping
 // The rules for mapping HTTP path, query parameters, and body fields
 // to the request message are as follows:
 //

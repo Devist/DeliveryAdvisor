@@ -62,6 +62,7 @@ import com.google.cloud.speech.v1.StreamingRecognizeResponse;
 import com.google.protobuf.ByteString;
 import com.ldcc.pliss.deliveryadvisor.R;
 import com.ldcc.pliss.deliveryadvisor.advisor.VoiceAnalyzer;
+import com.ldcc.pliss.deliveryadvisor.analyzer.Analyzer;
 import com.ldcc.pliss.deliveryadvisor.databases.AppLogsHelper;
 
 import io.grpc.CallOptions;
@@ -81,7 +82,7 @@ import io.grpc.stub.StreamObserver;
 
 public class SpeechService extends Service {
 
-    private int analyzerMode = VoiceAnalyzer.POPUP_HELLO_MODE;
+    private int analyzerMode = Analyzer.POPUP_HELLO_MODE;
     public interface Listener {
 
         /**
@@ -90,7 +91,7 @@ public class SpeechService extends Service {
          * @param text    The text.
          * @param isFinal {@code true} when the API finished processing audio.
          */
-        void onSpeechRecognized(String text, boolean isFinal, int analyzeResult);
+        void onSpeechRecognized(String text, boolean isFinal, int analyzeResult, List<String> invoiceKeywords);
 
     }
 
@@ -137,9 +138,10 @@ public class SpeechService extends Service {
                     if (isFinal){
                         appLogsHelper = new AppLogsHelper(getApplicationContext());
                         appLogsHelper.addAppLogs("Step1.음성 -> 텍스트 : \n"+text );
-                        VoiceAnalyzer voiceAnalyzer = new VoiceAnalyzer(getApplicationContext());
+                        Analyzer voiceAnalyzer = new Analyzer(getApplicationContext());
                         int result = voiceAnalyzer.getAnalyzedAction(analyzerMode,text);
-                        listener.onSpeechRecognized(text, isFinal,result);
+                        List<String> invoiceKeywords = voiceAnalyzer.getInvoiceKeywords();
+                        listener.onSpeechRecognized(text, isFinal,result,invoiceKeywords);
                     }
                 }
             }
@@ -175,7 +177,8 @@ public class SpeechService extends Service {
             }
             if (text != null) {
                 for (Listener listener : mListeners) {
-                    listener.onSpeechRecognized(text, true,-1);
+                    Log.d("진입","진입 아이돈 노우");
+                    listener.onSpeechRecognized(text, true,-333,null);
                 }
             }
         }
