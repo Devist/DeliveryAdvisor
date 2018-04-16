@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Random;
 
 public class ClovaTTS {
@@ -38,7 +39,18 @@ public class ClovaTTS {
     private MediaPlayer mediaPlayer;
 
 
+    public interface Listener {
 
+
+        void onSpeakingFinished(boolean isFinal);
+
+    }
+
+    private Listener mListener;
+
+    public void addListener(Listener mListener) {
+        this.mListener  = mListener;
+    }
     public ClovaTTS(File fileDir){
         this.fileDir=fileDir;
     }
@@ -193,6 +205,11 @@ public class ClovaTTS {
             mediaPlayer.setDataSource(MyFile.getFD());
             mediaPlayer.prepare();
             mediaPlayer.start();
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                public void onCompletion(MediaPlayer mp) {
+                    mListener.onSpeakingFinished(true);
+                }
+            });
 
 
         } catch (Exception e) {

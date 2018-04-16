@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.ldcc.pliss.deliveryadvisor.R;
 import com.ldcc.pliss.deliveryadvisor.advisor.google.SpeechHelper;
+import com.ldcc.pliss.deliveryadvisor.advisor.google.SpeechService;
 import com.ldcc.pliss.deliveryadvisor.advisor.naver.ClovaTTS;
 import com.ldcc.pliss.deliveryadvisor.analyzer.Analyzer;
 import com.ldcc.pliss.deliveryadvisor.analyzer.FinalAction;
@@ -54,6 +55,8 @@ public class AdvisorDialog extends Activity {
 
     private String[] currentDeliveryInfo;
     private Handler voiceHandler;
+    private MediaPlayer mediaPlayer;
+    boolean isPresentation;
 
     /**
      * 블루투스 헤드셋의 버튼을 클릭할 때, 기본으로 제공되는 비프음이나 안내 음성이 있습니다.
@@ -79,43 +82,27 @@ public class AdvisorDialog extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_advisor);
 
-        speechHelper = new SpeechHelper(this);
-        setListener();
+        initSetting();
+    }
 
+    private void initSetting(){
+        if(clovaTTS==null)
+            clovaTTS = new ClovaTTS(getFilesDir());
+
+        speechHelper = new SpeechHelper(this);
+        prefs= getSharedPreferences("Pref", MODE_PRIVATE);
+        isPresentation = prefs.getBoolean("isPresentation",false);
+
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioManager.startBluetoothSco();
+
+        setLayout();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         Log.d("처리","onStart()");
-        setLayout();
-
-        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        audioManager.startBluetoothSco();
-
-        //audioManager가 블루투스 마이크 사용을 가져오는 잠깐의 시간 동안 Delay가 발생하고,
-        //이에 따라 재생하는 음성이 끊길 수 있습니다. 따라서 블루투스 마이크 사용 설정하는 잠깐의 시간 후에(0.5초 정도) 음성을 재생합니다.
-        voiceHandler = new Handler();
-        voiceHandler.postDelayed(new Runnable(){
-            @Override
-            public void run(){
-                String myWork = getIntent().getStringExtra("Work-keyword");
-
-                switch (String.valueOf(myWork)){
-                    case "null":
-                        drawFirstQuestionButton(currentDeliveryInfo);
-                        break;
-                    case "initialQuestion":
-                        drawFirstQuestionButton(currentDeliveryInfo);
-                        break;
-                    case "processDelivery":
-                        drawProcessDeliveryButton(currentDeliveryInfo);
-                        break;
-                    case "howToProcess":
-                        break;
-                }
-            }
-        },DELAY_MILLIS_FOR_TTS);
     }
 
 
@@ -123,22 +110,27 @@ public class AdvisorDialog extends Activity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Log.d("처리","onNewIntent()");
+        if(clovaTTS==null)
+            clovaTTS = new ClovaTTS(getFilesDir());
+
         setIntent(intent);
         speechHelper.stopVoiceRecognition();
-        setLayout();
 
-        voiceHandler = new Handler();
-        //audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.startBluetoothSco();
+        setLayout();
+    }
 
+    private void setLayout(){
+
+        final String myWork = getIntent().getStringExtra("Work-keyword");
 
         //audioManager가 블루투스 마이크 사용을 가져오는 잠깐의 시간 동안 Delay가 발생하고,
         //이에 따라 재생하는 음성이 끊길 수 있습니다. 따라서 블루투스 마이크 사용 설정하는 잠깐의 시간 후에(0.5초 정도) 음성을 재생합니다.
+        voiceHandler = new Handler();
         voiceHandler.postDelayed(new Runnable(){
             @Override
             public void run(){
-                String myWork = getIntent().getStringExtra("Work-keyword");
-                Log.d("처리번호",myWork);
 
                 switch (String.valueOf(myWork)){
                     case "null":
@@ -155,16 +147,11 @@ public class AdvisorDialog extends Activity {
                 }
             }
         },DELAY_MILLIS_FOR_TTS);
-    }
-
-    private void setLayout(){
 
         layoutForWorkButton = (LinearLayout) findViewById(R.id.layout_for_work_button);
         textViewQuestion = (TextView) findViewById(R.id.text_advisor);
         layoutForWorkButton.removeAllViewsInLayout();
 
-
-        String myWork = getIntent().getStringExtra("Work-keyword");
 
         switch (String.valueOf(myWork)){
             case "null":
@@ -179,8 +166,7 @@ public class AdvisorDialog extends Activity {
                 break;
         }
 
-        if(clovaTTS==null)
-            clovaTTS = new ClovaTTS(getFilesDir());
+
 
         prefs = this.getSharedPreferences("Pref", MODE_PRIVATE);
         deliveryHelper = new DeliveryHelper(this);
@@ -191,7 +177,7 @@ public class AdvisorDialog extends Activity {
         if(currentDeliveryInfo==null)
             currentDeliveryInfo = managerHelper.getCurrentDeliveryInfoSimple();
 
-
+        setListener();
     }
 
     private void setListener(){
@@ -209,6 +195,21 @@ public class AdvisorDialog extends Activity {
 
             }
         });
+
+
+        final ClovaTTS.Listener mListener = new ClovaTTS.Listener() {
+            @Override
+            public void onSpeakingFinished(boolean isFinal) {
+                if(isPresentation){
+                    Log.d("처리","이떄 음성인식 하도록");
+                }else{
+                    Log.d("처리","암때나");
+                }
+            }
+        };
+        clovaTTS.addListener(mListener);
+
+
 
     }
 
