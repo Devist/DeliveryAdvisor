@@ -14,19 +14,26 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ldcc.pliss.deliveryadvisor.R;
 import com.ldcc.pliss.deliveryadvisor.advisor.google.SpeechHelper;
 import com.ldcc.pliss.deliveryadvisor.advisor.naver.ClovaTTS;
 import com.ldcc.pliss.deliveryadvisor.analyzer.Analyzer;
 import com.ldcc.pliss.deliveryadvisor.analyzer.FinalAction;
+import com.ldcc.pliss.deliveryadvisor.databases.Delivery;
 import com.ldcc.pliss.deliveryadvisor.databases.DeliveryHelper;
 import com.ldcc.pliss.deliveryadvisor.databases.ManagerHelper;
 import com.ldcc.pliss.deliveryadvisor.page.NavigationActivity;
 import com.ldcc.pliss.deliveryadvisor.util.WorkUtil;
 
 import java.util.List;
+
+import io.realm.RealmResults;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 /**
  * Created by pliss on 2018. 3. 6..
@@ -192,92 +199,550 @@ public class AdvisorDialog extends Activity {
         speechHelper.addListener(new SpeechHelper.Listener() {
             @Override
             public void onVoiceAnalyed(int analyzeResult, List<String> invoiceKeywords) {
-                Log.d("처리번호",analyzeResult+"");
-                switch (analyzeResult){
-                    case FinalAction.CALL_CURRENT_CUSTOMER:
-                        new Handler().postDelayed(new Runnable(){
-                            @Override
-                            public void run(){
-                                workUtil.callTheCustomer(getApplicationContext(),currentDeliveryInfo[4]);
-                            }
-                        },2000);
-                        finish();
-                        break;
+                Log.d("처리번호 : ", analyzeResult+"");
+                if(invoiceKeywords.size()>0)
+                    Log.d("처리송장 : ", invoiceKeywords.get(0));
 
-                    case FinalAction.NAVI_CURRENT:
-                        clovaTTS.sayThis("tts_navigation","고객의 위치를 보여드릴께요.");
-                        new Handler().postDelayed(new Runnable(){
-                            @Override
-                            public void run(){
-                                startActivity(new Intent(AdvisorDialog.this, NavigationActivity.class));
-                                finishAffinity();
-                            }
-                        },3000);
-                        break;
+                processCurrentSituation(analyzeResult);
+                processNextSituation(analyzeResult);
+                processInvoiceSituation(analyzeResult,invoiceKeywords);
 
-                    case FinalAction.DONE_SIMPLE_CURRENNT:
-                        workUtil.showProcessDeliveryDialog(AdvisorDialog.this,currentDeliveryInfo);
-                        break;
-
-                    case FinalAction.DONE_KEEP_CURRENT_SECURITY:
-                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
-                        deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","O");
-                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
-                        finish();
-                        break;
-
-                    case FinaAction.DONE_KEEP_DOOR_:
-                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
-                        deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","D");
-                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
-                        finish();
-                        break;
-
-                    case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_SELF:
-                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
-                        deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","S");
-                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
-                        finish();
-                        break;
-
-                    case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_ACQUAINTANCE:
-                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
-                        deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","F");
-                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
-                        finish();
-                        break;
-
-                    case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_UNMANNED:
-                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
-                        deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","U");
-                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
-                        finish();
-                        break;
-
-                    case VoiceAnalyzer.DELIVERY_THE_CURRENT_CUSTOMER_CANCLE:
-                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
-                        deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"N","U");
-                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
-                        finish();
-                        break;
-
-                    case VoiceAnalyzer.EXIT_ADVISOR:
-                        clovaTTS.sayGoodBye();
-                        new Handler().postDelayed(new Runnable(){
-                            @Override
-                            public void run(){
-                                System.exit(0);
-                            }
-                        },3000);
-                        break;
-
-                    case VoiceAnalyzer.HOW_TO_USE:
-                        clovaTTS.sayHelp();;
-                        break;
-                }
             }
         });
 
+    }
+
+    private void processCurrentSituation(int analyzeResult){
+        switch (analyzeResult){
+            //대상자 없이 전화연결해달라고 말한 경우, 현재 고객에게 전화연결합니다.
+            case FinalAction.CALL_CURRENT_CUSTOMER:
+                clovaTTS.sayThis("tts_call","전화 연결합니다.");
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.callTheCustomer(getApplicationContext(),currentDeliveryInfo[4]);
+                        finish();
+                    }
+                },2000);
+                break;
+
+            //대상자 없이 배송 완료 해달라고 말한 경우, 현재 고객의 상품을 배송완료 처리합니다.
+            //배송 완료 처리 방법을 알기 위해, 다시 한 번 다이얼로그를 띄웁니다.
+            case FinalAction.DONE_SIMPLE_CURRENNT:
+                workUtil.showProcessDeliveryDialog(AdvisorDialog.this,currentDeliveryInfo);
+                break;
+
+            //대상자 없이 배송 취소 해달라고 말한 경우 현재 고객의 배송을 취소 처리합니다.
+            case FinalAction.CANCLE_CURRENT:
+                clovaTTS.sayThis("tts_cancle_shipping","배송 취소 처리했습니다.");
+
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                    workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품이 배송 취소되었습니다.");
+                    deliveryHelper.processDelivery(currentDeliveryInfo[2],"N","");
+                    deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                    finish();
+                    }
+                },3000);
+
+                break;
+
+            //대상자 없이 배송 상품에 대해 본인이 수령했다고 말한 경우, 현재 배송 상품을 본인이 수령한 것으로 배송완료 처리합니다.
+            case FinalAction.DONE_SELF_CURRENT:
+                clovaTTS.sayThis("tts_done_shipping","배송 완료 처리했습니다.");
+
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                    workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 본인이 수령하셨습니다. 좋은 하루 되세요 ^^");
+                    deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","S");
+                    deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                    finish();
+                    }
+                },3000);
+
+                break;
+
+            //대상자 없이 배송 상품을 다른 사람이 수령했다고 말한 경우, 현재 배송 상품을 다른 사람이 수령한 것으로 배송완료 처리합니다.
+            case FinalAction.DONE_OTHER_CURRENT:
+                clovaTTS.sayThis("tts_done_shipping","배송 완료 처리했습니다.");
+
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 다른 분께서 수령해 주셨습니다.");
+                        deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","E");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        finish();
+                    }
+                },3000);
+
+                break;
+
+            //대상자 없이 가족(부모님, 외삼촌 등등)이 수령했다고 말한 경우, 현재 배송 상품을 가족이 수령한 것으로 배송완료 처리합니다.
+            case FinalAction.DONE_OTHER_CURRENT_FAMILY:
+                clovaTTS.sayThis("tts_done_shipping","배송 완료 처리했습니다.");
+
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 가족이 수령해 주었어요. 좋은 하루 되세요 ^^");
+                        deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","F");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        finish();
+                    }
+                },3000);
+
+                break;
+
+            //대상자 없이 회사 사람이 수령했다고 말한 경우, 현재 배송 상품을 회사 사람이 수령한 것으로 배송완료 처리합니다.
+            case FinalAction.DONE_OTHER_CURRENT_COMPANY:
+                clovaTTS.sayThis("tts_done_shipping","배송 완료 처리했습니다.");
+
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 회사에서 수령하였습니다. 좋은 하루 되세요 ^^");
+                        deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","C");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        finish();
+                    }
+                },3000);
+
+
+                break;
+
+            //대상자 없이 지인이 수령했다고 말한 경우, 현재 배송 상품을 지인이 수령한 것으로 배송완료 처리합니다.
+            case FinalAction.DONE_OTHER_CURRENT_FRIEND:
+                clovaTTS.sayThis("tts_done_shipping","배송 완료 처리했습니다.");
+
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 지인에게 맡겨두었으니 찾아가세요.");
+                        deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","A");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        finish();
+                    }
+                },3000);
+
+                break;
+
+            //대상자 없이 문 앞, 문 옆 등에 두었다고 말한 경우, 현재 상품을 문앞에 둔 것으로 배송완료 처리합니다.
+            case FinalAction.DONE_KEEP_CURRENT_DOOR:
+                clovaTTS.sayThis("tts_done_shipping","배송 완료 처리했습니다.");
+
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 문 앞에 맡겨두었으니 찾아가세요.");
+                        deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","D");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        finish();
+                    }
+                },3000);
+
+                break;
+
+            //대상자 없이 경비실에 맡겼다고 말한 경우, 현재 상품을 경비실에 맡긴 것으로 배송완료 처리합니다.
+            case FinalAction.DONE_KEEP_CURRENT_SECURITY:
+                clovaTTS.sayThis("tts_done_shipping","배송 완료 처리했습니다.");
+
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
+                        deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","O");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        finish();
+                    }
+                },3000);
+
+                break;
+
+            //대상자 없이 저장소(무인택배함,문서수발실)에 두었다고 말한 경우, 현재 상품을 택배함에 보관한 것으로 배송완료 처리합니다.
+            case FinalAction.DONE_KEEP_CURRENT_STORAGE:
+                clovaTTS.sayThis("tts_done_shipping","배송 완료 처리했습니다.");
+
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 택배함에 보관하였으니 찾아가세요.");
+                        deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","U");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        finish();
+                    }
+                },3000);
+
+                break;
+            case FinalAction.NAVI_CURRENT:
+                clovaTTS.sayThis("tts_navigation","고객의 위치를 보여드릴께요.");
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        startActivity(new Intent(AdvisorDialog.this, NavigationActivity.class));
+                        finishAffinity();
+                    }
+                },3000);
+                break;
+
+            //현재 필요없다고 말한 경우, 작별 인사와 함께 종료합니다.
+            case FinalAction.CANCLE:
+                clovaTTS.sayGoodBye();
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        System.exit(0);
+                    }
+                },1500);
+                break;
+
+            //사용방법을 물어본 경우, 사용 방법을 음성으로 안내합니다.
+            case FinalAction.HOW_TO_USE:
+                clovaTTS.sayHelp();
+                break;
+        }
+
+    }
+
+    private void processNextSituation(int analyzeResult){
+        final Delivery nextProduct = deliveryHelper.findNext(currentDeliveryInfo[2]);
+        switch (analyzeResult) {
+            //대상자 없이 전화연결해달라고 말한 경우, 현재 고객에게 전화연결합니다.
+            case FinalAction.CALL_NEXT_CUSTOMER:
+                clovaTTS.sayThis("tts_call_next","다음 고객에게 전화 연결합니다.");
+
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.callTheCustomer(getApplicationContext(),nextProduct.getRECV_1_TELNO());
+                        finish();
+                    }
+                },3000);
+
+                break;
+            case FinalAction.DONE_SIMPLE_NEXT:
+                Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+
+                clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),nextProduct.getRECV_1_TELNO(),"고객님, [" + nextProduct.getITEM_NM()+"] 상품이 배송 완료되었습니다.");
+                        deliveryHelper.processDelivery(nextProduct.getINV_NUMB(),"C","E");
+                        deliveryHelper.changeManagerInfoToNext(nextProduct.getINV_NUMB());
+                        finish();
+                    }
+                },1500);
+
+                break;
+            case FinalAction.CANCLE_NEXT:
+                Toast.makeText(getApplicationContext(),"배송 취소 처리 완료하였습니다.",LENGTH_SHORT).show();
+                clovaTTS.sayThis("tts_cancle_shipping","배송 취소 처리 완료.");
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),nextProduct.getRECV_1_TELNO(),"고객님, [" + nextProduct.getITEM_NM()+"] 상품이 배송 취소되었습니다.");
+                        deliveryHelper.processDelivery(nextProduct.getINV_NUMB(),"N","");
+                        deliveryHelper.changeManagerInfoToNext(nextProduct.getINV_NUMB());
+                        finish();
+                    }
+                },1500);
+                break;
+            case FinalAction.DONE_SELF_NEXT:
+                Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),nextProduct.getRECV_1_TELNO(),"고객님, [" + nextProduct.getITEM_NM()+"] 상품을 본인이 수령하였습니다.");
+                        deliveryHelper.processDelivery(nextProduct.getINV_NUMB(),"C","S");
+                        deliveryHelper.changeManagerInfoToNext(nextProduct.getINV_NUMB());
+                        finish();
+                    }
+                },1500);
+                break;
+            case FinalAction.DONE_OTHER_NEXT:
+                Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+
+                clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),nextProduct.getRECV_1_TELNO(),"고객님, [" + nextProduct.getITEM_NM()+"] 상품을 대신 수령하였습니다.");
+                        deliveryHelper.processDelivery(nextProduct.getINV_NUMB(),"C","E");
+                        deliveryHelper.changeManagerInfoToNext(nextProduct.getINV_NUMB());
+                        finish();
+                    }
+                },1500);
+
+                break;
+            case FinalAction.DONE_OTHER_NEXT_FAMILY:
+                Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),nextProduct.getRECV_1_TELNO(),"고객님, [" + nextProduct.getITEM_NM()+"] 상품을 가족이 수령하였습니다.");
+                        deliveryHelper.processDelivery(nextProduct.getINV_NUMB(),"C","F");
+                        deliveryHelper.changeManagerInfoToNext(nextProduct.getINV_NUMB());
+                        finish();
+                    }
+                },1500);
+                break;
+            case FinalAction.DONE_OTHER_NEXT_FRIEND:
+                Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),nextProduct.getRECV_1_TELNO(),"고객님, [" + nextProduct.getITEM_NM()+"] 상품을 지인이 수령하였습니다.");
+                        deliveryHelper.processDelivery(nextProduct.getINV_NUMB(),"C","A");
+                        deliveryHelper.changeManagerInfoToNext(nextProduct.getINV_NUMB());
+                        finish();
+                    }
+                },1500);
+                break;
+            case FinalAction.DONE_OTHER_NEXT_COMPANY:
+                Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),nextProduct.getRECV_1_TELNO(),"고객님, [" + nextProduct.getITEM_NM()+"] 상품을 회사 동료가 수령하였습니다.");
+                        deliveryHelper.processDelivery(nextProduct.getINV_NUMB(),"C","C");
+                        deliveryHelper.changeManagerInfoToNext(nextProduct.getINV_NUMB());
+                        finish();
+                    }
+                },1500);
+                break;
+            case FinalAction.DONE_KEEP_NEXT_DOOR:
+                Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),nextProduct.getRECV_1_TELNO(),"고객님, [" + nextProduct.getITEM_NM()+"] 상품을 문 앞에 두었습니다.");
+                        deliveryHelper.processDelivery(nextProduct.getINV_NUMB(),"C","D");
+                        deliveryHelper.changeManagerInfoToNext(nextProduct.getINV_NUMB());
+                        finish();
+                    }
+                },1500);
+                break;
+            case FinalAction.DONE_KEEP_NEXT_SECURITY:
+                Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),nextProduct.getRECV_1_TELNO(),"고객님, [" + nextProduct.getITEM_NM()+"] 상품을 경비실에 맡겼습니다.");
+                        deliveryHelper.processDelivery(nextProduct.getINV_NUMB(),"C","E");
+                        deliveryHelper.changeManagerInfoToNext(nextProduct.getINV_NUMB());
+                        finish();
+                    }
+                },1500);
+                break;
+            case FinalAction.DONE_KEEP_NEXT_STORAGE:
+                Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        workUtil.sendSMS(getApplicationContext(),nextProduct.getRECV_1_TELNO(),"고객님, [" + nextProduct.getITEM_NM()+"] 상품을 택배함에 보관하였습니다.");
+                        deliveryHelper.processDelivery(nextProduct.getINV_NUMB(),"C","U");
+                        deliveryHelper.changeManagerInfoToNext(nextProduct.getINV_NUMB());
+                        finish();
+                    }
+                },1500);
+                break;
+            case FinalAction.NAVI_NEXT: // 지도에 다음 위치 보이는 거 안 해둠
+                Toast.makeText(getApplicationContext(),"다음 고객의 위치를 안내합니다.",LENGTH_SHORT).show();
+                clovaTTS.sayThis("tts_navigation_next","다음 고객의 위치를 보여드릴께요.");
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run(){
+                        startActivity(new Intent(AdvisorDialog.this, NavigationActivity.class));
+                        finishAffinity();
+                    }
+                },2000);
+                break;
+        }
+    }
+
+    private void processInvoiceSituation(int analyzeResult, List<String> invoiceKeywords){
+
+        RealmResults<Delivery> invoiceProduct = null;
+        try{
+            invoiceProduct = deliveryHelper.findInvoiceFromKeyword(invoiceKeywords.get(0));
+        }catch(Exception e){
+
+        }
+
+        if(invoiceProduct==null){}
+        else if(invoiceProduct.size()>1){
+            Log.d("처리 송장 : " ,"여러 개 검색됨");
+        } else if(invoiceProduct.size()<1){
+            clovaTTS.sayThis("tts_not_searched","해당 송장번호가 존재하지 않습니다.");;
+        }else{
+            final Delivery searchedDelivery = invoiceProduct.first();
+            switch (analyzeResult){
+                case FinalAction.CALL_INVOICE_CUSTOMER:
+                    clovaTTS.sayThis("tts_call_next","검색된 송장번호로 전화 연결합니다.");
+
+                    new Handler().postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            workUtil.callTheCustomer(getApplicationContext(),searchedDelivery.getRECV_1_TELNO());
+                            finish();
+                        }
+                    },3000);
+                    break;
+                case FinalAction.DONE_SIMPLE_INVOICE:
+                    Log.d("처리","제대로 들어옴");
+                    Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                    clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                    new Handler().postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            workUtil.sendSMS(getApplicationContext(),searchedDelivery.getRECV_1_TELNO(),"고객님, [" + searchedDelivery.getITEM_NM()+"] 상품이 배송 완료되었습니다.");
+                            deliveryHelper.processDelivery(searchedDelivery.getINV_NUMB(),"C","E");
+                            deliveryHelper.changeManagerInfoToNext(searchedDelivery.getINV_NUMB());
+                            finish();
+                        }
+                    },1500);
+                    break;
+                case FinalAction.CANCLE_INVOICE:
+                    Toast.makeText(getApplicationContext(),"배송 취소를 완료하였습니다.",LENGTH_SHORT).show();
+                    clovaTTS.sayThis("tts_cancle_shipping","배송 취소 처리 완료.");
+                    new Handler().postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            workUtil.sendSMS(getApplicationContext(),searchedDelivery.getRECV_1_TELNO(),"고객님, [" + searchedDelivery.getITEM_NM()+"] 상품이 배송 취소되었습니다.");
+                            deliveryHelper.processDelivery(searchedDelivery.getINV_NUMB(),"N","");
+                            deliveryHelper.changeManagerInfoToNext(searchedDelivery.getINV_NUMB());
+                            finish();
+                        }
+                    },1500);
+                    break;
+                case FinalAction.DONE_SELF_INVOICE:
+                    Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                    clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                    new Handler().postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            workUtil.sendSMS(getApplicationContext(),searchedDelivery.getRECV_1_TELNO(),"고객님, [" + searchedDelivery.getITEM_NM()+"] 상품을 본인이 수령하였습니다.");
+                            deliveryHelper.processDelivery(searchedDelivery.getINV_NUMB(),"C","S");
+                            deliveryHelper.changeManagerInfoToNext(searchedDelivery.getINV_NUMB());
+                            finish();
+                        }
+                    },1500);
+                    break;
+                case FinalAction.DONE_OTHER_INVOICE:
+                    Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                    clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                    new Handler().postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            workUtil.sendSMS(getApplicationContext(),searchedDelivery.getRECV_1_TELNO(),"고객님, [" + searchedDelivery.getITEM_NM()+"] 상품을 타인이 수령하였습니다.");
+                            deliveryHelper.processDelivery(searchedDelivery.getINV_NUMB(),"C","E");
+                            deliveryHelper.changeManagerInfoToNext(searchedDelivery.getINV_NUMB());
+                            finish();
+                        }
+                    },1500);
+                    break;
+                case FinalAction.DONE_OTHER_INVOICE_FAMILY:
+                    Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                    clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                    new Handler().postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            workUtil.sendSMS(getApplicationContext(),searchedDelivery.getRECV_1_TELNO(),"고객님, [" + searchedDelivery.getITEM_NM()+"] 상품을 가족에게 전달하였습니다.");
+                            deliveryHelper.processDelivery(searchedDelivery.getINV_NUMB(),"C","F");
+                            deliveryHelper.changeManagerInfoToNext(searchedDelivery.getINV_NUMB());
+                            finish();
+                        }
+                    },1500);
+                    break;
+                case FinalAction.DONE_OTHER_INVOICE_FRIEND:
+                    Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                    clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                    new Handler().postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            workUtil.sendSMS(getApplicationContext(),searchedDelivery.getRECV_1_TELNO(),"고객님, [" + searchedDelivery.getITEM_NM()+"] 상품을 지인에게 전달하였으니 찾아가세요.");
+                            deliveryHelper.processDelivery(searchedDelivery.getINV_NUMB(),"C","A");
+                            deliveryHelper.changeManagerInfoToNext(searchedDelivery.getINV_NUMB());
+                            finish();
+                        }
+                    },1500);
+                    break;
+                case FinalAction.DONE_OTHER_INVOICE_COMPANY:
+                    Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                    clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                    new Handler().postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            workUtil.sendSMS(getApplicationContext(),searchedDelivery.getRECV_1_TELNO(),"고객님, [" + searchedDelivery.getITEM_NM()+"] 상품을 회사 관계자에게 전달했어요. ^^");
+                            deliveryHelper.processDelivery(searchedDelivery.getINV_NUMB(),"C","C");
+                            deliveryHelper.changeManagerInfoToNext(searchedDelivery.getINV_NUMB());
+                            finish();
+                        }
+                    },1500);
+                    break;
+                case FinalAction.DONE_KEEP_INVOICE_DOOR:
+                    Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                    clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                    new Handler().postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            workUtil.sendSMS(getApplicationContext(),searchedDelivery.getRECV_1_TELNO(),"고객님, [" + searchedDelivery.getITEM_NM()+"] 상품을 문 앞에 두었습니다.");
+                            deliveryHelper.processDelivery(searchedDelivery.getINV_NUMB(),"C","D");
+                            deliveryHelper.changeManagerInfoToNext(searchedDelivery.getINV_NUMB());
+                            finish();
+                        }
+                    },1500);
+                    break;
+                case FinalAction.DONE_KEEP_INVOICE_SECURITY:
+                    Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                    clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                    new Handler().postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            workUtil.sendSMS(getApplicationContext(),searchedDelivery.getRECV_1_TELNO(),"고객님, [" + searchedDelivery.getITEM_NM()+"] 상품을 경비실(또는 경비원)에게 전달헸어요.");
+                            deliveryHelper.processDelivery(searchedDelivery.getINV_NUMB(),"C","O");
+                            deliveryHelper.changeManagerInfoToNext(searchedDelivery.getINV_NUMB());
+                            finish();
+                        }
+                    },1500);
+                    break;
+                case FinalAction.DONE_KEEP_INVOICE_STORAGE:
+                    Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
+                    clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
+                    new Handler().postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            workUtil.sendSMS(getApplicationContext(),searchedDelivery.getRECV_1_TELNO(),"고객님, [" + searchedDelivery.getITEM_NM()+"] 상품을 택배함에 두었습니다.");
+                            deliveryHelper.processDelivery(searchedDelivery.getINV_NUMB(),"C","U");
+                            deliveryHelper.changeManagerInfoToNext(searchedDelivery.getINV_NUMB());
+                            finish();
+                        }
+                    },1500);
+                    break;
+                case FinalAction.NAVI_INVOICE:
+                    Toast.makeText(getApplicationContext(),"해당 송장번호의 위치로 안내합니다.",LENGTH_SHORT).show();
+                    clovaTTS.sayThis("tts_navigation_next","해당 송장의 위치를 보여드릴께요.");
+                    new Handler().postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            startActivity(new Intent(AdvisorDialog.this, NavigationActivity.class));
+                            finishAffinity();
+                        }
+                    },3000);
+                    break;
+            }
+
+        }
     }
 
     @Override
@@ -321,7 +786,7 @@ public class AdvisorDialog extends Activity {
         buttonKeepAcquaintance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","F");
+                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","F");
                 deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 finish();
             }
@@ -331,7 +796,7 @@ public class AdvisorDialog extends Activity {
         buttonKeepDoor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","D");
+                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","D");
                 deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 finish();
             }
@@ -341,7 +806,7 @@ public class AdvisorDialog extends Activity {
         buttonKeepSecurityOffice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","O");
+                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","O");
                 deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
@@ -366,7 +831,7 @@ public class AdvisorDialog extends Activity {
             @Override
             public void onClick(View v) {
                 workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 본인이 수령하셨습니다.");
-                deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","S");
+                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","S");
                 deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
@@ -378,7 +843,7 @@ public class AdvisorDialog extends Activity {
             @Override
             public void onClick(View v) {
                 workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 지인이 수령하셨습니다.");
-                deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","F");
+                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","F");
                 deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
@@ -390,7 +855,7 @@ public class AdvisorDialog extends Activity {
             @Override
             public void onClick(View v) {
                 workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 문 앞에 두었습니다.");
-                deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","D");
+                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","D");
                 deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
@@ -402,7 +867,7 @@ public class AdvisorDialog extends Activity {
             @Override
             public void onClick(View v) {
                 workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
-                deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","O");
+                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","O");
                 deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
@@ -414,7 +879,7 @@ public class AdvisorDialog extends Activity {
             @Override
             public void onClick(View v) {
                 workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 무인택배함에 보관했습니다.");
-                deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"C","U");
+                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","U");
                 deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
@@ -426,7 +891,7 @@ public class AdvisorDialog extends Activity {
             @Override
             public void onClick(View v) {
                 workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품이 미배송 처리되었습니다.");
-                deliveryHelper.processCurrentDelivery(currentDeliveryInfo[2],"N","");
+                deliveryHelper.processDelivery(currentDeliveryInfo[2],"N","");
                 deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();

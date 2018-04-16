@@ -21,6 +21,15 @@ import java.util.concurrent.ExecutionException;
 
 public class Analyzer {
 
+    /** 임시. 배송 처리 디테일 장소 키워드 셋. */
+    private static final String[] processDetailSecurityOffice= {"경비","경비실"};
+    private static final String[] processDetailSelf= {"본인","자기"};
+    private static final String[] processDetailAcquaintance = {"가족","지인","어머니","아버지","친척","동생"};
+    private static final String[] processDetailDoor = {"문","앞","집","문 앞","집 앞"};
+    private static final String[] processDetailUnmannedCourier = {"무인택배함","무인","택배"};
+    private static final String[] processDetailCancle = {"취소","다음","미배송"};
+
+
     public static final int POPUP_HELLO_MODE                    = 0;
     public static final int POPUP_INVOICE_NUMBER_MODE          = 1;
     public static final int POPUP_PROCESS                       = 2;
@@ -40,9 +49,10 @@ public class Analyzer {
      * @return
      */
     public static int getAnalyzedAction(int mode, String voice){
+        invoiceKeywords = new ArrayList<>();
         String keywords = NLP(voice);
         List<String> tokens = getTokens(keywords);
-        invoiceKeywords = new ArrayList<>();
+
         int result = POPUP_HELLO_MODE;
 
         switch(mode){
@@ -50,7 +60,7 @@ public class Analyzer {
                 result = analyzeAllSituation(tokens);
                 break;
             case POPUP_PROCESS:
-                //result = analyzeHowToSHIP(tokens);
+                result = analyzeHowToSHIP(tokens);
             default:
                 break;
         }
@@ -64,14 +74,27 @@ public class Analyzer {
     }
 
     private static int analyzeAllSituation(List<String> tokens){
+
         int finalAction;
         Params params = new Params(tokens);
+
+        Log.d("처리","길안내 : "+ params.isNavigate);
+        Log.d("처리","다음배송지 : "+ params.isNextCustomer);
+        Log.d("처리","송장개수 : "+ invoiceKeywords.size());
+
+        finalAction = classifyCancle(tokens);
+        if(finalAction>0)
+            return finalAction;
+
+        finalAction = classifyHelp(tokens);
+        if(finalAction>0)
+            return finalAction;
 
         finalAction = classifyWithCall(params);
         if(finalAction>0)
             return finalAction;
 
-        finalAction = classifyWithDelivery(params);
+        finalAction = classifyWithDelivery(params,tokens);
         if(finalAction>0)
             return finalAction;
 
@@ -94,6 +117,22 @@ public class Analyzer {
         return -1;
     }
 
+    private static int classifyCancle(List<String> tokens){
+        for(String keyword : ParamSet.finishArray) {
+            if(tokens.contains(keyword))
+                return FinalAction.CANCLE;
+        }
+        return -1;
+    }
+
+    private static int classifyHelp(List<String> tokens){
+        for(String keyword : ParamSet.helpArray) {
+            if(tokens.contains(keyword))
+                return FinalAction.HOW_TO_USE;
+        }
+        return -1;
+    }
+
     private static int classifyWithCall(Params params){
         if(!params.isCall)
             return -1;
@@ -109,7 +148,30 @@ public class Analyzer {
         return FinalAction.CALL_CURRENT_CUSTOMER;
     }
 
-    private static int classifyWithDelivery(Params params) {
+    private static int classifyWithDelivery(Params params, List<String> tokens) {
+
+        for(String keyword : ParamSet.deliveryKeywords) {
+            if(tokens.contains(keyword)){
+                for(String comb : ParamSet.deliveryCancleKeywords){
+                    if(tokens.contains(comb)){
+                        if(invoiceKeywords.size()<1 && params.isNextCustomer)
+                            return FinalAction.CANCLE_NEXT;
+                        if(invoiceKeywords.size()<1)
+                            return FinalAction.CANCLE_CURRENT;
+                        if(invoiceKeywords.size()>0){
+                            if(params.isNextCustomer)
+                                return FinalAction.CANCLE_E_INVOICE_OR_NEXT;
+                            if(invoiceKeywords.size()==1)
+                                return FinalAction.CANCLE_INVOICE;
+                            if(invoiceKeywords.size()>1)
+                                return FinalAction.CANCLE_E_MANY_INVOICES;
+                        }
+                        return FinalAction.CANCLE_CURRENT;
+                    }
+                }
+            }
+        }
+
         if(params.isCompleteDelivery==null)
             return -1;
 
@@ -142,6 +204,9 @@ public class Analyzer {
             }
             return FinalAction.CANCLE_CURRENT;
         }
+
+
+
         return -1;
     }
 
@@ -173,7 +238,7 @@ public class Analyzer {
             return FinalAction.DONE_OTHER_CURRENT;
 
         //if(params.isOtherReceipt.equals("대리수령")){   // 없음. 확인 필요
-
+        Log.d("처리", params.isOtherReceipt);
         //}
         if(params.isOtherReceipt.equals("대리수령:가족")){
             if(invoiceKeywords.size()>0 && params.isCurrentCustomer)
@@ -276,9 +341,7 @@ public class Analyzer {
     }
 
     private static int classifyNavigatePlace(Params params){
-        Log.d("처리","길안내 : "+ params.isNavigate);
-        Log.d("처리","다음배송지 : "+ params.isNextCustomer);
-        Log.d("처리","송장개수 : "+ invoiceKeywords.size());
+
         if(params.isNavigate){
             if(params.isNextCustomer && invoiceKeywords.size()>0)
                 return FinalAction.NAVI_E_INVOICE_OR_NEXT;
@@ -414,5 +477,36 @@ public class Analyzer {
             e.printStackTrace();
         }
         return tokens;
+    }
+
+
+    private static int analyzeHowToSHIP(List<String> keywordsArray){
+
+        for (String securityKeywords : processDetailSecurityOffice){
+            if(keywordsArray.contains(securityKeywords))
+                return FinalAction.DONE_KEEP_CURRENT_SECURITY;
+        }
+        for (String acquaintanceKeywords : processDetailAcquaintance){
+            if(keywordsArray.contains(acquaintanceKeywords))
+                return FinalAction.DONE_OTHER_CURRENT_FRIEND;
+        }
+        for (String doorKeywords : processDetailDoor){
+            if(keywordsArray.contains(doorKeywords))
+                return FinalAction.DONE_KEEP_CURRENT_DOOR;
+        }
+        for (String selfKeywords : processDetailSelf){
+            if(keywordsArray.contains(selfKeywords))
+                return FinalAction.DONE_SELF_CURRENT;
+        }
+        for (String unmannedKeywords : processDetailUnmannedCourier){
+            if(keywordsArray.contains(unmannedKeywords))
+                return FinalAction.DONE_KEEP_CURRENT_STORAGE;
+        }
+        for (String cancleKeywords : processDetailCancle){
+            if(keywordsArray.contains(cancleKeywords))
+                return FinalAction.CANCLE_CURRENT;
+        }
+
+        return FinalAction.DONE_SIMPLE_CURRENNT;
     }
 }

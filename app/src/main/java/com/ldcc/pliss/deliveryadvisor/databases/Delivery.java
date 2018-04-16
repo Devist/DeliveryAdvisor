@@ -36,7 +36,7 @@ public class Delivery extends RealmObject {
     private String  SHIP_MSG;       //배송메시지
     private String  SHIP_STAT;      //배송상태              B:배송전 C:배송완료 N:배송취소 O:배송중
     private String  STAT_DTIME;     //배송상태 최종 변경일시
-    private String  STAT_HOW;       //인수방법              S:본인  F: 지인  O: 경비실  E: 기타 U:무인택배함
+    private String  STAT_HOW;       //인수방법              S:본인  F: 가족  A: 지인  C:회사  O: 경비실 D:문 E: 기타 U:택배함
     private String  STAT_HOW_DTL;   //인수방법-상세
     private String  RMRK;           //비고
     private String  DEL_YN;         //삭제여부

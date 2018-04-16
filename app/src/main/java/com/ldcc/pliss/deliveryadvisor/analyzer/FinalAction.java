@@ -96,4 +96,10 @@ public class FinalAction {
     public static final int NAVI_INVOICE                    = 7020;
     public static final int NAVI_E_INVOICE_OR_NEXT                    = 7200;
     public static final int NAVI_E_MANY_INVOICES                      = 7300;
+
+    /** 종료 */
+    public static final int CANCLE                          = 10;
+
+    /** 사용 방법*/
+    public static final int HOW_TO_USE                      = 20;
 }

@@ -138,7 +138,7 @@ public class DeliveryHelper {
         });
     }
 
-    public void processCurrentDelivery(String invoice, String state, String how){
+    public void processDelivery(String invoice, String state, String how){
         mRealm.beginTransaction();
 
         Delivery deliveryProcessed = mRealm.where(Delivery.class).equalTo("INV_NUMB", invoice).findFirst();
@@ -149,5 +149,20 @@ public class DeliveryHelper {
             deliveryProcessed.setSHIP_STAT("N");
         }
         mRealm.commitTransaction();
+    }
+
+    public Delivery findNext(String currentInvoice){
+        mRealm.beginTransaction();
+        int currentOrder = mRealm.where(Delivery.class).equalTo("INV_NUMB", currentInvoice).findFirst().getSHIP_ID();
+        Delivery nextDeliveryInfo = mRealm.where(Delivery.class).equalTo("SHIP_ID", currentOrder+1).findFirst();
+        mRealm.commitTransaction();
+        return nextDeliveryInfo;
+    }
+
+    public RealmResults<Delivery> findInvoiceFromKeyword(String invoiceKeyword){
+        mRealm.beginTransaction();
+        RealmResults<Delivery> results = mRealm.where(Delivery.class).equalTo("INV_KW", invoiceKeyword).findAll();
+        mRealm.commitTransaction();
+        return results;
     }
 }

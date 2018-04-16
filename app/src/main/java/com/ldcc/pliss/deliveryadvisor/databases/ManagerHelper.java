@@ -32,6 +32,9 @@ public class ManagerHelper {
     public String getManagerName(){
         return results.get(0).getUserName();
     }
+    public String getInvoice(){
+        return results.get(0).getInvoice();
+    }
 
     public String[] getCurrentDeliveryInfoSimple(){
         String [] deliveryInfo = new String[7];

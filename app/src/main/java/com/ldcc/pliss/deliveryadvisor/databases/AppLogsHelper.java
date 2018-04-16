@@ -41,7 +41,7 @@ public class AppLogsHelper {
     }
 
     private String getTime(){
-        SimpleDateFormat mFormat = new SimpleDateFormat("yyyy년 MM월 dd일 hh시 mm분 ss초 SSS");
+        SimpleDateFormat mFormat = new SimpleDateFormat("MM월 dd일 hh시 mm분 ss초 SSS");
         long mNow = System.currentTimeMillis();
         Date mDate = new Date(mNow);
 

@@ -19,19 +19,19 @@ public class ParamSet {
     public static final String[] deliveryKeywords = {"배송","배달","전달"};
 
     /** 키워드 - 배송 - 완료 */
-    public static final String[] deliveryDoneKeywords = {"완료","치"};
+    public static final String[] deliveryDoneKeywords = {"완료","치","처리"};
     public static final String done ="완료";
 
     /** 키워드 - 배송 - 미완료 */
     public static final String[] deliveryCancleKeywords = {"취소","미완료","못","밉다"};
-    public static final String cancle ="미완료";
+    public static final String cancle ="취소, 미완료,미배";
 
     /** 키워드 - 배송 - 완료 - 본인 수령 */
     public static final String[] directKeywords = {"본인","수하인","이번"};
     public static final String[] directKeywords2 = {"직접"};
 
             //조합 키워드
-            public static final String[] directCombination = {"받다","수령","전달"};
+            public static final String[] directCombination = {"받다","수령","전달","가져가다","가져오다"};
 
 
 
@@ -40,7 +40,7 @@ public class ParamSet {
     //가족
     public static final String[] otherFamilyKeywords
             = {"가족","엄마","어머니","아빠","아버지","할머니","할아버지","남동생","여동생","동생","이모","고모","숙모"
-                ,"삼촌","숙부","고종사촌"};
+                ,"삼촌","숙부","고종사촌","외숙모"};
     //동료
     public static final String[] otherCompanyKeywords = {"회사","동료","팀원","팀장","대리"};
 
@@ -51,7 +51,7 @@ public class ParamSet {
     public static final String[] otherKeywords = {"대신","대리"};
 
             //조합키워드
-            public static final String[] otherCombination = {"받다","수령","전달","위탁"};
+            public static final String[] otherCombination = {"받다","수령","전달","위탁","맡기다","주다","가져가다","배달","배송","완료"};
 
 
 
@@ -75,14 +75,21 @@ public class ParamSet {
 
 
     /** 키워드 - 길 안내 */
-    public static final String[] naviLocation = {"길","위치","장소","집"};
-            public static final String[] naviCombination = {"알다","안내","안내하다","어디"};
+    public static final String[] naviLocation = {"길","위치","장소","집","배송지"};
+            public static final String[] naviCombination = {"알다","안내","안내하다","어디","보이다"};
 
     public static final String[] nextLocation = {"다음"};
             public static final String[] nextLocationCombination = {"어디"};
 
     public static final String[] howLocation = {"어떻다"};
             public static final String[] howLocationCombination = {"가다"};
+
+
+    /** 어드바이저 취소 */
+    public static final String[] finishArray={"굿바이","종료","괜찮아","아냐","아니야","아니다","괜찮다","들어가다"};
+
+    /** 사용 방법 질의 */
+    public static final String[] helpArray={"사용방법","사용","방법","헬프"};
 
 
 }

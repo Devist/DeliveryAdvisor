@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.ldcc.pliss.deliveryadvisor.advisor.VoiceRecorder;
 import com.ldcc.pliss.deliveryadvisor.analyzer.Analyzer;
+import com.ldcc.pliss.deliveryadvisor.databases.AppLogsHelper;
 
 import java.util.List;
 
@@ -24,6 +25,8 @@ import static android.content.Context.BIND_AUTO_CREATE;
 import static com.ldcc.pliss.deliveryadvisor.MainActivity.fa;
 
 public class SpeechHelper {
+
+    AppLogsHelper appLogsHelper;
 
     // 음성 문장 분석을 통한 취해야 할 액션을 얻기 위해, AdvisorDialog에서 구현됩니다.
     public interface Listener {
@@ -42,6 +45,7 @@ public class SpeechHelper {
 
     public SpeechHelper(Activity activity){
         this.activity=activity;
+        appLogsHelper = new AppLogsHelper(activity);
     }
 
     private int analyzerMode = Analyzer.POPUP_HELLO_MODE ;  // 1: 전체 분석, 2: 배송 처리 분석
@@ -112,6 +116,7 @@ public class SpeechHelper {
                                 if (isFinal) {
                                     Toast.makeText(activity,"인식된 문서는 : "+text,Toast.LENGTH_SHORT).show();
                                     mListener.onVoiceAnalyed(analyzeResult, invoiceKeywords);
+                                    appLogsHelper.addAppLogs("처리번호 : " + analyzeResult);
                                 } else {
                                     //실시간 인식에서 사용
                                 }
