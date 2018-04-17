@@ -57,4 +57,18 @@ public class ManagerHelper {
         mRealm.commitTransaction();
         return currentDelivery;
     }
+
+    public String[] getSearchedInfoSimple(Delivery nextProduct){
+        String [] deliveryInfo = new String[7];
+        mRealm.beginTransaction();
+        deliveryInfo[0] = nextProduct.getRECV_NM();
+        deliveryInfo[1] = nextProduct.getITEM_NM();
+        deliveryInfo[2] = nextProduct.getINV_NUMB();
+        deliveryInfo[3] = nextProduct.getRECV_ADDR();
+        deliveryInfo[4] = nextProduct.getRECV_1_TELNO();
+        deliveryInfo[5] = nextProduct.getSHIP_MSG();
+        deliveryInfo[6] = String.valueOf(nextProduct.getSHIP_ID());
+        mRealm.commitTransaction();
+        return deliveryInfo;
+    }
 }

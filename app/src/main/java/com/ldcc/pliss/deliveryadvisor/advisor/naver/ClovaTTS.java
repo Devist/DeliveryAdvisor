@@ -37,6 +37,10 @@ public class ClovaTTS {
     private File myFile;
 
     private MediaPlayer mediaPlayer;
+    private int helloMsg;
+    private int byeMsg;
+
+
 
 
     public interface Listener {
@@ -53,6 +57,8 @@ public class ClovaTTS {
     }
     public ClovaTTS(File fileDir){
         this.fileDir=fileDir;
+        helloMsg  = new Random().nextInt(TTS_HELLO.length);
+        byeMsg = new Random().nextInt(TTS_GOODBYE.length);
     }
 
     /**
@@ -64,43 +70,61 @@ public class ClovaTTS {
     public void sayThis(final String path, String sentence){
         final String sentences = sentence;
 
-        final Handler handler = new Handler() {
-            public void handleMessage(Message msg) {
-            }
-        };
+//        final Handler handler = new Handler() {
+//            public void handleMessage(Message msg) {
+//            }
+//        };
 
         new Thread() {
             public void run() {
                 tryClovaTTS(path, sentences);
-                Bundle bun = new Bundle();
-                Message msg = handler.obtainMessage();
-                msg.setData(bun);
-                handler.sendMessage(msg);
+//                Bundle bun = new Bundle();
+//                Message msg = handler.obtainMessage();
+//                msg.setData(bun);
+//                handler.sendMessage(msg);
             }
         }.start();
-
-
     }
+
+    public void sayNoVoice() {
+        final String path = "tts_no_voice";
+
+//        final Handler handler = new Handler() {
+//            public void handleMessage(Message msg) {
+//            }
+//        };
+
+        new Thread() {
+            public void run() {
+                tryClovaTTS(path, "필요할 때 불러주세요.");
+//                Bundle bun = new Bundle();
+//                Message msg = handler.obtainMessage();
+//                msg.setData(bun);
+//                handler.sendMessage(msg);
+            }
+        }.start();
+    }
+
 
     /**
      * 사용자가 어드바이저를 취소했을 때, 종료 문장을 재생합니다.
      */
     public void sayGoodBye(){
-        final int goodByeUsed  = new Random().nextInt(TTS_GOODBYE.length);
-        final String path = "tts_exit" + goodByeUsed;
 
-        final Handler handler = new Handler() {
-            public void handleMessage(Message msg) {
-            }
-        };
+        final String path = "tts_exit" + byeMsg;
+
+//        final Handler handler = new Handler() {
+//            public void handleMessage(Message msg) {
+//            }
+//        };
 
         new Thread() {
             public void run() {
-                tryClovaTTS(path, TTS_GOODBYE[goodByeUsed]);
-                Bundle bun = new Bundle();
-                Message msg = handler.obtainMessage();
-                msg.setData(bun);
-                handler.sendMessage(msg);
+                tryClovaTTS(path, TTS_GOODBYE[byeMsg]);
+//                Bundle bun = new Bundle();
+//                Message msg = handler.obtainMessage();
+//                msg.setData(bun);
+//                handler.sendMessage(msg);
             }
         }.start();
     }
@@ -110,26 +134,19 @@ public class ClovaTTS {
      *
      * @return 화면에 표시할 수 있는, 인사 문장을 반환합니다.
      */
-    public String sayHello(){
-        final int helloUsed  = new Random().nextInt(TTS_HELLO.length);
-        final String path = "tts_welcome" + helloUsed;
+    public void sayHello(){
+        final String path = "tts_welcome" + helloMsg;
 
-        final Handler handler = new Handler() {
-            public void handleMessage(Message msg) {
-            }
-        };
 
         new Thread() {
             public void run() {
-                tryClovaTTS(path, TTS_HELLO[helloUsed]);
-                Bundle bun = new Bundle();
-                Message msg = handler.obtainMessage();
-                msg.setData(bun);
-                handler.sendMessage(msg);
+                tryClovaTTS(path, TTS_HELLO[helloMsg]);
             }
         }.start();
-        return TTS_HELLO[helloUsed];
+
     }
+
+    public String getHelloMsg(){return TTS_HELLO[helloMsg];}
 
     /**
      * 사용 방법을 알려주는 도움말 문장을 재생합니다.

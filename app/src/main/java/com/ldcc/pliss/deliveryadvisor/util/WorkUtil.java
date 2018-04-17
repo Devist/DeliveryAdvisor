@@ -45,6 +45,20 @@ public class WorkUtil {
     }
 
     /**
+     * 음성인식 - 사용자가 사용방법을 알려달라고 했을 때, 사용방법과 함께 팝업을 띄우는 기능입니다.
+     * (Ex. 무엇을 도와드릴까요?)
+     *
+     * @param context     Activity 로부터 가져온 context (getApplicationContext())
+     * @param managerInfo ManagerHelper.getCurrentDeliveryInfoSimple() 에서 가져온 값
+     */
+    public void showQuestionDialogWithHelp (Context context, String[] managerInfo){
+        this.context = context;
+        bundle.putString("Work-keyword","howToProcess");
+        bundle.putStringArray("Delivery-data",managerInfo);
+        popupAdvisorDialog(bundle);
+    }
+
+    /**
      * 음성인식 - 사용자가 배송 처리를 할 때, 배송 처리 팝업을 띄우는 기능입니다.
      * (Ex. 송장번호 0000 를 배송 처리하겠습니까?)
      *

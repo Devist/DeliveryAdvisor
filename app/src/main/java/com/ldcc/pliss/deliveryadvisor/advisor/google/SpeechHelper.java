@@ -160,9 +160,14 @@ public class SpeechHelper {
         stopVoiceRecorder();        // 이 코드로 인해 앱 지연
 
         // Stop Cloud Speech API
-        mSpeechService.removeListener(mSpeechServiceListener);
-        activity.unbindService(mServiceConnection);
-        mSpeechService = null;
+        try{
+            mSpeechService.removeListener(mSpeechServiceListener);
+            activity.unbindService(mServiceConnection);
+            mSpeechService = null;
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
         //return thread;
 
     }

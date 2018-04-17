@@ -18,6 +18,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ldcc.pliss.deliveryadvisor.MainActivity;
 import com.ldcc.pliss.deliveryadvisor.R;
 import com.ldcc.pliss.deliveryadvisor.advisor.google.SpeechHelper;
 import com.ldcc.pliss.deliveryadvisor.advisor.google.SpeechService;
@@ -42,7 +43,11 @@ import static android.widget.Toast.LENGTH_SHORT;
 
 public class AdvisorDialog extends Activity {
 
+    /**
+     * P
+     */
     private SharedPreferences prefs;
+
     private LinearLayout layoutForWorkButton;
     private TextView textViewQuestion;
     private DeliveryHelper deliveryHelper;
@@ -55,9 +60,9 @@ public class AdvisorDialog extends Activity {
 
     private String[] currentDeliveryInfo;
     private Handler voiceHandler;
-    private MediaPlayer mediaPlayer;
     boolean isPresentation;
 
+    private String workKeyword;
     /**
      * 블루투스 헤드셋의 버튼을 클릭할 때, 기본으로 제공되는 비프음이나 안내 음성이 있습니다.
      * Delivery Advisor 에서 제공되는 음성이 겹칠 수 있으므로,
@@ -86,6 +91,10 @@ public class AdvisorDialog extends Activity {
     }
 
     private void initSetting(){
+        workUtil        = new WorkUtil();
+        deliveryHelper  = new DeliveryHelper(this);
+        managerHelper   = new ManagerHelper (this);
+
         if(clovaTTS==null)
             clovaTTS = new ClovaTTS(getFilesDir());
 
@@ -96,34 +105,80 @@ public class AdvisorDialog extends Activity {
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.startBluetoothSco();
 
+        workKeyword = getIntent().getStringExtra("Work-keyword");
+        if(!isPresentation)
+            startVoiceRecognition();
+
+        currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
+        if(currentDeliveryInfo==null)
+            currentDeliveryInfo = managerHelper.getCurrentDeliveryInfoSimple();
+
+        new Handler().postDelayed(new Runnable(){
+            @Override
+            public void run(){
+                try{
+                    speechHelper.stopVoiceRecognition();
+                    clovaTTS.sayNoVoice();
+                    new Handler().postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            finish();
+                        }
+                    },2500);
+                }catch(Exception e){
+                    Log.d("처리","기존 다이얼로그에서 동작함");
+                    finish();
+                }
+
+            }
+        },30000);
+
         setLayout();
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d("처리","onStart()");
-    }
-
-
-    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Log.d("처리","onNewIntent()");
+        setIntent(intent);
+        Log.d("처리","newIntent()");
         if(clovaTTS==null)
             clovaTTS = new ClovaTTS(getFilesDir());
 
-        setIntent(intent);
         speechHelper.stopVoiceRecognition();
-
-        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        speechHelper = new SpeechHelper(this);
         audioManager.startBluetoothSco();
+
+        workKeyword = getIntent().getStringExtra("Work-keyword");
+        if(!isPresentation)
+            startVoiceRecognition();
+
+        currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
+        if(currentDeliveryInfo==null)
+            currentDeliveryInfo = managerHelper.getCurrentDeliveryInfoSimple();
+
         setLayout();
     }
 
     private void setLayout(){
 
-        final String myWork = getIntent().getStringExtra("Work-keyword");
+        layoutForWorkButton = (LinearLayout) findViewById(R.id.layout_for_work_button);
+        textViewQuestion = (TextView) findViewById(R.id.text_advisor);
+        layoutForWorkButton.removeAllViewsInLayout();
+
+        switch (String.valueOf(workKeyword)){
+            case "null":
+                drawFirstQuestionButton(currentDeliveryInfo);
+                break;
+            case "initialQuestion":
+                drawFirstQuestionButton(currentDeliveryInfo);
+                break;
+            case "processDelivery":
+                drawProcessDeliveryButton(currentDeliveryInfo);
+                break;
+            case "howToProcess":
+                drawFirstQuestionButton(currentDeliveryInfo);
+                break;
+        }
 
         //audioManager가 블루투스 마이크 사용을 가져오는 잠깐의 시간 동안 Delay가 발생하고,
         //이에 따라 재생하는 음성이 끊길 수 있습니다. 따라서 블루투스 마이크 사용 설정하는 잠깐의 시간 후에(0.5초 정도) 음성을 재생합니다.
@@ -131,51 +186,25 @@ public class AdvisorDialog extends Activity {
         voiceHandler.postDelayed(new Runnable(){
             @Override
             public void run(){
-
-                switch (String.valueOf(myWork)){
+                switch (String.valueOf(workKeyword)){
                     case "null":
-                        drawFirstQuestionButton(currentDeliveryInfo);
+                        clovaTTS.sayHello();
                         break;
                     case "initialQuestion":
-                        drawFirstQuestionButton(currentDeliveryInfo);
+                        clovaTTS.sayHello();
                         break;
                     case "processDelivery":
-                        drawProcessDeliveryButton(currentDeliveryInfo);
+                        String invoiceKeword = clovaTTS.convertNumberToClova(deliveryHelper.getSearchedInfo(currentDeliveryInfo[2]).getINV_KW());
+                        String voice = "\"송장번호 "+invoiceKeword+", "+currentDeliveryInfo[0]
+                                +" 님의 상품을 배송처리할께요. 수령자는 누구입니까?"+"\"";
+                        clovaTTS.sayThis("tts_"+currentDeliveryInfo[2],voice);
                         break;
                     case "howToProcess":
+                        clovaTTS.sayHelp();
                         break;
                 }
             }
         },DELAY_MILLIS_FOR_TTS);
-
-        layoutForWorkButton = (LinearLayout) findViewById(R.id.layout_for_work_button);
-        textViewQuestion = (TextView) findViewById(R.id.text_advisor);
-        layoutForWorkButton.removeAllViewsInLayout();
-
-
-        switch (String.valueOf(myWork)){
-            case "null":
-                break;
-            case "initialQuestion":
-                speechHelper.startVoiceRecognition(Analyzer.POPUP_HELLO_MODE);
-                break;
-            case "processDelivery":
-                speechHelper.startVoiceRecognition(Analyzer.POPUP_PROCESS);
-                break;
-            case "howToProcess":
-                break;
-        }
-
-
-
-        prefs = this.getSharedPreferences("Pref", MODE_PRIVATE);
-        deliveryHelper = new DeliveryHelper(this);
-        managerHelper = new ManagerHelper(this);
-        workUtil = new WorkUtil();
-
-        currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
-        if(currentDeliveryInfo==null)
-            currentDeliveryInfo = managerHelper.getCurrentDeliveryInfoSimple();
 
         setListener();
     }
@@ -192,25 +221,17 @@ public class AdvisorDialog extends Activity {
                 processCurrentSituation(analyzeResult);
                 processNextSituation(analyzeResult);
                 processInvoiceSituation(analyzeResult,invoiceKeywords);
-
             }
         });
-
 
         final ClovaTTS.Listener mListener = new ClovaTTS.Listener() {
             @Override
             public void onSpeakingFinished(boolean isFinal) {
-                if(isPresentation){
-                    Log.d("처리","이떄 음성인식 하도록");
-                }else{
-                    Log.d("처리","암때나");
-                }
+                if(isPresentation)
+                    startVoiceRecognition();
             }
         };
         clovaTTS.addListener(mListener);
-
-
-
     }
 
     private void processCurrentSituation(int analyzeResult){
@@ -394,14 +415,15 @@ public class AdvisorDialog extends Activity {
                 new Handler().postDelayed(new Runnable(){
                     @Override
                     public void run(){
-                        System.exit(0);
+                        finish();
                     }
                 },1500);
                 break;
 
             //사용방법을 물어본 경우, 사용 방법을 음성으로 안내합니다.
             case FinalAction.HOW_TO_USE:
-                clovaTTS.sayHelp();
+                finish();
+                workUtil.showQuestionDialogWithHelp(this,currentDeliveryInfo);
                 break;
         }
 
@@ -424,19 +446,7 @@ public class AdvisorDialog extends Activity {
 
                 break;
             case FinalAction.DONE_SIMPLE_NEXT:
-                Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
-
-                clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
-                new Handler().postDelayed(new Runnable(){
-                    @Override
-                    public void run(){
-                        workUtil.sendSMS(getApplicationContext(),nextProduct.getRECV_1_TELNO(),"고객님, [" + nextProduct.getITEM_NM()+"] 상품이 배송 완료되었습니다.");
-                        deliveryHelper.processDelivery(nextProduct.getINV_NUMB(),"C","E");
-                        deliveryHelper.changeManagerInfoToNext(nextProduct.getINV_NUMB());
-                        finish();
-                    }
-                },1500);
-
+                workUtil.showProcessDeliveryDialog(AdvisorDialog.this,managerHelper.getSearchedInfoSimple(nextProduct));
                 break;
             case FinalAction.CANCLE_NEXT:
                 Toast.makeText(getApplicationContext(),"배송 취소 처리 완료하였습니다.",LENGTH_SHORT).show();
@@ -563,7 +573,12 @@ public class AdvisorDialog extends Activity {
                 new Handler().postDelayed(new Runnable(){
                     @Override
                     public void run(){
-                        startActivity(new Intent(AdvisorDialog.this, NavigationActivity.class));
+                        Intent intent = new Intent(AdvisorDialog.this, NavigationActivity.class);
+                        intent.putExtra("lat",nextProduct.getRECV_ADDR_LAT());
+                        intent.putExtra("lng",nextProduct.getRECV_ADDR_LNG());
+                        intent.putExtra("product-name",nextProduct.getITEM_NM());
+                        intent.putExtra("loc",nextProduct.getRECV_ADDR());
+                        startActivity(intent);
                         finishAffinity();
                     }
                 },2000);
@@ -600,18 +615,7 @@ public class AdvisorDialog extends Activity {
                     },3000);
                     break;
                 case FinalAction.DONE_SIMPLE_INVOICE:
-                    Log.d("처리","제대로 들어옴");
-                    Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
-                    clovaTTS.sayThis("tts_done_shipping","배송처리 완료.");
-                    new Handler().postDelayed(new Runnable(){
-                        @Override
-                        public void run(){
-                            workUtil.sendSMS(getApplicationContext(),searchedDelivery.getRECV_1_TELNO(),"고객님, [" + searchedDelivery.getITEM_NM()+"] 상품이 배송 완료되었습니다.");
-                            deliveryHelper.processDelivery(searchedDelivery.getINV_NUMB(),"C","E");
-                            deliveryHelper.changeManagerInfoToNext(searchedDelivery.getINV_NUMB());
-                            finish();
-                        }
-                    },1500);
+                    workUtil.showProcessDeliveryDialog(AdvisorDialog.this,managerHelper.getSearchedInfoSimple(searchedDelivery));
                     break;
                 case FinalAction.CANCLE_INVOICE:
                     Toast.makeText(getApplicationContext(),"배송 취소를 완료하였습니다.",LENGTH_SHORT).show();
@@ -732,11 +736,16 @@ public class AdvisorDialog extends Activity {
                     break;
                 case FinalAction.NAVI_INVOICE:
                     Toast.makeText(getApplicationContext(),"해당 송장번호의 위치로 안내합니다.",LENGTH_SHORT).show();
-                    clovaTTS.sayThis("tts_navigation_next","해당 송장의 위치를 보여드릴께요.");
+                    clovaTTS.sayThis("tts_navigation_invoice","해당 송장의 위치를 보여드릴께요.");
                     new Handler().postDelayed(new Runnable(){
                         @Override
                         public void run(){
-                            startActivity(new Intent(AdvisorDialog.this, NavigationActivity.class));
+                            Intent intent = new Intent(AdvisorDialog.this, NavigationActivity.class);
+                            intent.putExtra("lat",searchedDelivery.getRECV_ADDR_LAT());
+                            intent.putExtra("lng",searchedDelivery.getRECV_ADDR_LNG());
+                            intent.putExtra("product-name",searchedDelivery.getITEM_NM());
+                            intent.putExtra("loc",searchedDelivery.getRECV_ADDR());
+                            startActivity(intent);
                             finishAffinity();
                         }
                     },3000);
@@ -762,9 +771,8 @@ public class AdvisorDialog extends Activity {
         super.onStop();
     }
 
-
     private void drawFirstQuestionButton(final String[] currentDeliveryInfo){
-        textViewQuestion.setText(clovaTTS.sayHello());
+        textViewQuestion.setText(clovaTTS.getHelloMsg());
 
         Button buttonHelp = setButtonLayout("예제) 사용 방법 알려줘.");
         buttonHelp.setOnClickListener(new View.OnClickListener() {
@@ -816,16 +824,10 @@ public class AdvisorDialog extends Activity {
     }
 
     private void drawProcessDeliveryButton(final String[] currentDeliveryInfo){
-        String invoiceKeword = clovaTTS.convertNumberToClova(deliveryHelper.getSearchedInfo(currentDeliveryInfo[2]).getINV_KW());
+
         String sentence = "\"송장번호 "+currentDeliveryInfo[2]+", "+currentDeliveryInfo[0]
                 +" 님의 상품을 배송처리할께요. 수령자는 누구입니까?"+"\"";
-
-        String voice = "\"송장번호 "+invoiceKeword+", "+currentDeliveryInfo[0]
-                +" 님의 상품을 배송처리할께요. 수령자는 누구입니까?"+"\"";
-
         textViewQuestion.setText(sentence);
-        clovaTTS.sayThis("tts_"+currentDeliveryInfo[2],voice);
-
 
         Button buttonKeepSelf = setButtonLayout("예제) 본인이 수령");
         buttonKeepSelf.setOnClickListener(new View.OnClickListener() {  //S:본인  F: 지인  O: 경비실  E: 기타 U:무인택배함
@@ -915,6 +917,23 @@ public class AdvisorDialog extends Activity {
         layoutParams.bottomMargin = 10;
         createdButton.setLayoutParams(layoutParams);
         return  createdButton;
+    }
+
+    private void startVoiceRecognition(){
+        switch (String.valueOf(workKeyword)){
+            case "null":
+                speechHelper.startVoiceRecognition(Analyzer.POPUP_HELLO_MODE);
+                break;
+            case "initialQuestion":
+                speechHelper.startVoiceRecognition(Analyzer.POPUP_HELLO_MODE);
+                break;
+            case "processDelivery":
+                speechHelper.startVoiceRecognition(Analyzer.POPUP_PROCESS);
+                break;
+            case "howToProcess":
+                speechHelper.startVoiceRecognition(Analyzer.POPUP_HELLO_MODE);
+                break;
+        }
     }
 
     @Override

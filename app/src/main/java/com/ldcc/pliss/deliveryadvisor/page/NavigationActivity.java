@@ -259,7 +259,7 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
             if (savedInstanceState.keySet().contains(KEY_LAST_UPDATED_TIME_STRING)) {
                 mLastUpdateTime = savedInstanceState.getString(KEY_LAST_UPDATED_TIME_STRING);
             }
-            updateUI();
+
         }
     }
 
@@ -460,6 +460,10 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
             mLastUpdateTimeTextView.setText(String.format(Locale.ENGLISH, "%s: %s",
                     mLastUpdateTimeLabel, mLastUpdateTime));
 
+            String lat = getIntent().getStringExtra("lat");
+            String lng = getIntent().getStringExtra("lng");
+            String productName = getIntent().getStringExtra("product-name");
+            String loc = getIntent().getStringExtra("loc");
 
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             if(myMarker!=null && myMarker.length>2){
@@ -475,12 +479,22 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
                 builder.include(new LatLng(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude()));
 
                 Delivery delivery = managerHelper.getCurrentDeliveryInfoDetail();
-                myMarker[1] = myMap.addMarker(new MarkerOptions()
-                        .title(delivery.getITEM_NM())
-                        .snippet(delivery.getRECV_ADDR())
-                        .position(new LatLng(Double.parseDouble(delivery.getRECV_ADDR_LAT()),Double.parseDouble(delivery.getRECV_ADDR_LNG())))
-                        .icon(BitmapDescriptorFactory.defaultMarker(new Random().nextInt(360))));
-                builder.include(new LatLng(Double.parseDouble(delivery.getRECV_ADDR_LAT()),Double.parseDouble(delivery.getRECV_ADDR_LNG())));
+                if(lat==null){
+                    myMarker[1] = myMap.addMarker(new MarkerOptions()
+                            .title(delivery.getITEM_NM())
+                            .snippet(delivery.getRECV_ADDR())
+                            .position(new LatLng(Double.parseDouble(delivery.getRECV_ADDR_LAT()),Double.parseDouble(delivery.getRECV_ADDR_LNG())))
+                            .icon(BitmapDescriptorFactory.defaultMarker(new Random().nextInt(360))));
+                    builder.include(new LatLng(Double.parseDouble(delivery.getRECV_ADDR_LAT()),Double.parseDouble(delivery.getRECV_ADDR_LNG())));
+                }else{
+                    myMarker[1] = myMap.addMarker(new MarkerOptions()
+                            .title(productName)
+                            .snippet(loc)
+                            .position(new LatLng(Double.parseDouble(lat),Double.parseDouble(lng)))
+                            .icon(BitmapDescriptorFactory.defaultMarker(new Random().nextInt(360))));
+                    builder.include(new LatLng(Double.parseDouble(lat),Double.parseDouble(lng)));
+                }
+
             }else if(myMarker==null){
                 myMarker = new Marker[2];
                 myMarker[0] = myMap.addMarker(new MarkerOptions()
@@ -491,12 +505,22 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
                 builder.include(new LatLng(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude()));
 
                 Delivery delivery = managerHelper.getCurrentDeliveryInfoDetail();
-                myMarker[1] = myMap.addMarker(new MarkerOptions()
-                        .title(delivery.getITEM_NM())
-                        .snippet(delivery.getRECV_ADDR())
-                        .position(new LatLng(Double.parseDouble(delivery.getRECV_ADDR_LAT()),Double.parseDouble(delivery.getRECV_ADDR_LNG())))
-                        .icon(BitmapDescriptorFactory.defaultMarker(new Random().nextInt(360))));
-                builder.include(new LatLng(Double.parseDouble(delivery.getRECV_ADDR_LAT()),Double.parseDouble(delivery.getRECV_ADDR_LNG())));
+                if(lat==null){
+                    myMarker[1] = myMap.addMarker(new MarkerOptions()
+                            .title(delivery.getITEM_NM())
+                            .snippet(delivery.getRECV_ADDR())
+                            .position(new LatLng(Double.parseDouble(delivery.getRECV_ADDR_LAT()),Double.parseDouble(delivery.getRECV_ADDR_LNG())))
+                            .icon(BitmapDescriptorFactory.defaultMarker(new Random().nextInt(360))));
+                    builder.include(new LatLng(Double.parseDouble(delivery.getRECV_ADDR_LAT()),Double.parseDouble(delivery.getRECV_ADDR_LNG())));
+                }else{
+                    myMarker[1] = myMap.addMarker(new MarkerOptions()
+                            .title(productName)
+                            .snippet(loc)
+                            .position(new LatLng(Double.parseDouble(lat),Double.parseDouble(lng)))
+                            .icon(BitmapDescriptorFactory.defaultMarker(new Random().nextInt(360))));
+                    builder.include(new LatLng(Double.parseDouble(lat),Double.parseDouble(lng)));
+                }
+
             } else{
                 myMarker[0] = myMap.addMarker(new MarkerOptions()
                         .title("내 위치")
@@ -506,7 +530,12 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
                 builder.include(new LatLng(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude()));
 
                 Delivery delivery = managerHelper.getCurrentDeliveryInfoDetail();
-                builder.include(new LatLng(Double.parseDouble(delivery.getRECV_ADDR_LAT()),Double.parseDouble(delivery.getRECV_ADDR_LNG())));
+                if(lat==null){
+                    builder.include(new LatLng(Double.parseDouble(delivery.getRECV_ADDR_LAT()),Double.parseDouble(delivery.getRECV_ADDR_LNG())));
+                }else{
+                    builder.include(new LatLng(Double.parseDouble(lat),Double.parseDouble(lng)));
+                }
+
             }
 
             LatLngBounds bounds = builder.build();
