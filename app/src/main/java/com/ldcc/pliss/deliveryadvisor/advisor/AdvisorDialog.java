@@ -10,6 +10,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -50,6 +51,8 @@ public class AdvisorDialog extends Activity {
 
     private LinearLayout layoutForWorkButton;
     private TextView textViewQuestion;
+    private TextView textIsListening;
+    private TextView textDescription;
     private DeliveryHelper deliveryHelper;
     private ManagerHelper managerHelper;
     private SpeechHelper speechHelper;
@@ -166,6 +169,8 @@ public class AdvisorDialog extends Activity {
         layoutForWorkButton = (LinearLayout) findViewById(R.id.layout_for_work_button);
         textViewQuestion = (TextView) findViewById(R.id.text_advisor);
         layoutForWorkButton.removeAllViewsInLayout();
+        textIsListening = (TextView) findViewById(R.id.text_is_listening);
+        textDescription = (TextView) findViewById(R.id.text_advisor_description);
 
         switch (String.valueOf(workKeyword)){
             case "null":
@@ -229,8 +234,13 @@ public class AdvisorDialog extends Activity {
         speechHelper.addConnection(new SpeechHelper.Connection() {
             @Override
             public void onConnected(int connectNumber) {
-                if (connectNumber>=0)
-                    layoutForWorkButton.setBackgroundColor(0xFF6BEB3D);
+                if (connectNumber>=0){
+                    textIsListening.setTextColor(0xFF00FA92);
+                    textIsListening.setText("Listening..");
+                    textDescription.setTextColor(0xFFAAAAAA);
+                    //layoutForWorkButton.setBackgroundColor(0xFF00FA92);
+                }
+
 
             }
         });
@@ -442,7 +452,7 @@ public class AdvisorDialog extends Activity {
     }
 
     private void processNextSituation(int analyzeResult){
-        final Delivery nextProduct = deliveryHelper.findNext(currentDeliveryInfo[2]);
+        final Delivery nextProduct = deliveryHelper.findNext(currentDeliveryInfo[0]);
         switch (analyzeResult) {
             //대상자 없이 전화연결해달라고 말한 경우, 현재 고객에게 전화연결합니다.
             case FinalAction.CALL_NEXT_CUSTOMER:
@@ -788,7 +798,7 @@ public class AdvisorDialog extends Activity {
     private void drawFirstQuestionButton(final String[] currentDeliveryInfo){
         textViewQuestion.setText(clovaTTS.getHelloMsg());
 
-        Button buttonHelp = setButtonLayout("예제) 사용 방법 알려줘.");
+        Button buttonHelp = setButtonLayout("➜ 사용 방법 알려줘☻");
         buttonHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -797,7 +807,7 @@ public class AdvisorDialog extends Activity {
             }
         });
 
-        Button buttonKeepSelf = setButtonLayout("예제) 고객에게 전화 연결해줘.");
+        Button buttonKeepSelf = setButtonLayout("➜ 전화 연결해줘☻");
         buttonKeepSelf.setOnClickListener(new View.OnClickListener() {  //S:본인  F: 지인  O: 경비실  E: 기타 U:무인택배함
             @Override
             public void onClick(View v) {
@@ -805,7 +815,7 @@ public class AdvisorDialog extends Activity {
             }
         });
 
-        Button buttonKeepAcquaintance = setButtonLayout("예제) 배송지 정보 좀 알려줄래?");
+        Button buttonKeepAcquaintance = setButtonLayout("➜ 위치 알려줘☻");
         buttonKeepAcquaintance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -815,7 +825,7 @@ public class AdvisorDialog extends Activity {
             }
         });
 
-        Button buttonKeepDoor = setButtonLayout("예제) 배송 처리 부탁해.");
+        Button buttonKeepDoor = setButtonLayout("➜ 배송 처리 부탁해☻");
         buttonKeepDoor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -825,7 +835,7 @@ public class AdvisorDialog extends Activity {
             }
         });
 
-        Button buttonKeepSecurityOffice = setButtonLayout("예제) 아냐, 괜찮아.");
+        Button buttonKeepSecurityOffice = setButtonLayout("➜ 아니야, 괜찮아☻");
         buttonKeepSecurityOffice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -922,7 +932,8 @@ public class AdvisorDialog extends Activity {
         createdButton.setText(btnContents);
         createdButton.setTextColor(Color.WHITE);
         createdButton.setTextSize(18);
-        createdButton.setBackgroundResource(R.drawable.rounded);
+        createdButton.setBackgroundResource(R.drawable.rounded_button_advisor);
+        createdButton.setGravity(Gravity.LEFT);
         layoutForWorkButton.addView(createdButton);
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) createdButton.getLayoutParams();
         layoutParams.leftMargin = 15;

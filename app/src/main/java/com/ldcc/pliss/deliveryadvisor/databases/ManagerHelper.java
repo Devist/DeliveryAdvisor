@@ -40,9 +40,9 @@ public class ManagerHelper {
         String [] deliveryInfo = new String[7];
         mRealm.beginTransaction();
         Delivery currentDelivery = mRealm.where(Delivery.class).equalTo("INV_NUMB", results.get(0).getInvoice()).findFirst();
-        deliveryInfo[0] = currentDelivery.getRECV_NM();
-        deliveryInfo[1] = currentDelivery.getITEM_NM();
-        deliveryInfo[2] = currentDelivery.getINV_NUMB();
+        deliveryInfo[0] = currentDelivery.getINV_NUMB();
+        deliveryInfo[1] = currentDelivery.getRECV_NM();
+        deliveryInfo[2] = currentDelivery.getITEM_NM();
         deliveryInfo[3] = currentDelivery.getRECV_ADDR();
         deliveryInfo[4] = currentDelivery.getRECV_1_TELNO();
         deliveryInfo[5] = currentDelivery.getSHIP_MSG();

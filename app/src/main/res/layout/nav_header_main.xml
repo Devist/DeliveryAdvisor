@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:text="LDCC 정보기술연구소"
+        android:text="음성인식 PoC Application"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
@@ -33,59 +33,6 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="문의처 : " />
-
-    <TextView
-        android:gravity="right"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#fff"
-        android:text="프로젝트 매니저 : DT지원팀 정경진"
-        android:layout_marginEnd="10dp"
-
-        />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:gravity="right"
-        android:layout_marginBottom="10dp"
-        android:text="creativeDog@lotte.net   +82-10-5875-3636" />
-
-    <TextView
-        android:gravity="right"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#fff"
-        android:text="Developer : 솔루션연구팀 오동환"
-        android:layout_marginEnd="10dp"
-
-        />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:gravity="right"
-        android:text="creativeDog@lotte.net   +82-10-5875-3636"
-        android:layout_marginBottom="10dp"/>
-
-    <TextView
-        android:gravity="right"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#fff"
-        android:text="음성 업무 처리 : 지능정보기술팀 전슬기"
-        android:layout_marginEnd="10dp"
-
-        />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:gravity="right"
-        android:text="creativeDog@lotte.net   +82-10-5875-3636" />
+        android:text="문의 : Sherlock | aboutdh@lotte.net" />
 
 </LinearLayout>

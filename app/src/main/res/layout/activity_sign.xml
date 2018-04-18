@@ -30,7 +30,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="20"
-            app:srcCompat="@drawable/icon_user"
+            app:srcCompat="@drawable/icon_customer_name"
             />
         <android.support.v7.widget.AppCompatEditText
             android:id="@+id/edit_text_manager"

@@ -22,14 +22,6 @@
             />
     </android.support.v7.widget.Toolbar>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Setting Page"
-        android:textSize="25sp"
-        android:textColor="#FFF"
-        android:background="#383838"
-        android:gravity="center" />
 
     <LinearLayout
         android:id="@+id/settingList"
@@ -40,6 +32,7 @@
         android:orientation="vertical"
         >
         <LinearLayout
+            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="vertical"
@@ -48,18 +41,27 @@
             android:gravity="center"
             android:layout_weight="1"
             >
+            
             <LinearLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center"
                 >
+                
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/icon_change_stt"
+                    />
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Speech API 사용"
+                    android:text="STT 엔진"
                     android:maxLines="1"
-                    android:textSize="26dp"
+                    android:textSize="20sp"
+                    android:layout_marginStart="10dp"
                     android:gravity="center_vertical"
                     android:textColor="#000000"
                     android:layout_weight="67"
@@ -67,8 +69,8 @@
                 <ToggleButton
                     android:id="@+id/toggle_speech_api"
                     android:background="@drawable/toggle_selector"
-                    android:layout_width="117dp"
-                    android:layout_height="50dp"
+                    android:layout_width="80dp"
+                    android:layout_height="35dp"
                     android:textOn=""
                     android:textOff=""
                     android:checked="true"
@@ -78,8 +80,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:textSize="18.5dp"
-                android:text="사용할 경우 음성을 좀 더 정확하게 인식합니다."
+                android:textSize="15sp"
+                android:breakStrategy="balanced"
+                android:text="어떤 Speech API를 사용할까요? (현재 Google만 가능)"
                 />
         </LinearLayout>
 
@@ -98,12 +101,20 @@
                 android:orientation="horizontal"
                 android:gravity="center"
                 >
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/icon_awareness"
+                    />
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="위치인식기능 사용"
+                    android:text="Smart On"
                     android:maxLines="1"
-                    android:textSize="26dp"
+                    android:textSize="20sp"
+                    android:layout_marginStart="10dp"
                     android:gravity="center_vertical"
                     android:textColor="#000000"
                     android:layout_weight="67"
@@ -111,8 +122,8 @@
                 <ToggleButton
                     android:id="@+id/toggle_awareness"
                     android:background="@drawable/toggle_selector"
-                    android:layout_width="117dp"
-                    android:layout_height="50dp"
+                    android:layout_width="80dp"
+                    android:layout_height="35dp"
                     android:textOn=""
                     android:textOff=""
                     android:checked="true"
@@ -122,8 +133,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:textSize="18.5dp"
-                android:text="사용할 경우, 적절한 위치에서 배송 완료 전화 걸기 등의 필요한 활동을 알려줍니다."
+                android:textSize="15sp"
+                android:breakStrategy="balanced"
+                android:text="앱이 먼저 필요한 기능을 알려줍니다. (현재 지원 X )"
                 />
         </LinearLayout>
 
@@ -142,21 +154,26 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal">
-
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/icon_presentation"
+                    />
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="67"
                     android:gravity="center_vertical"
-                    android:text="Presentation기능"
+                    android:layout_marginStart="10dp"
+                    android:text="Presentation"
                     android:maxLines="1"
                     android:textColor="#000000"
-                    android:textSize="26dp" />
+                    android:textSize="20sp" />
 
                 <ToggleButton
                     android:id="@+id/toggle_hi_advisor"
-                    android:layout_width="117dp"
-                    android:layout_height="50dp"
+                    android:layout_width="80dp"
+                    android:layout_height="35dp"
                     android:background="@drawable/toggle_selector"
                     android:checked="true"
                     android:textOff=""
@@ -166,8 +183,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:textSize="18.5dp"
-                android:text="핸드폰 마이크를 사용하고, 버튼 대신 하이 어드바이저! 라고 말할 때 기능이 활성화 돼요."
+                android:textSize="15sp"
+                android:breakStrategy="balanced"
+                android:text="앱이 모두 말 한 뒤에 사용자의 음성을 인식합니다."
                 />
         </LinearLayout>
 
@@ -186,21 +204,26 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal">
-
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/icon_auto_sms"
+                    />
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="67"
                     android:gravity="center_vertical"
-                    android:text="자동문자전송 기능"
+                    android:text="자동 문자 전송"
+                    android:layout_marginStart="10dp"
                     android:maxLines="1"
                     android:textColor="#000000"
-                    android:textSize="26dp" />
+                    android:textSize="20sp" />
 
                 <ToggleButton
                     android:id="@+id/toggle_sms"
-                    android:layout_width="117dp"
-                    android:layout_height="50dp"
+                    android:layout_width="80dp"
+                    android:layout_height="35dp"
                     android:background="@drawable/toggle_selector"
                     android:checked="true"
                     android:textOff=""
@@ -210,27 +233,41 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:textSize="18.5dp"
-                android:text="활성화 시 배송 완료 처리를 할 때 고객에게 자동으로 문자를 전송합니다."
+                android:textSize="15sp"
+                android:text="테스트할 때 문자가 계속 와서 성가셔서 만들었어요."
                 />
         </LinearLayout>
 
     </LinearLayout>
 
-
-    <android.support.v7.widget.AppCompatButton
-        android:layout_marginTop="15dp"
-        android:layout_width="300dp"
-        android:layout_height="0dp"
-        android:layout_weight="5.62"
-        android:background="#000000"
-        android:text="초기화"
-        android:textSize="20dp"
-        android:layout_gravity="center_horizontal"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_weight="10"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:onClick="showDialogInit"
-        />
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/icon_clear"
+            />
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="초기화"
+            android:layout_marginStart="10dp"
+            android:textSize="20dp"
+            android:layout_gravity="center_vertical"
+            android:textColor="#333"
+            />
+    </LinearLayout>
+
 
     <TextView
         android:layout_width="match_parent"
@@ -238,8 +275,8 @@
 
         android:layout_weight="6.56"
         android:gravity="center"
-        android:text="Made by LDCC 정보기술연구소"
-
+        android:text="음성 인식 PoC Application"
+        android:layout_marginBottom="10dp"
         />
 
 </LinearLayout>

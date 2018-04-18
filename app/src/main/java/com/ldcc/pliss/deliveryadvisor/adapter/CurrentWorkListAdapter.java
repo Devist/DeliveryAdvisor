@@ -5,42 +5,47 @@ package com.ldcc.pliss.deliveryadvisor.adapter;
  */
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ldcc.pliss.deliveryadvisor.R;
 
-import java.util.ArrayList;
-
 
 public class CurrentWorkListAdapter extends BaseAdapter {
 
-    private Context context;
+    private View view;
     private final String [] infos = new String[6];
     private final int[] images = {
+            R.drawable.icon_invoice,
             R.drawable.icon_customer_name,
             R.drawable.icon_product,
-            R.drawable.icon_invoice_number,
-            R.drawable.icon_target_location,
+            R.drawable.icon_address,
             R.drawable.icon_phone,
-            R.drawable.icon_customer_message
+            R.drawable.icon_message
     };
 
-    public CurrentWorkListAdapter(Context context, String [] infos){
+    public final int mode;
+
+    public CurrentWorkListAdapter(View view, String[] infos, int mode){
         //super(context, R.layout.single_list_app_item, utilsArrayList);
-        this.context = context;
+        this.view = view;
 
         for(int i = 0; i<6 ; i++){
             System.arraycopy(infos,i,this.infos,i,1);
         }
+        this.mode= mode;
+        Log.d("모드",this.mode+"");
     }
 
     @Override
@@ -68,10 +73,41 @@ public class CurrentWorkListAdapter extends BaseAdapter {
         if (convertView == null) {
 
             viewHolder = new ViewHolder();
-            LayoutInflater inflater = LayoutInflater.from(context);
+            LayoutInflater inflater = LayoutInflater.from(view.getContext());
             convertView = inflater.inflate(R.layout.item_current_work, parent, false);
             viewHolder.txtName = (TextView) convertView.findViewById(R.id.aNametxt);
             viewHolder.icon = (ImageView) convertView.findViewById(R.id.appIconIV);
+            viewHolder.txtName.setText(infos[position]);
+            viewHolder.icon.setImageResource(images[position]);
+
+            if(position==0){
+                viewHolder.layout = (LinearLayout) convertView.findViewById(R.id.item_current);
+                TextView textView = new TextView(convertView.getContext());
+                textView.setBackgroundColor(Color.LTGRAY);
+                textView.setHeight(2);
+
+                viewHolder.layout.addView(textView);
+                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) textView.getLayoutParams();
+                layoutParams.leftMargin = 15;
+                layoutParams.rightMargin = 15;
+                layoutParams.topMargin = 5;
+                layoutParams.bottomMargin = 5;
+                textView.setLayoutParams(layoutParams);
+                if(mode==0){
+                    viewHolder.txtName.setText("Prev : " + infos[position]);
+                }
+
+                if(mode==1){
+                    viewHolder.txtName.setText("Now : " + infos[position]);
+                }
+
+                if(mode==2){
+                    viewHolder.txtName.setText("Next : " + infos[position]);
+                }
+
+                viewHolder.txtName.setTextSize(17);
+                viewHolder.txtName.setTypeface(null, Typeface.BOLD);
+            }
 
             convertView.setTag(viewHolder);
         } else {
@@ -86,9 +122,7 @@ public class CurrentWorkListAdapter extends BaseAdapter {
 //            Log.d("값 이후 높이",viewHolder.txtName.getMeasuredHeight()+"");
 //        }
 //        Log.d("값",infos[position]);
-        viewHolder.txtName.setText(infos[position]);
 
-        viewHolder.icon.setImageResource(images[position]);
 
 
         return convertView;
@@ -98,7 +132,7 @@ public class CurrentWorkListAdapter extends BaseAdapter {
 
         TextView txtName;
         ImageView icon;
-
+        LinearLayout layout;
     }
 
 }

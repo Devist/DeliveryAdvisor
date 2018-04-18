@@ -1,30 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:id="@+id/item_current"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/appIconIV"
-        android:src="@drawable/icon_user"
-        android:foregroundGravity="center"
-        android:layout_width="20dp"
-        android:layout_height="20dp" />
-
-    <TextView
-        android:id="@+id/aNametxt"
-        android:textSize="15sp"
-        android:textColor="#555"
-        android:gravity="center_vertical"
-        android:maxLines="2"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:minHeight="20dp"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/appIconIV"/>
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/appIconIV"
+            android:layout_height="42dp"
+            android:layout_width="42dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            />
+
+        <TextView
+            android:id="@+id/aNametxt"
+            android:textSize="16sp"
+            android:textColor="#333"
+            android:gravity="center_vertical"
+            android:maxLines="3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:minHeight="42dp"
+            android:breakStrategy="balanced"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_alignParentTop="true" />
+    </LinearLayout>
 
 
-
-
-</RelativeLayout>
+</LinearLayout>

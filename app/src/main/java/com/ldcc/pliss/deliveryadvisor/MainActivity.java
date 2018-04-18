@@ -3,6 +3,9 @@ package com.ldcc.pliss.deliveryadvisor;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -94,8 +97,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
         if(checkFirstRun())             //앱이 최초 실행인지 확인
@@ -104,8 +105,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             init();
     }
 
+    public void FragmentOneClick(View view) {
+        Fragment myfragment;
+        myfragment = new MainCurrentFragment();
+
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_switch, myfragment);
+        fragmentTransaction.commit();
+
+    }
+
+    public void FragmentTwoClick(View view) {
+        Fragment myfragment;
+        myfragment = new MainAllFragment();
+
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_switch, myfragment);
+        fragmentTransaction.commit();
+
+    }
+//    public void FragmentTwoClick(View view) {
+//        Fragment myfragment;
+//        myfragment = new FragmentTwo();
+//
+//        FragmentManager fm = getFragmentManager();
+//        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+//        fragmentTransaction.replace(R.id.fragment_switch, myfragment);
+//        fragmentTransaction.commit();
+//
+//    }
 
     private void init(){
+
 
         fa = this;
         workUtil = new WorkUtil();
@@ -142,8 +175,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //상단 툴바 세팅
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.drawable.icon_setting);
         getSupportActionBar().setTitle(null);
+        toolbar.setNavigationIcon(R.drawable.icon_navi_menu);
 
         //상단 툴바 왼쪽의 메뉴 버튼 클릭했을 때 등장하는 뷰 세팅
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -154,29 +187,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //상단 현재 업무 뷰 세팅
-        currentWorkListView = (ListView) findViewById(R.id.currentWorkList);
-        buttonShowDetails = (Button) findViewById(R.id.button_show_details);
-        buttonProcDelivery = (Button) findViewById(R.id.button_proc_delivery);
-        buttonCallCustomer= (Button) findViewById(R.id.button_call_customer);
-        buttonNaviPath = (Button) findViewById(R.id.button_navi_path);
-        currentWorkListAdapter = new CurrentWorkListAdapter(MainActivity.this, managerInfo);
-        currentWorkListView.setAdapter(currentWorkListAdapter);
-
-        //상태 진행 바 세팅
-        progressBarDelivery = (ProgressBar) findViewById(R.id.progress_bar_delivery);
-        progressTextDelivery = (TextView) findViewById(R.id.progress_text_delivery);
-        progressBarDelivery.setMax(results.size());
-        progressBarDelivery.setProgress(deliveryDoneCount);
-        progressTextDelivery.setText("업무 리스트 (" + deliveryDoneCount + "/" + results.size()+")");
-
-        //하단 모든 업무 뷰 세팅
-        allWorkListView = (ListView) findViewById(R.id.allWorkList);
-        status[deliveryDoneCount]="O";
-        allWorkListAdapter = new AllWorkListAdapter(invoice,customerName, customerProduct,customerAddress,status,deliveryDoneCount);
-        allWorkListView.setAdapter(allWorkListAdapter);
-        allWorkListView.setSelection(deliveryDoneCount);
-        allWorkListView.getViewTreeObserver().addOnGlobalLayoutListener(new MyGlobalListenerClass(deliveryDoneCount));
+//        //상단 현재 업무 뷰 세팅
+//        currentWorkListView = (ListView) findViewById(R.id.currentWorkList);
+//        buttonShowDetails = (Button) findViewById(R.id.button_show_details);
+//        buttonProcDelivery = (Button) findViewById(R.id.button_proc_delivery);
+//        buttonCallCustomer= (Button) findViewById(R.id.button_call_customer);
+//        buttonNaviPath = (Button) findViewById(R.id.button_navi_path);
+//        currentWorkListAdapter = new CurrentWorkListAdapter(MainActivity.this, managerInfo);
+//        currentWorkListView.setAdapter(currentWorkListAdapter);
+//
+//        //상태 진행 바 세팅
+//        progressBarDelivery = (ProgressBar) findViewById(R.id.progress_bar_delivery);
+//        progressTextDelivery = (TextView) findViewById(R.id.progress_text_delivery);
+//        progressBarDelivery.setMax(results.size());
+//        progressBarDelivery.setProgress(deliveryDoneCount);
+//        progressTextDelivery.setText("업무 리스트 (" + deliveryDoneCount + "/" + results.size()+")");
+//
+//        //하단 모든 업무 뷰 세팅
+//        allWorkListView = (ListView) findViewById(R.id.allWorkList);
+//        status[deliveryDoneCount]="O";
+//        allWorkListAdapter = new AllWorkListAdapter(invoice,customerName, customerProduct,customerAddress,status,deliveryDoneCount);
+//        allWorkListView.setAdapter(allWorkListAdapter);
+//        allWorkListView.setSelection(deliveryDoneCount);
+//        allWorkListView.getViewTreeObserver().addOnGlobalLayoutListener(new MyGlobalListenerClass(deliveryDoneCount));
 
         setListener();
     }
@@ -193,120 +226,120 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        // A. 모든 업무 리스트 화면 중 특정 아이템을 오래 클릭할 경우,
-        allWorkListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-
-                TextView temp;
-                if(position==deliveryDoneCount){
-                    temp = (TextView) view.findViewById(R.id.textWorkTitle_ongoing);
-                }else{
-                    temp = (TextView) view.findViewById(R.id.textWorkTitle);
-                }
-
-                // B.상세정보 표시 팝업 표출
-                String selectedInvoiceNumber = temp.getText().toString().split(":")[1].substring(1);    //송장번호를 잘라서 가져옴.
-                final DetailInfoDialog detailInfoDialog = new DetailInfoDialog(MainActivity.this, selectedInvoiceNumber);
-                detailInfoDialog.show();
-
-                // 1.상세정보 표시 팝업에서 "현재 목적지로 변경" 버튼을 눌렀을 때의 처리
-                detailInfoDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        // 2.단순 쓰레드 처리
-                        mprogressBar = (ProgressBar) findViewById(R.id.circular_progress_bar);
-                        ObjectAnimator anim = ObjectAnimator.ofInt(mprogressBar, "progress", 0, 100);
-                        anim.start();
-
-                        // 3. 현재 처리해야 할 업무 변경
-                        String addCategoryStr = detailInfoDialog.getAddCategoryStr();
-                        if(addCategoryStr!=null)
-                            deliveryHelper.changeManagerInfo(addCategoryStr);
-                    }
-                });
-                return true;
-            }
-
-        });
-
-        //현재업무 리스트 뷰에서 "상세 정보" 버튼 클릭 시 처리
-        buttonShowDetails.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final DetailInfoDialog detailInfoDialog = new DetailInfoDialog(MainActivity.this,managerInfo[2]);
-                detailInfoDialog.show();
-            }
-        });
-
-        //현재업무 리스트 뷰에서 "배송 처리" 버튼 클릭 시 처리
-        buttonProcDelivery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean isCallandMessagePossible = checkPermission();
-                if(isCallandMessagePossible) {
-                    workUtil.showProcessDeliveryDialog(v.getContext(),managerInfo);
-                }else{
-                    Toast.makeText(MainActivity.this, "권한이 부족하여 실행하지 못했습니다.", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
-
-        //현재업무 리스트 뷰에서 "전화 연결" 버튼 클릭 시 처리
-        buttonCallCustomer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean isCallandMessagePossible = checkPermission();
-                if(isCallandMessagePossible) {
-                    workUtil.callTheCustomer(v.getContext(), managerInfo[4]);
-                    workUtil.sendSMS(MainActivity.this,managerInfo[4],"배달원이 상품 배송을 진행하기 위해 전화 걸었습니다.");
-                }else{
-                    Toast.makeText(MainActivity.this, "앱 설정에서 전화 권한 허용을 클릭해주시기 바랍니다.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        //현재업무 리스트 뷰에서 "길 안내" 버튼 클릭 시 처리
-        buttonNaviPath.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                boolean isCallandMessagePossible = checkPermission();
-
-                if(isCallandMessagePossible) {
-                    startActivity(new Intent(MainActivity.this, NavigationActivity.class));
-                }else{
-                    Toast.makeText(MainActivity.this, "위치를 허용하지 않았을 경우, 앱 설정에서 위치 권한 허용을 클릭해주시기 바랍니다.", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
-
-        //데이터베이스에서 현재 업무가 변경되었을 때, 이를 감지하여 [현재 업무 화면, 진행 프로그레스바, 전체 업무 화면] 내용을 변경해준다.
-        ddd = mRealm.where(Manager.class).equalTo("userName",managerHelper.getManagerName()).findFirstAsync();
-        workDataChangeListener = new RealmChangeListener() {
-            @Override
-            public void onChange(Object o) {
-
-                try{
-                    changeWorkData();
-                    currentWorkListAdapter = new CurrentWorkListAdapter(MainActivity.this, managerInfo);
-                    currentWorkListView.setAdapter(currentWorkListAdapter);
-
-                    progressBarDelivery.setProgress(deliveryDoneCount);
-                    progressTextDelivery.setText("업무 리스트 (" + deliveryDoneCount + "/" + results.size()+")");
-
-                    allWorkListAdapter = new AllWorkListAdapter(invoice,customerName, customerProduct,customerAddress,status,deliveryDoneCount);
-                    allWorkListView.setAdapter(allWorkListAdapter);
-                    allWorkListView.setSelection(deliveryDoneCount);
-                    allWorkListView.getViewTreeObserver().addOnGlobalLayoutListener(new MyGlobalListenerClass(deliveryDoneCount));
-                }catch(Exception e){
-                    finish();
-                }
-            }
-        };
-        ddd.addChangeListener(workDataChangeListener);
+//        // A. 모든 업무 리스트 화면 중 특정 아이템을 오래 클릭할 경우,
+//        allWorkListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//
+//                TextView temp;
+//                if(position==deliveryDoneCount){
+//                    temp = (TextView) view.findViewById(R.id.textWorkTitle_ongoing);
+//                }else{
+//                    temp = (TextView) view.findViewById(R.id.textWorkTitle);
+//                }
+//
+//                // B.상세정보 표시 팝업 표출
+//                String selectedInvoiceNumber = temp.getText().toString().split(":")[1].substring(1);    //송장번호를 잘라서 가져옴.
+//                final DetailInfoDialog detailInfoDialog = new DetailInfoDialog(MainActivity.this, selectedInvoiceNumber);
+//                detailInfoDialog.show();
+//
+//                // 1.상세정보 표시 팝업에서 "현재 목적지로 변경" 버튼을 눌렀을 때의 처리
+//                detailInfoDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//                    @Override
+//                    public void onDismiss(DialogInterface dialog) {
+//                        // 2.단순 쓰레드 처리
+//                        mprogressBar = (ProgressBar) findViewById(R.id.circular_progress_bar);
+//                        ObjectAnimator anim = ObjectAnimator.ofInt(mprogressBar, "progress", 0, 100);
+//                        anim.start();
+//
+//                        // 3. 현재 처리해야 할 업무 변경
+//                        String addCategoryStr = detailInfoDialog.getAddCategoryStr();
+//                        if(addCategoryStr!=null)
+//                            deliveryHelper.changeManagerInfo(addCategoryStr);
+//                    }
+//                });
+//                return true;
+//            }
+//
+//        });
+//
+//        //현재업무 리스트 뷰에서 "상세 정보" 버튼 클릭 시 처리
+//        buttonShowDetails.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                final DetailInfoDialog detailInfoDialog = new DetailInfoDialog(MainActivity.this,managerInfo[2]);
+//                detailInfoDialog.show();
+//            }
+//        });
+//
+//        //현재업무 리스트 뷰에서 "배송 처리" 버튼 클릭 시 처리
+//        buttonProcDelivery.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                boolean isCallandMessagePossible = checkPermission();
+//                if(isCallandMessagePossible) {
+//                    workUtil.showProcessDeliveryDialog(v.getContext(),managerInfo);
+//                }else{
+//                    Toast.makeText(MainActivity.this, "권한이 부족하여 실행하지 못했습니다.", Toast.LENGTH_SHORT).show();
+//                }
+//
+//            }
+//        });
+//
+//        //현재업무 리스트 뷰에서 "전화 연결" 버튼 클릭 시 처리
+//        buttonCallCustomer.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                boolean isCallandMessagePossible = checkPermission();
+//                if(isCallandMessagePossible) {
+//                    workUtil.callTheCustomer(v.getContext(), managerInfo[4]);
+//                    workUtil.sendSMS(MainActivity.this,managerInfo[4],"배달원이 상품 배송을 진행하기 위해 전화 걸었습니다.");
+//                }else{
+//                    Toast.makeText(MainActivity.this, "앱 설정에서 전화 권한 허용을 클릭해주시기 바랍니다.", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
+//
+//        //현재업무 리스트 뷰에서 "길 안내" 버튼 클릭 시 처리
+//        buttonNaviPath.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                boolean isCallandMessagePossible = checkPermission();
+//
+//                if(isCallandMessagePossible) {
+//                    startActivity(new Intent(MainActivity.this, NavigationActivity.class));
+//                }else{
+//                    Toast.makeText(MainActivity.this, "위치를 허용하지 않았을 경우, 앱 설정에서 위치 권한 허용을 클릭해주시기 바랍니다.", Toast.LENGTH_SHORT).show();
+//                }
+//
+//            }
+//        });
+//
+//        //데이터베이스에서 현재 업무가 변경되었을 때, 이를 감지하여 [현재 업무 화면, 진행 프로그레스바, 전체 업무 화면] 내용을 변경해준다.
+//        ddd = mRealm.where(Manager.class).equalTo("userName",managerHelper.getManagerName()).findFirstAsync();
+//        workDataChangeListener = new RealmChangeListener() {
+//            @Override
+//            public void onChange(Object o) {
+//
+//                try{
+//                    changeWorkData();
+//                    currentWorkListAdapter = new CurrentWorkListAdapter(MainActivity.this, managerInfo);
+//                    currentWorkListView.setAdapter(currentWorkListAdapter);
+//
+//                    progressBarDelivery.setProgress(deliveryDoneCount);
+//                    progressTextDelivery.setText("업무 리스트 (" + deliveryDoneCount + "/" + results.size()+")");
+//
+//                    allWorkListAdapter = new AllWorkListAdapter(invoice,customerName, customerProduct,customerAddress,status,deliveryDoneCount);
+//                    allWorkListView.setAdapter(allWorkListAdapter);
+//                    allWorkListView.setSelection(deliveryDoneCount);
+//                    allWorkListView.getViewTreeObserver().addOnGlobalLayoutListener(new MyGlobalListenerClass(deliveryDoneCount));
+//                }catch(Exception e){
+//                    finish();
+//                }
+//            }
+//        };
+//        ddd.addChangeListener(workDataChangeListener);
 
     }
 

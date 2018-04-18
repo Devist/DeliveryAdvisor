@@ -8,165 +8,51 @@
     android:background="#FFFFFF"
     tools:context="com.ldcc.pliss.deliveryadvisor.MainActivity"
     tools:showIn="@layout/activity_main">
-
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ProgressBar
-            android:id="@+id/circular_progress_bar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="30dp"
-            android:indeterminate="false"
-            android:max="48"
-            android:progress="1"
-            android:progressDrawable="@drawable/progressbar_circular"
-            android:visibility="visible" />
-
-
+        android:layout_height="match_parent"
+        android:background="#EFF2EF"
+        android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="이전･현재･다음"
+                android:textSize="18sp"
+                android:onClick="FragmentOneClick"
+                android:background="#EFF2EF"
+                android:layout_weight="1"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="현재 업무"
-                android:textSize="20sp"
-                android:textColor="#FFF"
-                android:background="#383838"
-                android:gravity="center"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"/>
-
-            <ListView
-                android:id="@+id/currentWorkList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#FAFAFA"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="5.2"
-                android:background="#F5F5F5"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:orientation="horizontal">
-                <Button
-                    android:id="@+id/button_show_details"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="상세정보"
-                    android:textColor="#2896F3"
-                    android:textSize="15sp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    />
-                <Button
-                    android:id="@+id/button_proc_delivery"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="배송처리"
-                    android:textColor="#2896F3"
-                    android:textSize="15sp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    />
-                <Button
-                    android:id="@+id/button_call_customer"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="전화연결"
-                    android:textColor="#2896F3"
-                    android:textSize="15sp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    />
-                <Button
-                    android:id="@+id/button_navi_path"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="길 안내"
-                    android:textColor="#2896F3"
-                    android:textSize="15sp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="25dp"
-                android:gravity="center"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginTop="10dp">
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <ProgressBar
-                        android:id="@+id/progress_bar_delivery"
-                        android:layout_width="match_parent"
-                        android:layout_height="25dp"
-                        style="@android:style/Widget.ProgressBar.Horizontal"
-                        android:progressDrawable="@drawable/progressbar_linear"
-                        />
-
-                    <TextView
-                        android:id="@+id/progress_text_delivery"
-                        android:layout_width="match_parent"
-                        android:textSize="17sp"
-                        android:layout_height="25dp"
-                        android:layout_alignLeft="@id/progress_bar_delivery"
-                        android:layout_alignRight="@id/progress_bar_delivery"
-                        android:background="@android:color/transparent"
-                        android:text="업무 리스트 (8/10)"
-                        android:gravity="center"
-                        android:textColor="#FFF"
-                        />
-
-                </RelativeLayout>
-            </LinearLayout>
-
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:fillViewport="true"
-                android:visibility="visible"
-                android:scrollbars="none"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_weight="59">
-
-                <ListView
-                    android:id="@+id/allWorkList"
-                    android:longClickable="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#FAFAFA"
-                    android:divider="@drawable/divider"
-                    android:headerDividersEnabled="false"
-                    android:footerDividersEnabled="false" />
-
-            </ScrollView>
-
-
-
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="리스트보기"
+                android:onClick="FragmentTwoClick"
+                android:background="#FFF"
+                android:layout_weight="1"/>
 
         </LinearLayout>
 
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="2px"-->
+            <!--android:background="#ffcccccc"-->
+            <!--/>-->
 
-    </RelativeLayout>
+        <fragment
+            android:id="@+id/fragment_switch"
+            android:name="com.ldcc.pliss.deliveryadvisor.MainCurrentFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"/>
+    </LinearLayout>
 
 
 </android.support.constraint.ConstraintLayout>
