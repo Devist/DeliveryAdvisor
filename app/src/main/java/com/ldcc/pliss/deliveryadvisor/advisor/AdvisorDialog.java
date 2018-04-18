@@ -113,7 +113,8 @@ public class AdvisorDialog extends Activity {
         if(currentDeliveryInfo==null)
             currentDeliveryInfo = managerHelper.getCurrentDeliveryInfoSimple();
 
-        new Handler().postDelayed(new Runnable(){
+        Handler myTimer = new Handler();
+        myTimer.postDelayed(new Runnable(){
             @Override
             public void run(){
                 try{
@@ -132,6 +133,7 @@ public class AdvisorDialog extends Activity {
 
             }
         },30000);
+
 
         setLayout();
     }
@@ -224,6 +226,15 @@ public class AdvisorDialog extends Activity {
             }
         });
 
+        speechHelper.addConnection(new SpeechHelper.Connection() {
+            @Override
+            public void onConnected(int connectNumber) {
+                if (connectNumber>=0)
+                    layoutForWorkButton.setBackgroundColor(0xFF6BEB3D);
+
+            }
+        });
+
         final ClovaTTS.Listener mListener = new ClovaTTS.Listener() {
             @Override
             public void onSpeakingFinished(boolean isFinal) {
@@ -251,6 +262,7 @@ public class AdvisorDialog extends Activity {
             //대상자 없이 배송 완료 해달라고 말한 경우, 현재 고객의 상품을 배송완료 처리합니다.
             //배송 완료 처리 방법을 알기 위해, 다시 한 번 다이얼로그를 띄웁니다.
             case FinalAction.DONE_SIMPLE_CURRENNT:
+                finish();
                 workUtil.showProcessDeliveryDialog(AdvisorDialog.this,currentDeliveryInfo);
                 break;
 
@@ -446,6 +458,7 @@ public class AdvisorDialog extends Activity {
 
                 break;
             case FinalAction.DONE_SIMPLE_NEXT:
+                finish();
                 workUtil.showProcessDeliveryDialog(AdvisorDialog.this,managerHelper.getSearchedInfoSimple(nextProduct));
                 break;
             case FinalAction.CANCLE_NEXT:
@@ -615,6 +628,7 @@ public class AdvisorDialog extends Activity {
                     },3000);
                     break;
                 case FinalAction.DONE_SIMPLE_INVOICE:
+                    finish();
                     workUtil.showProcessDeliveryDialog(AdvisorDialog.this,managerHelper.getSearchedInfoSimple(searchedDelivery));
                     break;
                 case FinalAction.CANCLE_INVOICE:

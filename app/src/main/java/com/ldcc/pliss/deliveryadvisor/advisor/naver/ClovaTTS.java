@@ -168,6 +168,7 @@ public class ClovaTTS {
                 handler.sendMessage(msg);
             }
         }.start();
+
     }
 
     private void tryClovaTTS(String path,String sentences){

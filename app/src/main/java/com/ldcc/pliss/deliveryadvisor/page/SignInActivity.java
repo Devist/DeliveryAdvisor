@@ -31,8 +31,8 @@ public class SignInActivity extends AppCompatActivity {
     private List<String[]> workData;
 
     //UI 위젯
-    private TextView successProgressText;
-    private TextView failProgressText;
+//    private TextView successProgressText;
+//    private TextView failProgressText;
     private EditText editTextManager;
     private DeliveryHelper deliveryHelper;
 
@@ -50,19 +50,19 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private void init(){
-        successProgressText = (TextView) findViewById(R.id.textSuccessProgress);
-        failProgressText    = (TextView) findViewById(R.id.textFailProgress);
+//        successProgressText = (TextView) findViewById(R.id.textSuccessProgress);
+//        failProgressText    = (TextView) findViewById(R.id.textFailProgress);
         editTextManager     = (EditText) findViewById(R.id.edit_text_manager);
         deliveryHelper      = new DeliveryHelper(this);
         TextView tvView = (TextView) findViewById(R.id.sign_title);
-        LinearLayout linearLayout = (LinearLayout)findViewById(R.id.sign_ll);
-        LinearLayout signUserLayout = (LinearLayout)findViewById(R.id.sign_user_ll);
+//        LinearLayout linearLayout = (LinearLayout)findViewById(R.id.sign_ll);
+//        LinearLayout signUserLayout = (LinearLayout)findViewById(R.id.sign_user_ll);
         Animation animationLtoR = AnimationUtils.loadAnimation(this, R.anim.from_lx_to_rx);
         Animation animationRtoL = AnimationUtils.loadAnimation(this, R.anim.from_rx_to_lx);
         Animation animationTtoB = AnimationUtils.loadAnimation(this, R.anim.from_ty_to_by);
-        linearLayout.startAnimation(animationLtoR);
+        //linearLayout.startAnimation(animationLtoR);
         tvView.startAnimation(animationTtoB);
-        signUserLayout.startAnimation(animationRtoL);
+        //signUserLayout.startAnimation(animationRtoL);
 
 
         CsvUtil csvUtil = new CsvUtil();
@@ -70,16 +70,16 @@ public class SignInActivity extends AppCompatActivity {
 
         Realm.init(this);
         Realm mRealm = Realm.getDefaultInstance();
-        RealmResults<Delivery> delivery = mRealm.where(Delivery.class).findAll();
-        RealmChangeListener callback = new RealmChangeListener() {
-            @Override
-            public void onChange(Object o) {
-                RealmResults results = (RealmResults) o;
-                successProgressText.setText(results.size()+ "개 Success");
-                failProgressText.setText(workData.size()-results.size()-1+ "개 Fail");
-            }
-        };
-        delivery.addChangeListener(callback);
+//        RealmResults<Delivery> delivery = mRealm.where(Delivery.class).findAll();
+//        RealmChangeListener callback = new RealmChangeListener() {
+//            @Override
+//            public void onChange(Object o) {
+//                RealmResults results = (RealmResults) o;
+//                successProgressText.setText(results.size()+ "개 Success");
+//                failProgressText.setText(workData.size()-results.size()-1+ "개 Fail");
+//            }
+//        };
+//        delivery.addChangeListener(callback);
         deliveryHelper.setAllDeliveryList(workData);
     }
 

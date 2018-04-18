@@ -11,9 +11,9 @@
         android:id="@+id/sign_title"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="36"
+        android:layout_weight="15"
         android:text="Delivery Advisor"
-        android:gravity="center"
+        android:gravity="center|bottom"
         android:textSize="23sp"
         android:textColor="#000"
         />
@@ -22,65 +22,66 @@
         android:id="@+id/sign_user_ll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="40dp"
-        android:layout_weight="8"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_weight="72"
         >
         <android.support.v7.widget.AppCompatImageView
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="24"
+            android:layout_weight="20"
             app:srcCompat="@drawable/icon_user"
             />
         <android.support.v7.widget.AppCompatEditText
             android:id="@+id/edit_text_manager"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="76"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:hint="이름 ( 사원번호 )" />
     </LinearLayout>
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="43.82"
-        android:gravity="center"
-        >
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="43.82"-->
+        <!--android:gravity="center"-->
+        <!--&gt;-->
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            android:id="@+id/sign_ll"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/textSuccessProgress"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="0개 Success"
-                android:textSize="50sp"
-                android:textColor="#000000"
-                />
-            <TextView
-                android:id="@+id/textFailProgress"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="0개 Fail"
-                android:textSize="25dp"
-                android:textColor="#000000"
-                android:gravity="right|center"
-                />
+        <!--<LinearLayout-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:orientation="vertical"-->
+            <!--android:id="@+id/sign_ll"-->
+            <!--android:layout_height="wrap_content">-->
+            <!--<TextView-->
+                <!--android:id="@+id/textSuccessProgress"-->
+                <!--android:layout_weight="1"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:text="0개 Success"-->
+                <!--android:textSize="50sp"-->
+                <!--android:textColor="#000000"-->
+                <!--/>-->
+            <!--<TextView-->
+                <!--android:id="@+id/textFailProgress"-->
+                <!--android:layout_weight="1"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="0개 Fail"-->
+                <!--android:textSize="25dp"-->
+                <!--android:textColor="#000000"-->
+                <!--android:gravity="right|center"-->
+                <!--/>-->
 
-        </LinearLayout>
-    </LinearLayout>
+        <!--</LinearLayout>-->
+    <!--</LinearLayout>-->
 
     <android.support.v7.widget.AppCompatButton
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5.62"
         android:background="#000000"
@@ -90,6 +91,8 @@
         android:textColor="#FFFFFF"
         android:textStyle="bold"
         android:onClick="goMainPage"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
         />
 
     <TextView

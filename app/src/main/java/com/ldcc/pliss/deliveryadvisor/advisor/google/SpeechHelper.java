@@ -33,9 +33,17 @@ public class SpeechHelper {
         void onVoiceAnalyed(int analyzeResult, List<String> invoiceKeywords);
     }
 
+    public interface Connection {
+        void onConnected(int connectNumber);
+    }
+
+    Connection mConnection;
     Listener mListener;
     public void addListener(@NonNull SpeechHelper.Listener listener) {
-        mListener = listener;
+        this.mListener = listener;
+    }
+    public void addConnection(@NonNull SpeechHelper.Connection mConnection) {
+        this.mConnection = mConnection;
     }
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
@@ -87,7 +95,7 @@ public class SpeechHelper {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder binder) {
             mSpeechService = SpeechService.from(binder);
-            Log.d("처리커넥션",analyzerMode+"");
+            mConnection.onConnected(analyzerMode);
             mSpeechService.setVoiceAnalyzerMode(analyzerMode);
             mSpeechService.addListener(mSpeechServiceListener);
         }
