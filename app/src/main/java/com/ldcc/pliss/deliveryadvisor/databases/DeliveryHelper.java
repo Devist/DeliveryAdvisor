@@ -102,6 +102,13 @@ public class DeliveryHelper {
         return deliveryProcessed;
     }
 
+    public Delivery getSearchedInfoFromOrder(int order){
+        mRealm.beginTransaction();
+        Delivery deliveryProcessed = mRealm.where(Delivery.class).equalTo("SHIP_ID", order).findFirst();
+        mRealm.commitTransaction();
+        return deliveryProcessed;
+    }
+
     public void setAllDeliveryList(final List<String[]> workData){
         mRealm.executeTransactionAsync(new Realm.Transaction() {
             @Override

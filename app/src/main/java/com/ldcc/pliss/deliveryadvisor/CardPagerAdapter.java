@@ -1,16 +1,31 @@
 package com.ldcc.pliss.deliveryadvisor;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ldcc.pliss.deliveryadvisor.adapter.CurrentWorkListAdapter;
+import com.ldcc.pliss.deliveryadvisor.page.DetailInfoDialog;
+import com.ldcc.pliss.deliveryadvisor.page.NavigationActivity;
+import com.ldcc.pliss.deliveryadvisor.util.WorkUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.security.AccessController.getContext;
 
 public class CardPagerAdapter extends PagerAdapter implements CardAdapter {
 
@@ -18,6 +33,7 @@ public class CardPagerAdapter extends PagerAdapter implements CardAdapter {
     private List<String[]> mData;
     private List<Integer> mode;
     private float mBaseElevation;
+    private ListView workView;
 
     public CardPagerAdapter() {
         mData = new ArrayList<String[]>();
@@ -33,6 +49,10 @@ public class CardPagerAdapter extends PagerAdapter implements CardAdapter {
 
     public float getBaseElevation() {
         return mBaseElevation;
+    }
+
+    public ListView getWorkListView(){
+        return workView;
     }
 
     @Override
@@ -73,28 +93,52 @@ public class CardPagerAdapter extends PagerAdapter implements CardAdapter {
         mViews.set(position, null);
     }
 
-    private void bind(String[] managerInfo, View view, int mode) {
+    private void bind(final String[] managerInfo, View view, int mode) {
+
+        final WorkUtil workUtil = new WorkUtil();
         //상단 현재 업무 뷰 세팅
-        ListView currentWorkListView = (ListView) view.findViewById(R.id.currentWorkList);
-//        Button buttonShowDetails = (Button) view.findViewById(R.id.button_show_details);
-//        Button buttonProcDelivery = (Button) view.findViewById(R.id.button_proc_delivery);
-//        Button buttonCallCustomer= (Button) view.findViewById(R.id.button_call_customer);
-//        Button buttonNaviPath = (Button) view.findViewById(R.id.button_navi_path);
+        workView = (ListView) view.findViewById(R.id.currentWorkList);
 
         CurrentWorkListAdapter currentWorkListAdapter = new CurrentWorkListAdapter(view, managerInfo,mode);
-        currentWorkListView.setAdapter(currentWorkListAdapter);
+        workView.setAdapter(currentWorkListAdapter);
 
-        //상태 진행 바 세팅
-//        progressBarDelivery = (ProgressBar) view.findViewById(R.id.progress_bar_delivery);
-//        progressTextDelivery = (TextView) view.findViewById(R.id.progress_text_delivery);
-//        progressBarDelivery.setMax(results.size());
-//        progressBarDelivery.setProgress(deliveryDoneCount);
-//        progressTextDelivery.setText("업무 리스트 (" + deliveryDoneCount + "/" + results.size()+")");
 
-//        TextView titleTextView = (TextView) view.findViewById(R.id.);
-//        TextView contentTextView = (TextView) view.findViewById(R.id.contentTextView);
-//        titleTextView.setText(item.getTitle());
-//        contentTextView.setText(item.getText());
+        workView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                TextView tvView  = (TextView) view.findViewById(R.id.aNametxt);
+                DetailInfoDialog detailInfoDialog = new DetailInfoDialog(view.getContext(),managerInfo[0]);
+                switch (position){
+                    case 0: //송장 클릭시 상세정보
+                        detailInfoDialog = new DetailInfoDialog(view.getContext(),managerInfo[0]);
+                        detailInfoDialog.show();
+                        break;
+                    case 2: //상품 클릭시 상세정보
+                        detailInfoDialog = new DetailInfoDialog(view.getContext(),managerInfo[0]);
+                        detailInfoDialog.show();
+                        break;
+                    case 3: //주소 클릭시 지도로 이동
+                        view.getContext().startActivity(new Intent(view.getContext(), NavigationActivity.class));
+                        break;
+                    case 4: //전화번호 클릭시 전화 연결
+                        workUtil.callTheCustomer(view.getContext(), String.valueOf(tvView.getText()));
+                        workUtil.sendSMS(view.getContext(),String.valueOf(tvView.getText()),"배달원이 상품 배송을 진행하기 위해 전화 걸었습니다.");
+                        break;
+                }
+
+                return false;
+            }
+        });
+
+        Button doneButton = (Button) view.findViewById(R.id.done_current_button);
+        doneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                workUtil.showProcessDeliveryDialog(v.getContext(),managerInfo);
+            }
+        });
+
     }
 
 }

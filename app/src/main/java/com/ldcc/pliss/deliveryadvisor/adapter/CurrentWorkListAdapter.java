@@ -99,6 +99,7 @@ public class CurrentWorkListAdapter extends BaseAdapter {
 
                 if(mode==1){
                     viewHolder.txtName.setText("Now : " + infos[position]);
+                    viewHolder.txtName.setTypeface(null, Typeface.BOLD);
                 }
 
                 if(mode==2){
@@ -106,22 +107,19 @@ public class CurrentWorkListAdapter extends BaseAdapter {
                 }
 
                 viewHolder.txtName.setTextSize(17);
-                viewHolder.txtName.setTypeface(null, Typeface.BOLD);
+            }
+
+            if(position==5){
+                if(infos[position].equals("") || infos[position]==null){
+                    viewHolder.txtName.setText("배송 메시지 없음");
+                }
             }
 
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-//        if(infos[position].length()>20){
-//            viewHolder.txtName.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//            Log.d("값 들어옴",infos[position]);
-//            int height = viewHolder.txtName.getMeasuredHeight();
-//            Log.d("값 이전 높이",height+"");
-//            viewHolder.txtName.setMinimumHeight(height*2);
-//            Log.d("값 이후 높이",viewHolder.txtName.getMeasuredHeight()+"");
-//        }
-//        Log.d("값",infos[position]);
+
 
 
 

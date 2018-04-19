@@ -58,16 +58,16 @@ public class ManagerHelper {
         return currentDelivery;
     }
 
-    public String[] getSearchedInfoSimple(Delivery nextProduct){
+    public String[] getSearchedInfoSimple(Delivery delivery){
         String [] deliveryInfo = new String[7];
         mRealm.beginTransaction();
-        deliveryInfo[0] = nextProduct.getRECV_NM();
-        deliveryInfo[1] = nextProduct.getITEM_NM();
-        deliveryInfo[2] = nextProduct.getINV_NUMB();
-        deliveryInfo[3] = nextProduct.getRECV_ADDR();
-        deliveryInfo[4] = nextProduct.getRECV_1_TELNO();
-        deliveryInfo[5] = nextProduct.getSHIP_MSG();
-        deliveryInfo[6] = String.valueOf(nextProduct.getSHIP_ID());
+        deliveryInfo[0] = delivery.getINV_NUMB();
+        deliveryInfo[1] = delivery.getRECV_NM();
+        deliveryInfo[2] = delivery.getITEM_NM();
+        deliveryInfo[3] = delivery.getRECV_ADDR();
+        deliveryInfo[4] = delivery.getRECV_1_TELNO();
+        deliveryInfo[5] = delivery.getSHIP_MSG();
+        deliveryInfo[6] = String.valueOf(delivery.getSHIP_ID());
         mRealm.commitTransaction();
         return deliveryInfo;
     }

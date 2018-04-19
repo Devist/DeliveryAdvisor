@@ -1,25 +1,54 @@
 package com.ldcc.pliss.deliveryadvisor;
 
+import android.Manifest;
 import android.app.Fragment;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.ldcc.pliss.deliveryadvisor.databases.Delivery;
 import com.ldcc.pliss.deliveryadvisor.databases.DeliveryHelper;
+import com.ldcc.pliss.deliveryadvisor.databases.Manager;
 import com.ldcc.pliss.deliveryadvisor.databases.ManagerHelper;
+import com.ldcc.pliss.deliveryadvisor.util.WorkUtil;
+
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class MainCurrentFragment extends Fragment {
 
 
     private ViewPager mViewPager;
+    private WorkUtil workUtil;
+
+    private Realm mRealm;
+    private Manager ddd;
+
 
     private CardPagerAdapter mCardAdapter;
     private ShadowTransformer mCardShadowTransformer;
+
+    private SharedPreferences prefs;                        // 앱이 최초 실행인지 확인하기 위한 변수
+
+    private ManagerHelper managerHelper;
+    private DeliveryHelper deliveryHelper;
+    private RealmChangeListener workDataChangeListener;     // 데이터베이스 상태변화 감지 리스너
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,26 +64,76 @@ public class MainCurrentFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_one, null);
 
-
+        Realm.init(getContext());
+        mRealm = Realm.getDefaultInstance();
+        prefs = view.getContext().getSharedPreferences("Pref", MODE_PRIVATE);
         mViewPager = (ViewPager) view.findViewById(R.id.viewPager);
 
-        DeliveryHelper deliveryHelper = new DeliveryHelper(this.getContext());
-        ManagerHelper managerHelper = new ManagerHelper((this.getContext()));
+        deliveryHelper = new DeliveryHelper(this.getContext());
+        managerHelper = new ManagerHelper((this.getContext()));
 
-        mCardAdapter = new CardPagerAdapter();
-        managerHelper.getCurrentDeliveryInfoDetail().getSHIP_ORD();
-        mCardAdapter.addCardItem(managerHelper.getCurrentDeliveryInfoSimple(),0);
-        mCardAdapter.addCardItem(managerHelper.getCurrentDeliveryInfoSimple(),1);
-        mCardAdapter.addCardItem(managerHelper.getCurrentDeliveryInfoSimple(),2);
+        if(checkFirstRun())
+            return view;
 
-        mViewPager.setAdapter(mCardAdapter);
-        mViewPager.setPageTransformer(false, mCardShadowTransformer);
-        mViewPager.setOffscreenPageLimit(3);
-        mViewPager.setCurrentItem(1);
+
+
+        setListener();
 
         return view;
 
     }
+
+    private void setListener(){
+        //데이터베이스에서 현재 업무가 변경되었을 때, 이를 감지하여 [현재 업무 화면, 진행 프로그레스바, 전체 업무 화면] 내용을 변경해준다.
+        ddd = mRealm.where(Manager.class).equalTo("userName",managerHelper.getManagerName()).findFirstAsync();
+        workDataChangeListener = new RealmChangeListener() {
+            @Override
+            public void onChange(Object o) {
+
+                try{
+                    new Handler().postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            mCardAdapter = new CardPagerAdapter();
+                            int order = managerHelper.getCurrentDeliveryInfoDetail().getSHIP_ID();
+                            Log.d("처리",order+"");
+                            Delivery prevInfo;
+                            if(order>1){
+                                prevInfo = deliveryHelper.getSearchedInfoFromOrder(order-1);
+                                mCardAdapter.addCardItem(managerHelper.getSearchedInfoSimple(prevInfo),0);
+                            }
+                            Delivery nextInfo = deliveryHelper.getSearchedInfoFromOrder(order+1);
+
+                            mCardAdapter.addCardItem(managerHelper.getCurrentDeliveryInfoSimple(),1);
+                            mCardAdapter.addCardItem(managerHelper.getSearchedInfoSimple(nextInfo),2);
+
+                            mViewPager.setAdapter(mCardAdapter);
+                            mViewPager.setPageTransformer(false, mCardShadowTransformer);
+                            mViewPager.setOffscreenPageLimit(3);
+
+
+                            if(order<=1)
+                                mViewPager.setCurrentItem(0);
+                            else
+                                mViewPager.setCurrentItem(1);
+                        }
+                    },500);
+
+                }catch(Exception e){
+                    getActivity().finish();
+                }
+            }
+        };
+        ddd.addChangeListener(workDataChangeListener);
+
+    }
+
+    //앱이 최초 실행인지 검출하여, 최초 페이지로 이동시키거나 메인 페이지에 머무릅니다.
+    private boolean checkFirstRun(){
+        return prefs.getBoolean("isFirstRun",true);
+    }
+
+
 }
 
 

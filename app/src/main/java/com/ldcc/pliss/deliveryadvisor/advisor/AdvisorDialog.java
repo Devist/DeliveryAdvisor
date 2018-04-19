@@ -201,10 +201,9 @@ public class AdvisorDialog extends Activity {
                         clovaTTS.sayHello();
                         break;
                     case "processDelivery":
-                        String invoiceKeword = clovaTTS.convertNumberToClova(deliveryHelper.getSearchedInfo(currentDeliveryInfo[2]).getINV_KW());
-                        String voice = "\"송장번호 "+invoiceKeword+", "+currentDeliveryInfo[0]
-                                +" 님의 상품을 배송처리할께요. 수령자는 누구입니까?"+"\"";
-                        clovaTTS.sayThis("tts_"+currentDeliveryInfo[2],voice);
+                        String invoiceKeword = clovaTTS.convertNumberToClova(deliveryHelper.getSearchedInfo(currentDeliveryInfo[0]).getINV_KW());
+                        String voice = "\"송장번호, "+invoiceKeword+", 배송처리 하겠습니다. 수령자는 누구입니까?"+"\"";
+                        clovaTTS.sayThis("tts_"+currentDeliveryInfo[0],voice);
                         break;
                     case "howToProcess":
                         clovaTTS.sayHelp();
@@ -283,9 +282,9 @@ public class AdvisorDialog extends Activity {
                 new Handler().postDelayed(new Runnable(){
                     @Override
                     public void run(){
-                    workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품이 배송 취소되었습니다.");
-                    deliveryHelper.processDelivery(currentDeliveryInfo[2],"N","");
-                    deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                    workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품이 배송 취소되었습니다.");
+                    deliveryHelper.processDelivery(currentDeliveryInfo[0],"N","");
+                    deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                     finish();
                     }
                 },3000);
@@ -299,9 +298,10 @@ public class AdvisorDialog extends Activity {
                 new Handler().postDelayed(new Runnable(){
                     @Override
                     public void run(){
-                    workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 본인이 수령하셨습니다. 좋은 하루 되세요 ^^");
-                    deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","S");
-                    deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                    Log.d("전화번호",currentDeliveryInfo[4]);
+                    workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품을 본인이 수령하셨습니다. 좋은 하루 되세요 ^^");
+                    deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","S");
+                    deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                     finish();
                     }
                 },3000);
@@ -315,9 +315,9 @@ public class AdvisorDialog extends Activity {
                 new Handler().postDelayed(new Runnable(){
                     @Override
                     public void run(){
-                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 다른 분께서 수령해 주셨습니다.");
-                        deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","E");
-                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품을 다른 분께서 수령해 주셨습니다.");
+                        deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","E");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                         finish();
                     }
                 },3000);
@@ -331,9 +331,9 @@ public class AdvisorDialog extends Activity {
                 new Handler().postDelayed(new Runnable(){
                     @Override
                     public void run(){
-                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 가족이 수령해 주었어요. 좋은 하루 되세요 ^^");
-                        deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","F");
-                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품을 가족이 수령해 주었어요. 좋은 하루 되세요 ^^");
+                        deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","F");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                         finish();
                     }
                 },3000);
@@ -347,9 +347,9 @@ public class AdvisorDialog extends Activity {
                 new Handler().postDelayed(new Runnable(){
                     @Override
                     public void run(){
-                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 회사에서 수령하였습니다. 좋은 하루 되세요 ^^");
-                        deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","C");
-                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품을 회사에서 수령하였습니다. 좋은 하루 되세요 ^^");
+                        deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","C");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                         finish();
                     }
                 },3000);
@@ -364,9 +364,9 @@ public class AdvisorDialog extends Activity {
                 new Handler().postDelayed(new Runnable(){
                     @Override
                     public void run(){
-                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 지인에게 맡겨두었으니 찾아가세요.");
-                        deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","A");
-                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품을 지인에게 맡겨두었으니 찾아가세요.");
+                        deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","A");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                         finish();
                     }
                 },3000);
@@ -380,9 +380,9 @@ public class AdvisorDialog extends Activity {
                 new Handler().postDelayed(new Runnable(){
                     @Override
                     public void run(){
-                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 문 앞에 맡겨두었으니 찾아가세요.");
-                        deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","D");
-                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품을 문 앞에 맡겨두었으니 찾아가세요.");
+                        deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","D");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                         finish();
                     }
                 },3000);
@@ -396,9 +396,9 @@ public class AdvisorDialog extends Activity {
                 new Handler().postDelayed(new Runnable(){
                     @Override
                     public void run(){
-                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
-                        deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","O");
-                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
+                        deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","O");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                         finish();
                     }
                 },3000);
@@ -412,9 +412,9 @@ public class AdvisorDialog extends Activity {
                 new Handler().postDelayed(new Runnable(){
                     @Override
                     public void run(){
-                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 택배함에 보관하였으니 찾아가세요.");
-                        deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","U");
-                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                        workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품을 택배함에 보관하였으니 찾아가세요.");
+                        deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","U");
+                        deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                         finish();
                     }
                 },3000);
@@ -819,8 +819,8 @@ public class AdvisorDialog extends Activity {
         buttonKeepAcquaintance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","F");
-                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","F");
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                 finish();
             }
         });
@@ -829,8 +829,8 @@ public class AdvisorDialog extends Activity {
         buttonKeepDoor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","D");
-                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","D");
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                 finish();
             }
         });
@@ -839,8 +839,8 @@ public class AdvisorDialog extends Activity {
         buttonKeepSecurityOffice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","O");
-                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","O");
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }
@@ -849,7 +849,7 @@ public class AdvisorDialog extends Activity {
 
     private void drawProcessDeliveryButton(final String[] currentDeliveryInfo){
 
-        String sentence = "\"송장번호 "+currentDeliveryInfo[2]+", "+currentDeliveryInfo[0]
+        String sentence = "\"송장번호 "+currentDeliveryInfo[0]+", "+currentDeliveryInfo[1]
                 +" 님의 상품을 배송처리할께요. 수령자는 누구입니까?"+"\"";
         textViewQuestion.setText(sentence);
 
@@ -857,9 +857,9 @@ public class AdvisorDialog extends Activity {
         buttonKeepSelf.setOnClickListener(new View.OnClickListener() {  //S:본인  F: 지인  O: 경비실  E: 기타 U:무인택배함
             @Override
             public void onClick(View v) {
-                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 본인이 수령하셨습니다.");
-                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","S");
-                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품을 본인이 수령하셨습니다.");
+                deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","S");
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }
@@ -869,9 +869,9 @@ public class AdvisorDialog extends Activity {
         buttonKeepAcquaintance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 지인이 수령하셨습니다.");
-                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","F");
-                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품을 지인이 수령하셨습니다.");
+                deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","F");
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }
@@ -881,9 +881,9 @@ public class AdvisorDialog extends Activity {
         buttonKeepDoor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 문 앞에 두었습니다.");
-                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","D");
-                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품을 문 앞에 두었습니다.");
+                deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","D");
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }
@@ -893,9 +893,9 @@ public class AdvisorDialog extends Activity {
         buttonKeepSecurityOffice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
-                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","O");
-                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품을 경비실에 맡겨두었으니 찾아가세요.");
+                deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","O");
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }
@@ -905,9 +905,9 @@ public class AdvisorDialog extends Activity {
         buttonKeepUnmannedCourier.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품을 무인택배함에 보관했습니다.");
-                deliveryHelper.processDelivery(currentDeliveryInfo[2],"C","U");
-                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품을 무인택배함에 보관했습니다.");
+                deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","U");
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }
@@ -917,9 +917,9 @@ public class AdvisorDialog extends Activity {
         buttonNoShipping.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[1]+"] 상품이 미배송 처리되었습니다.");
-                deliveryHelper.processDelivery(currentDeliveryInfo[2],"N","");
-                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[2]);
+                workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품이 미배송 처리되었습니다.");
+                deliveryHelper.processDelivery(currentDeliveryInfo[0],"N","");
+                deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
                 //Toast.makeText(getApplicationContext(),"배송 처리를 완료하였습니다.",LENGTH_SHORT).show();
                 finish();
             }
