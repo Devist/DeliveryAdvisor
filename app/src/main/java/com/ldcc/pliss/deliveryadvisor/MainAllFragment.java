@@ -143,7 +143,6 @@ public class MainAllFragment extends Fragment {
 
                             progressTextDelivery.setText("총 " + results.size()+"개 중 "+deliveryDoneCount + "개 완료했어요.");
                             ObjectAnimator anim = ObjectAnimator.ofInt(progressBarDelivery, "progress", deliveryDoneCount);
-//                            anim.setDuration(500);
                             anim.start();
 
                             allWorkListAdapter = new AllWorkListAdapter(invoice,customerName, customerProduct,customerAddress,status,how);
