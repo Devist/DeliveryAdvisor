@@ -172,4 +172,8 @@ public class DeliveryHelper {
         mRealm.commitTransaction();
         return results;
     }
+
+    public void destroy(){
+        mRealm.close();
+    }
 }

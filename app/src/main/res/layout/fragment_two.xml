@@ -1,15 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_gravity="center"
+    app:cardUseCompatPadding="true">
 
-    <TextView
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="안녕하세요."/>
+        android:layout_height="match_parent">
 
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-</LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:textSize="20sp"
+                android:layout_height="40dp"
+                android:background="#AAA"
+                android:text="모든 업무 카드"
+                android:gravity="center"
+                android:textColor="#555"
+                />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:fillViewport="true"
+                android:visibility="visible"
+                android:scrollbars="none"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_weight="59">
+
+                <ListView
+                    android:id="@+id/allWorkList"
+                    android:longClickable="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FAFAFA"
+                    android:divider="@drawable/divider"
+                    android:headerDividersEnabled="false"
+                    android:footerDividersEnabled="false" />
+
+            </ScrollView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <ProgressBar
+                        android:id="@+id/progress_bar_delivery"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        style="@android:style/Widget.ProgressBar.Horizontal"
+                        android:progressDrawable="@drawable/progressbar_linear"
+                        />
+
+                    <TextView
+                        android:id="@+id/progress_text_delivery"
+                        android:layout_width="match_parent"
+                        android:textSize="20sp"
+                        android:layout_height="40dp"
+                        android:background="@android:color/transparent"
+                        android:text="업무 리스트 (8/10)"
+                        android:gravity="center"
+                        android:textColor="#555"
+                        />
+
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

@@ -11,7 +11,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#EFF2EF"
         android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,7 +23,6 @@
                 android:text="이전･현재･다음"
                 android:textSize="18sp"
                 android:onClick="FragmentOneClick"
-                android:background="#EFF2EF"
                 android:layout_weight="1"/>
 
             <Button
@@ -32,8 +30,10 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:text="리스트보기"
+                android:topLeftRadius="25dp"
+                android:topRightRadius="25dp"
                 android:onClick="FragmentTwoClick"
-                android:background="#FFF"
+                android:background="@color/colorPrimary"
                 android:layout_weight="1"/>
 
         </LinearLayout>
@@ -49,9 +49,7 @@
             android:name="com.ldcc.pliss.deliveryadvisor.MainCurrentFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"/>
+            android:layout_margin="10dp"/>
     </LinearLayout>
 
 

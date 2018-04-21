@@ -55,7 +55,7 @@ public class MainCurrentFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    View view;
+    private View view;
 
     @Nullable
     @Override

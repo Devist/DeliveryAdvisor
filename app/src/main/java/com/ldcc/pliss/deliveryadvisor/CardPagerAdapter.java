@@ -3,6 +3,7 @@ package com.ldcc.pliss.deliveryadvisor;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.CardView;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ldcc.pliss.deliveryadvisor.adapter.CurrentWorkListAdapter;
+import com.ldcc.pliss.deliveryadvisor.databases.DeliveryHelper;
 import com.ldcc.pliss.deliveryadvisor.page.DetailInfoDialog;
 import com.ldcc.pliss.deliveryadvisor.page.NavigationActivity;
 import com.ldcc.pliss.deliveryadvisor.util.WorkUtil;
@@ -34,6 +36,7 @@ public class CardPagerAdapter extends PagerAdapter implements CardAdapter {
     private List<Integer> mode;
     private float mBaseElevation;
     private ListView workView;
+    private DeliveryHelper deliveryHelper;
 
     public CardPagerAdapter() {
         mData = new ArrayList<String[]>();
@@ -138,6 +141,51 @@ public class CardPagerAdapter extends PagerAdapter implements CardAdapter {
                 workUtil.showProcessDeliveryDialog(v.getContext(),managerInfo);
             }
         });
+        deliveryHelper = new DeliveryHelper(view.getContext());
+        String shipStat = deliveryHelper.getSearchedInfo(managerInfo[0]).getSHIP_STAT();
+        String shipHow = deliveryHelper.getSearchedInfo(managerInfo[0]).getSTAT_HOW();
+
+        if (shipStat.equals("C")){
+            doneButton.setClickable(false);
+            doneButton.setBackgroundResource(R.drawable.rounded_done);
+            String buttonText = "완료";
+            Log.d("방법",shipHow);
+            switch (shipHow){
+                case "S":
+                    buttonText+=" -본인";
+                    doneButton.setText(buttonText);
+                    break;
+                case "F":
+                    buttonText+=" -가족";
+                    break;
+                case "A":
+                    buttonText+=" -지인";
+                    break;
+                case "C":
+                    buttonText+=" -회사";
+                    break;
+                case "O":
+                    buttonText+=" -경비실";
+                    break;
+                case "D":
+                    buttonText+=" -문 앞(옆)";
+                    break;
+                case "E":
+                    buttonText+=" -기타";
+                    break;
+                case "U":
+                    buttonText+=" -택배함";
+                    break;
+            }
+            doneButton.setText(buttonText);
+            doneButton.setTextColor(Color.GRAY);
+        }else if (shipStat.equals("N")){
+            doneButton.setClickable(false);
+            doneButton.setText("배송 취소");
+            doneButton.setBackgroundResource(R.drawable.rounded_done);
+        }
+
+        deliveryHelper.destroy();
 
     }
 

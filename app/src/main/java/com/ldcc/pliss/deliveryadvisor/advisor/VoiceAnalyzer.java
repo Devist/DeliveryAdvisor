@@ -75,7 +75,7 @@ public class VoiceAnalyzer {
      */
     public static int getAnalyzedAction(int mode, String voice){
         String keywords = NLP(voice);
-        joinIndividualNumbers();
+//        joinIndividualNumbers();
         List<String> keywordArray = getTokens(keywords);
 
         int result = POPUP_HELLO_MODE;
@@ -94,23 +94,23 @@ public class VoiceAnalyzer {
 
     }
 
-    private static void joinIndividualNumbers(){
-        String myTest = "송장번호 3 2 9 8 0 배송처 리 4 7 89";
-        StringBuffer buffer = new StringBuffer(myTest);
-        for(int i = 0; i<buffer.length()-1 ; i++){
-            char compareChar = buffer.charAt(i);
-            char spaceChar = buffer.charAt(i+1);
-            if (compareChar==('0')||compareChar==('1')||compareChar==('2')||compareChar==('3')
-                    ||compareChar==('4')||compareChar==('5')||compareChar==('6')
-                    ||compareChar==('7')||compareChar==('8')||compareChar==('9')){
-                if(spaceChar==' '){
-                    buffer.deleteCharAt(i+1);
-                }
-            }
-        }
-        myTest = buffer.toString();
-        Log.d("테스트",myTest);
-    }
+//    private static void joinIndividualNumbers(){
+//        String myTest = "송장번호 3 2 9 8 0 배송처 리 4 7 89";
+//        StringBuffer buffer = new StringBuffer(myTest);
+//        for(int i = 0; i<buffer.length()-1 ; i++){
+//            char compareChar = buffer.charAt(i);
+//            char spaceChar = buffer.charAt(i+1);
+//            if (compareChar==('0')||compareChar==('1')||compareChar==('2')||compareChar==('3')
+//                    ||compareChar==('4')||compareChar==('5')||compareChar==('6')
+//                    ||compareChar==('7')||compareChar==('8')||compareChar==('9')){
+//                if(spaceChar==' '){
+//                    buffer.deleteCharAt(i+1);
+//                }
+//            }
+//        }
+//        myTest = buffer.toString();
+//        Log.d("테스트",myTest);
+//    }
 
     /**
      * 자연 언어 처리(NLP, Natural Language Processing)을 통해 문장에서 명사, 형용사, 조사 등 키워드를 json string 형태로 추출합니다.

@@ -15,7 +15,8 @@
     <string name="last_update_time_label">마지막 업데이트 시각</string>
 
     <!--samples for layout -->
-    <string name="all_work_title">업무 순서 : 송장 번호</string>
+    <string name="all_work_orlder">Order</string>
+    <string name="all_work_title">송장 번호</string>
     <string name="all_work_contents">수하인 성명 : 상품 명</string>
     <string name="all_work_address">수하인의 주소</string>
     <string name="all_work_img_description">배송 상태 아이콘이 표시 됩니다.</string>

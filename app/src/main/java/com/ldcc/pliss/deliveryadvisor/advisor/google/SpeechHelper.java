@@ -115,7 +115,7 @@ public class SpeechHelper {
                 @Override
                 public void onSpeechRecognized(final String text, final boolean isFinal, final int analyzeResult, final List<String> invoiceKeywords) {
                     if (isFinal) {
-                        mVoiceRecorder.dismiss();
+                            mVoiceRecorder.dismiss();
                     }
                     if (!TextUtils.isEmpty(text)) {
                         activity.runOnUiThread(new Runnable() {
@@ -169,7 +169,9 @@ public class SpeechHelper {
 
         // Stop Cloud Speech API
         try{
-            mSpeechService.removeListener(mSpeechServiceListener);
+            if(mSpeechService!=null)
+                mSpeechService.removeListener(mSpeechServiceListener);
+
             activity.unbindService(mServiceConnection);
             mSpeechService = null;
         }catch(Exception e){

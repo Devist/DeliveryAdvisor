@@ -14,9 +14,9 @@
         android:layout_gravity="bottom"
         android:clipToPadding="false"
         android:paddingTop="5dp"
-        android:paddingBottom="20dp"
-        android:paddingEnd="20dp"
-        android:paddingStart="20dp" />
+        android:paddingBottom="15dp"
+        android:paddingEnd="40dp"
+        android:paddingStart="40dp" />
 
 
 </LinearLayout>

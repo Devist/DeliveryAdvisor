@@ -7,12 +7,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -20,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ldcc.pliss.deliveryadvisor.adapter.AllWorkListAdapter;
 import com.ldcc.pliss.deliveryadvisor.adapter.CurrentWorkListAdapter;
 import com.ldcc.pliss.deliveryadvisor.databases.Delivery;
 import com.ldcc.pliss.deliveryadvisor.databases.DeliveryHelper;
@@ -61,25 +64,27 @@ public class MainAllFragment extends Fragment {
     private String[] managerInfo = new String[7];
 
     //모든 업무 정보를 담고 있는 배열
-    private String[] invoice, customerName, customerProduct, customerAddress, status;
+    private String[] invoice, customerName, customerProduct, customerAddress, status, how;
 
     private RealmResults<Delivery> results;
     private int deliveryDoneCount;
     private Realm mRealm;
     private Manager ddd;
 
+    private View view;
 
     private ProgressBar mprogressBar;   //동작하지 않으나, 쓰레드의 빠른 반환을 위해 사용
     public static Activity fa;          //세팅에서 초기화시, 남아있는 메인액티비티에서 Realm 디비 변화를 감지하여 처리하려다 에러나지 않도록 처리하는 변수
 
 
-    View view;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         Log.d("모드","진입");
         container.removeAllViews();
-        return inflater.inflate(R.layout.fragment_two, container, false);
+        view = inflater.inflate(R.layout.fragment_two, null);
+        init();
+        return view;
 
     }
 
@@ -107,14 +112,48 @@ public class MainAllFragment extends Fragment {
         progressBarDelivery = (ProgressBar) view.findViewById(R.id.progress_bar_delivery);
         progressTextDelivery = (TextView) view.findViewById(R.id.progress_text_delivery);
         progressBarDelivery.setMax(results.size());
-        progressBarDelivery.setProgress(deliveryDoneCount);
-        progressTextDelivery.setText("업무 리스트 (" + deliveryDoneCount + "/" + results.size()+")");
+
+        //        //하단 모든 업무 뷰 세팅
+        allWorkListView = (ListView) view.findViewById(R.id.allWorkList);
+        status[deliveryDoneCount]="O";
+        allWorkListAdapter = new AllWorkListAdapter(invoice,customerName, customerProduct,customerAddress,status,how);
+        allWorkListView.setAdapter(allWorkListAdapter);
+        allWorkListView.setSelection(deliveryDoneCount);
+        allWorkListView.getViewTreeObserver().addOnGlobalLayoutListener(new MyGlobalListenerClass(deliveryDoneCount));
 
         setListener();
     }
 
     private void setListener(){
 
+
+        ddd = mRealm.where(Manager.class).equalTo("userName",managerHelper.getManagerName()).findFirstAsync();
+        workDataChangeListener = new RealmChangeListener() {
+            @Override
+            public void onChange(Object o) {
+
+                try{
+                    changeWorkData();
+                  //  new Handler().postDelayed(new Runnable(){
+                       // @Override
+                        //public void run(){
+                            progressBarDelivery.setProgress(deliveryDoneCount);
+                            progressTextDelivery.setText("총 " + results.size()+"개 중 "+deliveryDoneCount + "개 완료했어요.");
+
+                            allWorkListAdapter = new AllWorkListAdapter(invoice,customerName, customerProduct,customerAddress,status,how);
+                            allWorkListView.setAdapter(allWorkListAdapter);
+                            allWorkListView.setSelection(deliveryDoneCount);
+                            allWorkListView.getViewTreeObserver().addOnGlobalLayoutListener(new MyGlobalListenerClass(deliveryDoneCount));
+                        //}
+                   // },1000);
+
+
+                }catch(Exception e){
+                    fa.finish();
+                }
+            }
+        };
+        ddd.addChangeListener(workDataChangeListener);
 
     }
 
@@ -128,7 +167,7 @@ public class MainAllFragment extends Fragment {
         customerProduct = new String[results.size()];
         customerAddress = new String[results.size()];
         status = new String[results.size()];
-
+        how = new String[results.size()];
         deliveryDoneCount = Integer.parseInt(managerInfo[6])-1;
         for(int i = 0 ; i<results.size() ; i++){
             invoice[i] = results.get(i).getINV_NUMB();
@@ -136,6 +175,7 @@ public class MainAllFragment extends Fragment {
             customerProduct[i] = results.get(i).getITEM_NM();
             customerAddress[i] = results.get(i).getRECV_ADDR();
             status[i] = results.get(i).getSHIP_STAT();
+            how[i] = results.get(i).getSTAT_HOW();
         }
         status[deliveryDoneCount]="O";
     }
@@ -155,6 +195,28 @@ public class MainAllFragment extends Fragment {
             result = true;
         }
         return result;
+    }
+
+    //앱 실행시 업무 리스트뷰에 현재 업무를 중앙에 표시하기 위해 사용됩니다.
+    class MyGlobalListenerClass implements ViewTreeObserver.OnGlobalLayoutListener {
+
+        int pos;
+        boolean isAlreadyDone = false;
+        public MyGlobalListenerClass(int deliveryDoneCount) {
+            pos = deliveryDoneCount;
+        }
+
+        @Override
+        public void onGlobalLayout() {
+            if(!isAlreadyDone){
+                ListView v = (ListView) view.findViewById(R.id.allWorkList);
+                v.measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
+                int h1 = v.getHeight();
+                int h2 = v.getMeasuredHeight();
+                allWorkListView.setSelectionFromTop(pos, h1/2-h2/2);
+                isAlreadyDone = true;
+            }
+        }
     }
 
 }

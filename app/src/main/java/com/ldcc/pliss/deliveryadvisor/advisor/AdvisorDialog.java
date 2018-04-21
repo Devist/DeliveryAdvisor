@@ -112,9 +112,7 @@ public class AdvisorDialog extends Activity {
         if(!isPresentation)
             startVoiceRecognition();
 
-        currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
-        if(currentDeliveryInfo==null)
-            currentDeliveryInfo = managerHelper.getCurrentDeliveryInfoSimple();
+        currentDeliveryInfo = managerHelper.getCurrentDeliveryInfoSimple();
 
         Handler myTimer = new Handler();
         myTimer.postDelayed(new Runnable(){

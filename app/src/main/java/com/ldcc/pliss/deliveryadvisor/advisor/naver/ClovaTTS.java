@@ -240,7 +240,7 @@ public class ClovaTTS {
         if(numbers.length()<5){
             String results = "";
             for(int i =0 ; i<4 ;i++){
-                results += (numbers.charAt(i)+"\n");
+                results += (numbers.charAt(i)+", ");
             }
             return results;
         }else

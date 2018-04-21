@@ -13,6 +13,7 @@ public class AllWorkListVO {
     private String txtContents;
     private String txtAddress;
     private String status;
+    private String how;
 
     public String getTxtTitle() {
         return txtTitle;
@@ -44,5 +45,14 @@ public class AllWorkListVO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getHow() {
+        return how;
+    }
+
+    public AllWorkListVO setHow(String how) {
+        this.how = how;
+        return this;
     }
 }

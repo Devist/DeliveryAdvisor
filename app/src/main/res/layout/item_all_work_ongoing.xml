@@ -52,5 +52,13 @@
         android:layout_width="60dp"
         android:layout_height="match_parent" />
 
+    <ImageView
+        android:id="@+id/imageWorkHow_ongoing"
+        android:background="#CCC"
+        android:contentDescription="@string/all_work_img_description"
+        android:src="@drawable/icon_delivery_ongoing"
+        android:layout_width="60dp"
+        android:layout_height="match_parent" />
+
 
 </LinearLayout>

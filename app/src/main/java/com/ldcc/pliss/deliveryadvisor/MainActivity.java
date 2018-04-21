@@ -458,25 +458,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         finish();
     }
 
-    //앱 실행시 업무 리스트뷰에 현재 업무를 중앙에 표시하기 위해 사용됩니다.
-    class MyGlobalListenerClass implements ViewTreeObserver.OnGlobalLayoutListener {
 
-        int pos;
-        boolean isAlreadyDone = false;
-        public MyGlobalListenerClass(int deliveryDoneCount) {
-            pos = deliveryDoneCount;
-        }
-
-        @Override
-        public void onGlobalLayout() {
-            if(!isAlreadyDone){
-                ListView v = (ListView) findViewById(R.id.allWorkList);
-                v.measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
-                int h1 = v.getHeight();
-                int h2 = v.getMeasuredHeight();
-                allWorkListView.setSelectionFromTop(pos, h1/2-h2/2);
-                isAlreadyDone = true;
-            }
-        }
-    }
 }
