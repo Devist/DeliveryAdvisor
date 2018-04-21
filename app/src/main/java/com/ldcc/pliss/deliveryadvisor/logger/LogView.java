@@ -64,9 +64,11 @@ public class LogView extends android.support.v7.widget.AppCompatTextView {
             }
             text+="==";
             setText(text+"\n"+textTime+"\n"+text+"\n" + getText());
+            setTextAlignment(TEXT_ALIGNMENT_INHERIT);
 
         }else{
             setText(s+"\n" + getText());
+
         }
 
 

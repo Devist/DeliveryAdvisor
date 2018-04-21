@@ -12,6 +12,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -89,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Realm mRealm;
     private Manager ddd;
 
+    private Button buttonShowCurrent, buttonShowAll;
+
 
     private ProgressBar mprogressBar;   //동작하지 않으나, 쓰레드의 빠른 반환을 위해 사용
     public static Activity fa;          //세팅에서 초기화시, 남아있는 메인액티비티에서 Realm 디비 변화를 감지하여 처리하려다 에러나지 않도록 처리하는 변수
@@ -105,27 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             init();
     }
 
-    public void FragmentOneClick(View view) {
-        Fragment myfragment;
-        myfragment = new MainCurrentFragment();
 
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_switch, myfragment);
-        fragmentTransaction.commit();
-
-    }
-
-    public void FragmentTwoClick(View view) {
-        Fragment myfragment;
-        myfragment = new MainAllFragment();
-
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_switch, myfragment);
-        fragmentTransaction.commit();
-
-    }
 //    public void FragmentTwoClick(View view) {
 //        Fragment myfragment;
 //        myfragment = new FragmentTwo();
@@ -186,6 +169,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        buttonShowCurrent   = (Button) findViewById(R.id.buttonShowCurrent);
+        buttonShowAll       = (Button) findViewById(R.id.buttonShowAll);
 
 //        //상단 현재 업무 뷰 세팅
 //        currentWorkListView = (ListView) findViewById(R.id.currentWorkList);
@@ -341,6 +327,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        };
 //        ddd.addChangeListener(workDataChangeListener);
 
+    }
+
+    public void FragmentOneClick(View view) {
+        Fragment myfragment;
+        myfragment = new MainCurrentFragment();
+
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_switch, myfragment);
+        fragmentTransaction.commit();
+        changeTopButton(1);
+    }
+
+    public void FragmentTwoClick(View view) {
+        Fragment myfragment;
+        myfragment = new MainAllFragment();
+
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_switch, myfragment);
+        fragmentTransaction.commit();
+        changeTopButton(2);
+    }
+
+    private void changeTopButton(int mode){
+        if(mode==1){
+            buttonShowCurrent.setTextSize(17);
+            buttonShowCurrent.setBackgroundResource(R.drawable.top_button);
+            buttonShowAll.setTextSize(13);
+            buttonShowAll.setBackgroundColor(Color.WHITE);
+        }
+        if(mode==2){
+            buttonShowCurrent.setTextSize(13);
+            buttonShowCurrent.setBackgroundColor(Color.WHITE);
+            buttonShowAll.setTextSize(17);
+            buttonShowAll.setBackgroundResource(R.drawable.top_button);
+        }
     }
 
     @Override

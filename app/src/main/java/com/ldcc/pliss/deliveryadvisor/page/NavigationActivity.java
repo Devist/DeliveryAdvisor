@@ -168,14 +168,13 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
     private GoogleMap myMap;
     ArrayList<LatLng> destinations = new ArrayList();
     private Marker[] myMarker;
-    ManagerHelper managerHelper = new ManagerHelper(this);
-    DeliveryHelper deliveryHelper = new DeliveryHelper(this);
+
+    ManagerHelper managerHelper;
+    DeliveryHelper deliveryHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_map);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -185,6 +184,10 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
     }
 
     private void initSetting(Bundle savedInstanceState){
+
+        managerHelper = new ManagerHelper(this);
+        deliveryHelper = new DeliveryHelper(this);
+
         mRequestingLocationUpdates = false;
         mLastUpdateTime = "";
 
@@ -439,10 +442,10 @@ public class NavigationActivity extends AppCompatActivity  implements OnMapReady
             mStartNavigationButton.setEnabled(false);
             mStartNavigationButton.setBackgroundColor(0xFFAAAAAA);
             mAllShippingButton.setEnabled(true);
-            mAllShippingButton.setBackgroundColor(0xFF555555);
+            mAllShippingButton.setBackgroundResource(R.drawable.rounded);
         } else {
             mStartNavigationButton.setEnabled(true);
-            mStartNavigationButton.setBackgroundColor(0xFF555555);
+            mStartNavigationButton.setBackgroundResource(R.drawable.rounded);
             mAllShippingButton.setEnabled(false);
             mAllShippingButton.setBackgroundColor(0xFFAAAAAA);
         }

@@ -18,15 +18,15 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:textSize="20sp"
-                android:layout_height="40dp"
-                android:background="#AAA"
-                android:text="모든 업무 카드"
-                android:gravity="center"
-                android:textColor="#555"
-                />
+            <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:textSize="20sp"-->
+                <!--android:layout_height="40dp"-->
+                <!--android:background="@drawable/top_button"-->
+                <!--android:text="모든 업무 카드"-->
+                <!--android:gravity="center"-->
+                <!--android:textColor="#fff"-->
+                <!--/>-->
 
             <ScrollView
                 android:layout_width="match_parent"
@@ -44,7 +44,7 @@
                     android:longClickable="true"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#FAFAFA"
+                    android:background="#FFFFFF"
                     android:divider="@drawable/divider"
                     android:headerDividersEnabled="false"
                     android:footerDividersEnabled="false" />
@@ -52,12 +52,12 @@
             </ScrollView>
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="25dp"
                 android:gravity="center"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp">
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
@@ -66,7 +66,7 @@
                     <ProgressBar
                         android:id="@+id/progress_bar_delivery"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_height="25dp"
                         style="@android:style/Widget.ProgressBar.Horizontal"
                         android:progressDrawable="@drawable/progressbar_linear"
                         />
@@ -74,16 +74,17 @@
                     <TextView
                         android:id="@+id/progress_text_delivery"
                         android:layout_width="match_parent"
-                        android:textSize="20sp"
-                        android:layout_height="40dp"
+                        android:textSize="16sp"
+                        android:layout_height="25dp"
                         android:background="@android:color/transparent"
                         android:text="업무 리스트 (8/10)"
                         android:gravity="center"
-                        android:textColor="#555"
+                        android:textColor="#FFF"
                         />
 
                 </RelativeLayout>
             </LinearLayout>
+
         </LinearLayout>
     </RelativeLayout>
 

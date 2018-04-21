@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    android:background="#FFFFFF"
+    android:background="#FFF"
     tools:context="com.ldcc.pliss.deliveryadvisor.MainActivity"
     tools:showIn="@layout/activity_main">
     <LinearLayout
@@ -17,25 +17,45 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <Button
-                android:id="@+id/button1"
+                android:id="@+id/buttonShowCurrent"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:text="이전･현재･다음"
                 android:textSize="18sp"
+                android:background="@drawable/top_button"
                 android:onClick="FragmentOneClick"
+                android:shadowColor="#FFF"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
                 android:layout_weight="1"/>
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/buttonShowAll"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:text="리스트보기"
                 android:topLeftRadius="25dp"
                 android:topRightRadius="25dp"
+                android:background="#FFFFFF"
                 android:onClick="FragmentTwoClick"
-                android:background="@color/colorPrimary"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
                 android:layout_weight="1"/>
 
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:background="@drawable/top_button2"
+            android:layout_height="match_parent">
+            <fragment
+                android:id="@+id/fragment_switch"
+                android:name="com.ldcc.pliss.deliveryadvisor.MainCurrentFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#AAA"
+                android:layout_margin="10dp"/>
         </LinearLayout>
 
         <!--<TextView-->
@@ -44,12 +64,7 @@
             <!--android:background="#ffcccccc"-->
             <!--/>-->
 
-        <fragment
-            android:id="@+id/fragment_switch"
-            android:name="com.ldcc.pliss.deliveryadvisor.MainCurrentFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"/>
+
     </LinearLayout>
 
 

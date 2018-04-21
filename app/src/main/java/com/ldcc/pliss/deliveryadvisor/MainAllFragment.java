@@ -1,8 +1,10 @@
 package com.ldcc.pliss.deliveryadvisor;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -15,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -137,8 +140,11 @@ public class MainAllFragment extends Fragment {
                   //  new Handler().postDelayed(new Runnable(){
                        // @Override
                         //public void run(){
-                            progressBarDelivery.setProgress(deliveryDoneCount);
+
                             progressTextDelivery.setText("총 " + results.size()+"개 중 "+deliveryDoneCount + "개 완료했어요.");
+                            ObjectAnimator anim = ObjectAnimator.ofInt(progressBarDelivery, "progress", deliveryDoneCount);
+//                            anim.setDuration(500);
+                            anim.start();
 
                             allWorkListAdapter = new AllWorkListAdapter(invoice,customerName, customerProduct,customerAddress,status,how);
                             allWorkListView.setAdapter(allWorkListAdapter);
@@ -155,6 +161,38 @@ public class MainAllFragment extends Fragment {
         };
         ddd.addChangeListener(workDataChangeListener);
 
+        // A. 모든 업무 리스트 화면 중 특정 아이템을 오래 클릭할 경우,
+        allWorkListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                TextView temp;
+                if(position==deliveryDoneCount){
+                    temp = (TextView) view.findViewById(R.id.textWorkTitle_ongoing);
+                }else{
+                    temp = (TextView) view.findViewById(R.id.textWorkTitle);
+                }
+
+                // B.상세정보 표시 팝업 표출
+                String selectedInvoiceNumber = temp.getText().toString().split(":")[1].substring(1);    //송장번호를 잘라서 가져옴.
+                final DetailInfoDialog detailInfoDialog = new DetailInfoDialog(getContext(), selectedInvoiceNumber);
+                detailInfoDialog.show();
+
+                // 1.상세정보 표시 팝업에서 "현재 목적지로 변경" 버튼을 눌렀을 때의 처리
+                detailInfoDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+
+                        // 3. 현재 처리해야 할 업무 변경
+                        String addCategoryStr = detailInfoDialog.getAddCategoryStr();
+                        if(addCategoryStr!=null)
+                            deliveryHelper.changeManagerInfo(addCategoryStr);
+                    }
+                });
+                return true;
+            }
+
+        });
     }
 
 

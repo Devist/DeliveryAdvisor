@@ -71,7 +71,7 @@ public class AllWorkListAdapter extends BaseAdapter {
             txtTitle = (TextView) convertView.findViewById(R.id.textWorkTitle_ongoing);
             txtContents = (TextView) convertView.findViewById(R.id.textWorkContents_ongoing);
             txtAddress = (TextView) convertView.findViewById(R.id.textWorkAddress_ongoing);
-            icon = (ImageView) convertView.findViewById(R.id.imageWorkState_ongoing);
+            icon = (ImageView) convertView.findViewById(R.id.imageWorkHow_ongoing);
             iconHow = (ImageView) convertView.findViewById(R.id.imageWorkHow_ongoing);
         }else{
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -116,7 +116,9 @@ public class AllWorkListAdapter extends BaseAdapter {
                 iconHow.setVisibility(View.GONE);
                 break;
             case "N":
-                icon.setImageResource(R.drawable.icon_delevery_cancel);
+                icon.setImageAlpha(180);
+                icon.setImageResource(R.drawable.label_cancle);
+                iconHow.setVisibility(View.GONE);
                 break;
         }
         return convertView;

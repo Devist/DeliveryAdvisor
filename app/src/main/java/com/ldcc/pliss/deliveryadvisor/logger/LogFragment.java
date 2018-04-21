@@ -42,6 +42,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
 
+import com.ldcc.pliss.deliveryadvisor.R;
+
 /**
  * LogView가 포함되어 있으며 사용하는 로그 데이터를 화면에 출력하는 간단한 Fragment
  */
@@ -76,6 +78,7 @@ public class LogFragment extends Fragment {
         mLogView.setGravity(Gravity.BOTTOM);
         mLogView.setTextAppearance(getActivity(),
                 android.R.style.TextAppearance_DeviceDefault_Medium);
+        mScrollView.setBackgroundResource(R.drawable.top_button2);
 
         mScrollView.addView(mLogView);
         return mScrollView;

@@ -57,6 +57,8 @@ public class MainCurrentFragment extends Fragment {
 
     private View view;
 
+    private boolean isStart = true;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,7 +77,7 @@ public class MainCurrentFragment extends Fragment {
         if(checkFirstRun())
             return view;
 
-
+        isStart = true;
 
         setListener();
 
@@ -90,6 +92,11 @@ public class MainCurrentFragment extends Fragment {
             @Override
             public void onChange(Object o) {
 
+                int delayMillis = 500;
+                if(isStart) {
+                    isStart = false;
+                    delayMillis = 0;
+                }
                 try{
                     new Handler().postDelayed(new Runnable(){
                         @Override
@@ -117,7 +124,7 @@ public class MainCurrentFragment extends Fragment {
                             else
                                 mViewPager.setCurrentItem(1);
                         }
-                    },500);
+                    },delayMillis);
 
                 }catch(Exception e){
                     getActivity().finish();

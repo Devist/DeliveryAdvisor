@@ -8,12 +8,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="#424242"
+        android:background="#555"
         android:orientation="vertical">
         <TextView
             android:id="@+id/textWorkTitle_ongoing"
             android:text="@string/all_work_title"
-            android:textSize="20sp"
+            android:textSize="25sp"
             android:textColor="#FFF"
             android:maxLines="1"
             android:layout_width="match_parent"
@@ -23,7 +23,7 @@
         <TextView
             android:id="@+id/textWorkContents_ongoing"
             android:text="@string/all_work_contents"
-            android:textSize="15sp"
+            android:textSize="20sp"
             android:textColor="#FFF"
             android:ellipsize="marquee"
             android:singleLine="true"
@@ -34,7 +34,7 @@
         <TextView
             android:id="@+id/textWorkAddress_ongoing"
             android:text="@string/all_work_address"
-            android:textSize="12sp"
+            android:textSize="15sp"
             android:textColor="#2995FF"
             android:textStyle="bold"
             android:maxLines="2"
@@ -45,20 +45,13 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/imageWorkState_ongoing"
-        android:background="#CCC"
-        android:contentDescription="@string/all_work_img_description"
-        android:src="@drawable/icon_delivery_ongoing"
-        android:layout_width="60dp"
-        android:layout_height="match_parent" />
-
-    <ImageView
         android:id="@+id/imageWorkHow_ongoing"
         android:background="#CCC"
         android:contentDescription="@string/all_work_img_description"
         android:src="@drawable/icon_delivery_ongoing"
-        android:layout_width="60dp"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_width="50dp"
+         />
 
 
 </LinearLayout>

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:orientation="horizontal"
-        android:background="#0075A2">
+        android:background="#fff">
 
         <ImageView
             android:id="@+id/appIconView"
@@ -26,7 +26,7 @@
             android:gravity="center"
             android:layout_height="match_parent"
             android:text="송장번호 "
-            android:textColor="#FFF"
+            android:textColor="#555"
             android:textSize="18dp" />
 
         <TextView
@@ -36,8 +36,7 @@
             android:layout_weight="1"
             android:layout_gravity="center_vertical|left"
             android:layout_height="match_parent"
-            android:text="00000000000"
-            android:textColor="#FFF"
+            android:textColor="#555"
             android:textSize="18dp" />
     </LinearLayout>
 
@@ -138,7 +137,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="5dp"
-        android:background="#237EFF"/>
+        android:background="#DDD"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -253,7 +252,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="5dp"
-        android:background="#237EFF"/>
+        android:background="#DDD"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -286,7 +285,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="5dp"
-        android:background="#237EFF"/>
+        android:background="#DDD"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -430,7 +429,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:background="#0075A2">
+        android:background="#fff">
 
         <Button
             android:id="@+id/button_change_destination"
