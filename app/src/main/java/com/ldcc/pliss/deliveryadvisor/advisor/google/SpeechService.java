@@ -297,9 +297,14 @@ public class SpeechService extends Service {
             return;
         }
         // Call the streaming recognition API
-        mRequestObserver.onNext(StreamingRecognizeRequest.newBuilder()
-                .setAudioContent(ByteString.copyFrom(data, 0, size))
-                .build());
+        try{
+            mRequestObserver.onNext(StreamingRecognizeRequest.newBuilder()
+                    .setAudioContent(ByteString.copyFrom(data, 0, size))
+                    .build());
+        }catch(Exception e){
+
+        }
+
     }
 
     /**

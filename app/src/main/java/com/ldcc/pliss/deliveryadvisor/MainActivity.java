@@ -132,8 +132,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         deliveryHelper = new DeliveryHelper(this);
         managerHelper = new ManagerHelper((this));
 
-        changeWorkData();
-
         //음성인식 서비스 활성
         startService(new Intent(this, AdvisorService.class));
 
@@ -206,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         buttonSpeechRecognition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                managerInfo = managerHelper.getCurrentDeliveryInfoSimple();
                 Snackbar.make(view, "무엇을 도와 드릴까요? ^^ [전화,배송 처리,길 안내]",Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 workUtil.showFirstQuestionDialog (MainActivity.this, managerInfo);
@@ -381,27 +380,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
-    }
-
-    private void changeWorkData() {
-        managerInfo = managerHelper.getCurrentDeliveryInfoSimple();
-
-        results = deliveryHelper.getAllDeliveryList();
-        invoice = new String[results.size()];
-        customerName = new String[results.size()];
-        customerProduct = new String[results.size()];
-        customerAddress = new String[results.size()];
-        status = new String[results.size()];
-
-        deliveryDoneCount = Integer.parseInt(managerInfo[6])-1;
-        for(int i = 0 ; i<results.size() ; i++){
-            invoice[i] = results.get(i).getINV_NUMB();
-            customerName[i] = results.get(i).getRECV_NM();
-            customerProduct[i] = results.get(i).getITEM_NM();
-            customerAddress[i] = results.get(i).getRECV_ADDR();
-            status[i] = results.get(i).getSHIP_STAT();
-        }
-        status[deliveryDoneCount]="O";
     }
 
     //왼쪽에 숨겨져 있는 네비게이션 메뉴 중 특정 버튼을 누르면, 해당 페이지로 이동시킵니다.

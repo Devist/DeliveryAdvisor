@@ -24,8 +24,8 @@ import java.util.Random;
 
 public class ClovaTTS {
 
-    private static final String[]   TTS_GOODBYE   = {"감사합니다.","See you next time!","알겠습니다.","조금 있다 뵙겠습니다."};
-    private static final String[]   TTS_HELLO     = {"무엇을 도와드릴까요?","안녕하세요?","무엇을 도와드릴까요?","무엇이든 시켜만 주세요!","Delivery Advisor 입니다."};
+    private static final String[]   TTS_GOODBYE   = {"감사합니다.","알겠습니다.","조금 있다 뵙겠습니다.","오늘도 파이팅!"};
+    private static final String[]   TTS_HELLO     = {"무엇을 도와드릴까요?","안녕하세요?","무엇을 도와드릴까요?","무엇이든 시켜만 주세요!","Delivery Advisor 입니다.","오늘도 파이팅!","항상 감사합니다."};
     private static final String     TTS_HOW_TO_USE  = "저는 배송 처리, 전화 연결, 현재 목적지 확인을 할 수 있어요. 배송해 줘, 전화 연결 부탁해, 등으로 저에게 명령하세요. 이후 대화는 제가 리드 할께요!";
     private static final String     TTS_CALL        = "전화를 연결하겠습니다.";
     private static final String     TTS_NAVIGATION  = "길 안내를 시작하겠습니다.";

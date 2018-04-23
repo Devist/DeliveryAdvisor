@@ -101,6 +101,8 @@ public class AdvisorDialog extends Activity {
         if(clovaTTS==null)
             clovaTTS = new ClovaTTS(getFilesDir());
 
+        if(speechHelper!= null)
+            speechHelper.stopVoiceRecognition();
         speechHelper = new SpeechHelper(this);
         prefs= getSharedPreferences("Pref", MODE_PRIVATE);
         isPresentation = prefs.getBoolean("isPresentation",false);
@@ -112,7 +114,11 @@ public class AdvisorDialog extends Activity {
         if(!isPresentation)
             startVoiceRecognition();
 
-        currentDeliveryInfo = managerHelper.getCurrentDeliveryInfoSimple();
+        currentDeliveryInfo = getIntent().getStringArrayExtra("Delivery-data");
+        if(currentDeliveryInfo==null ||currentDeliveryInfo[0]==null){
+            Log.d("송장","null");
+            currentDeliveryInfo = managerHelper.getCurrentDeliveryInfoSimple();
+        }
 
         Handler myTimer = new Handler();
         myTimer.postDelayed(new Runnable(){
@@ -221,10 +227,17 @@ public class AdvisorDialog extends Activity {
                 Log.d("처리번호 : ", analyzeResult+"");
                 if(invoiceKeywords.size()>0)
                     Log.d("처리송장 : ", invoiceKeywords.get(0));
-
-                processCurrentSituation(analyzeResult);
-                processNextSituation(analyzeResult);
-                processInvoiceSituation(analyzeResult,invoiceKeywords);
+                speechHelper.stopVoiceRecognition();
+                boolean hasResults= false;
+                hasResults = processCurrentSituation(analyzeResult);
+                Log.d("송장",hasResults+"");
+                hasResults = processNextSituation(analyzeResult);
+                Log.d("송장",hasResults+"");
+                hasResults = processInvoiceSituation(analyzeResult,invoiceKeywords);
+                Log.d("송장",hasResults+"");
+                if(!hasResults){
+                    startVoiceRecognition();
+                }
             }
         });
 
@@ -252,7 +265,8 @@ public class AdvisorDialog extends Activity {
         clovaTTS.addListener(mListener);
     }
 
-    private void processCurrentSituation(int analyzeResult){
+    private boolean processCurrentSituation(int analyzeResult){
+        boolean hasResult = true;
         switch (analyzeResult){
             //대상자 없이 전화연결해달라고 말한 경우, 현재 고객에게 전화연결합니다.
             case FinalAction.CALL_CURRENT_CUSTOMER:
@@ -270,7 +284,7 @@ public class AdvisorDialog extends Activity {
             //배송 완료 처리 방법을 알기 위해, 다시 한 번 다이얼로그를 띄웁니다.
             case FinalAction.DONE_SIMPLE_CURRENNT:
                 finish();
-                workUtil.showProcessDeliveryDialog(AdvisorDialog.this,currentDeliveryInfo);
+                workUtil.showProcessDeliveryDialog(AdvisorDialog.this);
                 break;
 
             //대상자 없이 배송 취소 해달라고 말한 경우 현재 고객의 배송을 취소 처리합니다.
@@ -445,11 +459,19 @@ public class AdvisorDialog extends Activity {
                 finish();
                 workUtil.showQuestionDialogWithHelp(this,currentDeliveryInfo);
                 break;
+            default:
+                Log.d("송장","진입");
+                return false;
         }
+
+        return hasResult;
 
     }
 
-    private void processNextSituation(int analyzeResult){
+    private boolean processNextSituation(int analyzeResult){
+
+        boolean hasResult = true;
+
         final Delivery nextProduct = deliveryHelper.findNext(currentDeliveryInfo[0]);
         switch (analyzeResult) {
             //대상자 없이 전화연결해달라고 말한 경우, 현재 고객에게 전화연결합니다.
@@ -604,11 +626,16 @@ public class AdvisorDialog extends Activity {
                     }
                 },2000);
                 break;
+            default:
+                return false;
         }
+
+        return hasResult;
     }
 
-    private void processInvoiceSituation(int analyzeResult, List<String> invoiceKeywords){
+    private boolean processInvoiceSituation(int analyzeResult, List<String> invoiceKeywords){
 
+        boolean hasResult = true;
         RealmResults<Delivery> invoiceProduct = null;
         try{
             invoiceProduct = deliveryHelper.findInvoiceFromKeyword(invoiceKeywords.get(0));
@@ -616,16 +643,20 @@ public class AdvisorDialog extends Activity {
 
         }
 
-        if(invoiceProduct==null){}
+        if(invoiceProduct==null){
+            return false;
+        }
         else if(invoiceProduct.size()>1){
             Log.d("처리 송장 : " ,"여러 개 검색됨");
+            return false;
         } else if(invoiceProduct.size()<1){
-            clovaTTS.sayThis("tts_not_searched","해당 송장번호가 존재하지 않습니다.");;
+            clovaTTS.sayThis("tts_not_searched","해당 송장번호가 존재하지 않습니다.");
+            return false;
         }else{
             final Delivery searchedDelivery = invoiceProduct.first();
             switch (analyzeResult){
                 case FinalAction.CALL_INVOICE_CUSTOMER:
-                    clovaTTS.sayThis("tts_call_next","검색된 송장번호로 전화 연결합니다.");
+                    clovaTTS.sayThis("tts_call_invoice","검색된 송장번호로 전화 연결합니다.");
 
                     new Handler().postDelayed(new Runnable(){
                         @Override
@@ -633,7 +664,7 @@ public class AdvisorDialog extends Activity {
                             workUtil.callTheCustomer(getApplicationContext(),searchedDelivery.getRECV_1_TELNO());
                             finish();
                         }
-                    },3000);
+                    },4000);
                     break;
                 case FinalAction.DONE_SIMPLE_INVOICE:
                     finish();
@@ -772,9 +803,11 @@ public class AdvisorDialog extends Activity {
                         }
                     },3000);
                     break;
+                default:
+                    return false;
             }
-
         }
+        return  hasResult;
     }
 
     @Override

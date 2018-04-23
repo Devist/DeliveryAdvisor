@@ -72,11 +72,10 @@ public class WorkUtil {
         popupAdvisorDialog(bundle);
     }
 
-    public void showProcessDeliveryDialog (Context context,String[] managerInfo, int mode){
+public void showProcessDeliveryDialog (Context context){
         this.context = context;
         bundle.putString("Work-keyword","processDelivery");
         bundle.putInt("speech",-1);
-        bundle.putStringArray("Delivery-data",managerInfo);
         popupAdvisorDialog(bundle);
     }
 

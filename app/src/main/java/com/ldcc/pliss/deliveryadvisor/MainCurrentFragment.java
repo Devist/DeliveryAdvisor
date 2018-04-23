@@ -112,7 +112,8 @@ public class MainCurrentFragment extends Fragment {
                             Delivery nextInfo = deliveryHelper.getSearchedInfoFromOrder(order+1);
 
                             mCardAdapter.addCardItem(managerHelper.getCurrentDeliveryInfoSimple(),1);
-                            mCardAdapter.addCardItem(managerHelper.getSearchedInfoSimple(nextInfo),2);
+                            if(nextInfo!=null)
+                                mCardAdapter.addCardItem(managerHelper.getSearchedInfoSimple(nextInfo),2);
 
                             mViewPager.setAdapter(mCardAdapter);
                             mViewPager.setPageTransformer(false, mCardShadowTransformer);

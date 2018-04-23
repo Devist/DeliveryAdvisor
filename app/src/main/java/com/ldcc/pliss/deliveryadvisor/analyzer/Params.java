@@ -1,5 +1,7 @@
 package com.ldcc.pliss.deliveryadvisor.analyzer;
 
+import android.util.Log;
+
 import java.util.List;
 
 
@@ -69,8 +71,12 @@ public class Params {
         if(tokens.contains(ParamSet.done))
             return "배송완료";
 
-        if(tokens.contains(ParamSet.cancle))
-            return "배송미완료";
+        for(String cancleKeyword : ParamSet.cancle){
+            if(tokens.contains(cancleKeyword))
+                return "배송미완료";
+        }
+
+
 
         return null;
     }

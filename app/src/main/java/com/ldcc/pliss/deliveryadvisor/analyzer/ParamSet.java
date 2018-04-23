@@ -24,7 +24,7 @@ public class ParamSet {
 
     /** 키워드 - 배송 - 미완료 */
     public static final String[] deliveryCancleKeywords = {"취소","미완료","못","밉다"};
-    public static final String cancle ="취소, 미완료,미배";
+    public static final String[] cancle = {"취소", "미완료","미배송"};
 
     /** 키워드 - 배송 - 완료 - 본인 수령 */
     public static final String[] directKeywords = {"본인","수하인","이번"};
@@ -76,7 +76,7 @@ public class ParamSet {
 
     /** 키워드 - 길 안내 */
     public static final String[] naviLocation = {"길","위치","장소","집","배송지"};
-            public static final String[] naviCombination = {"알다","안내","안내하다","어디","보이다"};
+            public static final String[] naviCombination = {"알다","안내","안내하다","어디","보이다","부탁"};
 
     public static final String[] nextLocation = {"다음"};
             public static final String[] nextLocationCombination = {"어디"};
