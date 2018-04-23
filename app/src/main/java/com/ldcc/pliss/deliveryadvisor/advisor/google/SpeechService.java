@@ -61,7 +61,6 @@ import com.google.cloud.speech.v1.StreamingRecognizeRequest;
 import com.google.cloud.speech.v1.StreamingRecognizeResponse;
 import com.google.protobuf.ByteString;
 import com.ldcc.pliss.deliveryadvisor.R;
-import com.ldcc.pliss.deliveryadvisor.advisor.VoiceAnalyzer;
 import com.ldcc.pliss.deliveryadvisor.analyzer.Analyzer;
 import com.ldcc.pliss.deliveryadvisor.databases.AppLogsHelper;
 
@@ -177,7 +176,6 @@ public class SpeechService extends Service {
             }
             if (text != null) {
                 for (Listener listener : mListeners) {
-                    Log.d("진입","진입 아이돈 노우");
                     listener.onSpeechRecognized(text, true,-333,null);
                 }
             }

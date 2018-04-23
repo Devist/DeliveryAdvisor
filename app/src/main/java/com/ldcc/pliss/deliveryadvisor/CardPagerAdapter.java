@@ -149,7 +149,6 @@ public class CardPagerAdapter extends PagerAdapter implements CardAdapter {
             doneButton.setClickable(false);
             doneButton.setBackgroundResource(R.drawable.rounded_done);
             String buttonText = "완료";
-            Log.d("방법",shipHow);
             switch (shipHow){
                 case "S":
                     buttonText+=" -본인";

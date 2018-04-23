@@ -176,7 +176,7 @@ public class ClovaTTS {
         try {
             myFile = new File(fileDir,path + ".mp3");
             if(!myFile.exists()){
-                Log.d("테스트","파일이 존재하지 않음");
+                Log.d("테스트","음성 파일 새로 생성");
                 String text = URLEncoder.encode(sentences, "UTF-8"); // 13자
                 String apiURL = "https://openapi.naver.com/v1/voice/tts.bin";
                 URL url = new URL(apiURL);
@@ -215,7 +215,7 @@ public class ClovaTTS {
                         response.append(inputLine);
                     }
                     br.close();
-                    Log.d("비전피킹 TTS 에러 : ", response.toString());
+                    Log.d("TTS 에러 : ", response.toString());
                 }
             }
 
@@ -231,7 +231,7 @@ public class ClovaTTS {
 
 
         } catch (Exception e) {
-            Log.d("뭔가 에러 : ", e.toString());
+            Log.d("에러 발생 : ", e.toString());
         }
     }
 

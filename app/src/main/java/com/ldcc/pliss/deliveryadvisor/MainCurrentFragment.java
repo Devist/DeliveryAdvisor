@@ -103,7 +103,6 @@ public class MainCurrentFragment extends Fragment {
                         public void run(){
                             mCardAdapter = new CardPagerAdapter();
                             int order = managerHelper.getCurrentDeliveryInfoDetail().getSHIP_ID();
-                            Log.d("처리",order+"");
                             Delivery prevInfo;
                             if(order>1){
                                 prevInfo = deliveryHelper.getSearchedInfoFromOrder(order-1);

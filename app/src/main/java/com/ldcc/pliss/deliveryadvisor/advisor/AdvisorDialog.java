@@ -230,11 +230,8 @@ public class AdvisorDialog extends Activity {
                 speechHelper.stopVoiceRecognition();
                 boolean hasResults= false;
                 hasResults = processCurrentSituation(analyzeResult);
-                Log.d("송장",hasResults+"");
                 hasResults = processNextSituation(analyzeResult);
-                Log.d("송장",hasResults+"");
                 hasResults = processInvoiceSituation(analyzeResult,invoiceKeywords);
-                Log.d("송장",hasResults+"");
                 if(!hasResults){
                     startVoiceRecognition();
                 }
@@ -310,7 +307,6 @@ public class AdvisorDialog extends Activity {
                 new Handler().postDelayed(new Runnable(){
                     @Override
                     public void run(){
-                    Log.d("전화번호",currentDeliveryInfo[4]);
                     workUtil.sendSMS(getApplicationContext(),currentDeliveryInfo[4],"고객님, [" + currentDeliveryInfo[2]+"] 상품을 본인이 수령하셨습니다. 좋은 하루 되세요 ^^");
                     deliveryHelper.processDelivery(currentDeliveryInfo[0],"C","S");
                     deliveryHelper.changeManagerInfoToNext(currentDeliveryInfo[0]);
@@ -460,7 +456,6 @@ public class AdvisorDialog extends Activity {
                 workUtil.showQuestionDialogWithHelp(this,currentDeliveryInfo);
                 break;
             default:
-                Log.d("송장","진입");
                 return false;
         }
 
@@ -647,7 +642,14 @@ public class AdvisorDialog extends Activity {
             return false;
         }
         else if(invoiceProduct.size()>1){
-            Log.d("처리 송장 : " ,"여러 개 검색됨");
+            clovaTTS.sayThis("tts_say_a_lot_of","하나의 송장번호만 말해주세요.");
+            new Handler().postDelayed(new Runnable(){
+                @Override
+                public void run(){
+                    workUtil.showProcessDeliveryDialog(AdvisorDialog.this);
+                }
+            },3500);
+
             return false;
         } else if(invoiceProduct.size()<1){
             clovaTTS.sayThis("tts_not_searched","해당 송장번호가 존재하지 않습니다.");

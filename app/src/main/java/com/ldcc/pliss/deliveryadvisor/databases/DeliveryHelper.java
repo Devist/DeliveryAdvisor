@@ -61,7 +61,6 @@ public class DeliveryHelper {
         mRealm.beginTransaction();
         Delivery delivery = mRealm.where(Delivery.class).equalTo("INV_NUMB", invoice).findFirst();
         if(!delivery.getSHIP_STAT().equals("C") && !delivery.getSHIP_STAT().equals("N")){
-            Log.d("송장","굳");
             Manager managerINFO = mRealm.where(Manager.class).findAll().first();
             managerINFO.setInvoice(delivery.getINV_NUMB());
         }

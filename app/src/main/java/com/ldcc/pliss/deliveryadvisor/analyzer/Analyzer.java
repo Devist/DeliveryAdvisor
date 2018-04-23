@@ -171,7 +171,6 @@ public class Analyzer {
                 }
             }
         }
-        Log.d("처리","여기까지??");
         if(params.isCompleteDelivery==null)
             return -1;
 
@@ -190,7 +189,6 @@ public class Analyzer {
             }
             return FinalAction.DONE_SIMPLE_CURRENNT;
         }else if(params.isCompleteDelivery.equals("배송미완료")){
-            Log.d("처리","취소 키워드");
             if(invoiceKeywords.size()<1 && params.isNextCustomer)
                 return FinalAction.CANCLE_NEXT;
             if(invoiceKeywords.size()<1)

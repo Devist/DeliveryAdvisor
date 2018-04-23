@@ -83,7 +83,6 @@ public class MainAllFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Log.d("모드","진입");
         container.removeAllViews();
         view = inflater.inflate(R.layout.fragment_two, null);
         init();
@@ -184,7 +183,6 @@ public class MainAllFragment extends Fragment {
 
                         // 3. 현재 처리해야 할 업무 변경
                         String addCategoryStr = detailInfoDialog.getAddCategoryStr();
-                        Log.d("확인송장번호",addCategoryStr);
                         if(addCategoryStr!=null)
                             deliveryHelper.changeManagerInfo(addCategoryStr);
                     }
