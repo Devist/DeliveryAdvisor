@@ -97,7 +97,7 @@ public class AdvisorService extends Service {
         filter.setPriority(0);
         mediaSession.setActive(true);
 
-        clovaTTS = new ClovaTTS(getFilesDir());
+        clovaTTS = new ClovaTTS(getApplicationContext());
 
     }
 

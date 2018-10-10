@@ -63,6 +63,7 @@ public class SpeechHelper {
 
         @Override
         public void onVoiceStart() {
+            Log.d("테스트","음성녹음시작");
             showStatus(true);
             if (mSpeechService != null) {
                 mSpeechService.startRecognizing(mVoiceRecorder.getSampleRate());
@@ -79,6 +80,7 @@ public class SpeechHelper {
         @Override
         public void onVoiceEnd() {
             showStatus(false);
+            Log.d("테스트","음성녹음종료");
             if (mSpeechService != null) {
                 mSpeechService.finishRecognizing();
             }
@@ -152,12 +154,15 @@ public class SpeechHelper {
         // 목소리 듣기 시작.
         if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED) {
+            Log.d("테스트","여기진입0");
             startVoiceRecorder();
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
                 Manifest.permission.RECORD_AUDIO)) {
+            Log.d("테스트","여기진입1");
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO},
                     REQUEST_RECORD_AUDIO_PERMISSION);
         } else {
+            Log.d("테스트","여기진입2");
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO},
                     REQUEST_RECORD_AUDIO_PERMISSION);
         }
@@ -169,12 +174,14 @@ public class SpeechHelper {
 
         // Stop Cloud Speech API
         try{
+            Log.d("테스트","스탑이 안되나111?");
             if(mSpeechService!=null)
                 mSpeechService.removeListener(mSpeechServiceListener);
 
             activity.unbindService(mServiceConnection);
             mSpeechService = null;
         }catch(Exception e){
+            Log.d("테스트","스탑이 안되나?");
             e.printStackTrace();
         }
 
