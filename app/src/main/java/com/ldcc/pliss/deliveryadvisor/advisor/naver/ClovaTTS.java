@@ -87,7 +87,6 @@ public class ClovaTTS {
 
             @Override
             public void onDone(String utteranceId) {
-                Log.d("test","발음 종료");
                 mListener.onSpeakingFinished(true);
 //                new Handler().postDelayed(new Runnable(){
 //                    @Override
@@ -226,7 +225,6 @@ public class ClovaTTS {
         mediaPlayer = new MediaPlayer();
         myFile = new File(context.getFilesDir().getPath().toString()+"/"+path+".mp3");
         try {
-            Log.d("테스트: 경로 확인 : ",context.getFilesDir().getPath().toString()+"/"+path+".mp3");
             if(!myFile.exists()){
                 myFile.createNewFile();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)

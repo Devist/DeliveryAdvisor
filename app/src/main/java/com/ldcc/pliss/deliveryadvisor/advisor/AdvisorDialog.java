@@ -229,7 +229,6 @@ public class AdvisorDialog extends Activity {
         speechHelper.addListener(new SpeechHelper.Listener() {
             @Override
             public void onVoiceAnalyed(int analyzeResult, List<String> invoiceKeywords) {
-                Log.d("처리번호 : ", analyzeResult+"");
                 if(invoiceKeywords.size()>0)
                     Log.d("처리송장 : ", invoiceKeywords.get(0));
                 speechHelper.stopVoiceRecognition();
@@ -248,7 +247,6 @@ public class AdvisorDialog extends Activity {
             @Override
             public void onConnected(int connectNumber) {
                 if (connectNumber>=0){
-                    Log.d("테스트","여기진입4");
                     textIsListening.setTextColor(0xFF00FA92);
                     textIsListening.setText("Listening..");
                     textDescription.setTextColor(0xFFAAAAAA);
@@ -263,7 +261,6 @@ public class AdvisorDialog extends Activity {
             @Override
             public void onSpeakingFinished(boolean isFinal) {
                 if(isPresentation){
-                    Log.d("테스트","이제 녹화 시작");
                     //speechHelper = new SpeechHelper(mActivity);
                     startVoiceRecognition();
                 }
